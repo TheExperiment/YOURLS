@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * MySQL Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+/**
+ * Summary of Install
+ */
 class Install {
     
     /**
