@@ -1,9 +1,18 @@
 <?php
-/*
- * YOURLS
- * Function library
+
+/**
+ * Functions Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
  */
 
+/**
+ * Summary of Functions
+ * 
+ * @deprecated Too much methods!
+ * @todo We have to separate methods!
+ */
 class Functions {
     
     /**
