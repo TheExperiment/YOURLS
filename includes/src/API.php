@@ -7,6 +7,8 @@
  * @copyright 2009-2014 YOURLS - MIT
  */
 
+namespace YOURLS;
+
 /**
  * API's Voice
  * 

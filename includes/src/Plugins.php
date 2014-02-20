@@ -7,6 +7,8 @@
  * @copyright 2009-2014 YOURLS - MIT
  */
 
+namespace YOURLS;
+
 /**
  * The filter/plugin API which allows for creating filters
  * and hooking functions, and methods. The functions or methods will be run when
