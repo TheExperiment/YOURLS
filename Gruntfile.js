@@ -24,7 +24,7 @@ module.exports = function (grunt) {
         },
         phpcsfixer: {
             app: {
-                dir: 'includes'
+                dir: 'includes/src'
             },
             options: {
                 level: 'all',
@@ -82,7 +82,7 @@ module.exports = function (grunt) {
                 tasks: 'less:development'
             },
             php: {
-                files: 'includes/**/*.php',
+                files: 'includes/src/**/*.php',
                 tasks: [/*'phpcsfixer', */'phpunit']
             }
         }
