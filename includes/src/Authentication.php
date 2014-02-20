@@ -443,12 +443,7 @@ class Authentication {
             $domain = '';
 
         if ( !headers_sent() ) {
-            // Set httponly if the php version is >= 5.2.0
-            if( version_compare( phpversion(), '5.2.0', 'ge' ) ) {
-                setcookie('username', salt( $user ), $time, '/', $domain, $secure, $httponly );
-            } else {
-                setcookie('username', salt( $user ), $time, '/', $domain, $secure );
-            }
+            setcookie('username', salt( $user ), $time, '/', $domain, $secure, $httponly );
         } else {
             // For some reason cookies were not stored: action to be able to debug that
             do_action( 'setcookie_failed', $user );

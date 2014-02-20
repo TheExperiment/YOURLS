@@ -44,7 +44,7 @@ class Functions {
      *
      */
     public function make_regexp_pattern( $string ) {
-        $pattern = preg_quote( $string, '-' ); // add - as an escaped characters -- this is fixed in PHP 5.3
+        $pattern = preg_quote( $string );
         // TODO: replace char sequences by smart sequences such as 0-9, a-z, A-Z ... ?
         return $pattern;
     }
