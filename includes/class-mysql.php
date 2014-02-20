@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * MySQL Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+/**
+ * Connection with database
+ * 
+ * Load everything (driver and subclasses) to talk with MySQL.
+ */
 class MySQL {
     
     /**
