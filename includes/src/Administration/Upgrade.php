@@ -25,7 +25,7 @@ class Upgrade {
             case 1:
             case 2:
                 if( $oldsql < 482 )
-                    upgrade_to_15();
+                    $this->to_15();
 
                 redirect_javascript( admin_url( "upgrade?step=3" ) );
 
@@ -43,7 +43,7 @@ class Upgrade {
      * Main func for upgrade from 1.4.3 to 1.5
      *
      */
-    public function upgrade_to_15( ) {
+    public function to_15( ) {
         // Create empty 'active_plugins' entry in the option if needed
         if( get_option( 'active_plugins' ) === false )
             add_option( 'active_plugins', array() );
