@@ -7,7 +7,7 @@
  * @copyright 2009-2014 YOURLS - MIT
  */
 
-namespace YOURLS;
+namespace YOURLS\Utilities;
 
 /**
  * This class stores associative arrays in an xml formatted string.

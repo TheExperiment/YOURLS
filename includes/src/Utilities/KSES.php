@@ -8,7 +8,7 @@
  * @copyright 2009-2014 YOURLS - MIT
  */
 
-namespace YOURLS;
+namespace YOURLS\Utilities;
 
 /* NOTE ABOUT GLOBALS
  * Two globals are defined: $allowedentitynames and $allowedprotocols

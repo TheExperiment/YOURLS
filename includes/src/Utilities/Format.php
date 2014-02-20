@@ -7,7 +7,7 @@
  * @copyright 2009-2014 YOURLS - MIT
  */
 
-namespace YOURLS;
+namespace YOURLS\Utilities;
 
 /**
  * Useful methods to convert anything
