@@ -35,6 +35,9 @@
         "lib-curl": "Allow API external transactions",
         "lib-openssl": "Allow HTTPS connexions"
     },
+    "autoload": {
+        "psr-4": {"YOURLS\\": "includes/src"}
+    },
     "config": {
         "vendor-dir": "includes/vendor"
     }
