@@ -47,7 +47,7 @@ class Plugins {
     public function add_filter( $hook, $function_name, $priority = 10, $accepted_args = NULL, $type = 'filter' ) {
         global $filters;
         // At this point, we cannot check if the function exists, as it may well be defined later (which is OK)
-        $id = filter_unique_id( $hook, $function_name, $priority );
+        $id = $this->filter_unique_id( $hook, $function_name, $priority );
 
         $filters[ $hook ][ $priority ][ $id ] = array(
             'function'      => $function_name,
@@ -70,7 +70,7 @@ class Plugins {
      * @param int $accepted_args optional. The number of arguments the function accept (default 1).
      */
     public function add_action( $hook, $function_name, $priority = 10, $accepted_args = 1 ) {
-        return add_filter( $hook, $function_name, $priority, $accepted_args, 'action' );
+        return $this->add_filter( $hook, $function_name, $priority, $accepted_args, 'action' );
     }
 
     /**
@@ -178,7 +178,7 @@ class Plugins {
      * @return mixed
      */
     public function apply_filters( $hook, $value = '' ) {
-        return apply_filter( $hook, $value );
+        return $this->apply_filter( $hook, $value );
     }
 
     /**
@@ -242,7 +242,7 @@ class Plugins {
     public function remove_filter( $hook, $function_to_remove, $priority = 10, $accepted_args = 1 ) {
         global $filters;
 
-        $function_to_remove = filter_unique_id( $hook, $function_to_remove, $priority );
+        $function_to_remove = $this->filter_unique_id( $hook, $function_to_remove, $priority );
 
         $remove = isset( $filters[ $hook ][ $priority ][ $function_to_remove ] );
 
@@ -270,7 +270,7 @@ class Plugins {
         if ( false === $function_to_check || false == $has ) {
             return $has;
         }
-        if ( !$idx = filter_unique_id( $hook, $function_to_check, false ) ) {
+        if ( !$idx = $this->filter_unique_id( $hook, $function_to_check, false ) ) {
             return false;
         }
 
@@ -290,7 +290,7 @@ class Plugins {
      * @return bool
      */
     public function has_action( $hook, $function_to_check = false ) {
-        return has_filter( $hook, $function_to_check );
+        return $this->has_filter( $hook, $function_to_check );
     }
 
     /**
@@ -339,12 +339,12 @@ class Plugins {
      * @return bool
      */
     public function is_active_plugin( $plugin ) {
-        if( !has_active_plugins( ) )
+        if( !$this->has_active_plugins( ) )
 
             return false;
 
         global $ydb;
-        $plugin = plugin_basename( $plugin );
+        $plugin = $this->plugin_basename( $plugin );
 
         return in_array( $plugin, $ydb->plugins );
 
@@ -404,7 +404,7 @@ class Plugins {
             $ydb->debug_log[] = 'Plugins: ' . count( $active_plugins );
 
         foreach( (array)$active_plugins as $key=>$plugin ) {
-            if( validate_plugin_file( YOURLS_PLUGINDIR.'/'.$plugin ) ) {
+            if( $this->validate_plugin_file( YOURLS_PLUGINDIR.'/'.$plugin ) ) {
                 include_once( YOURLS_PLUGINDIR.'/'.$plugin );
                 $ydb->plugins[] = $plugin;
                 unset( $active_plugins[$key] );
@@ -450,15 +450,15 @@ class Plugins {
      */
     public function activate_plugin( $plugin ) {
         // validate file
-        $plugin = plugin_basename( $plugin );
+        $plugin = $this->plugin_basename( $plugin );
         $plugindir = sanitize_filename( YOURLS_PLUGINDIR );
-        if( !validate_plugin_file( $plugindir.'/'.$plugin ) )
+        if( !$this->validate_plugin_file( $plugindir.'/'.$plugin ) )
 
             return _( 'Not a valid plugin file' );
 
         // check not activated already
         global $ydb;
-        if( has_active_plugins() && in_array( $plugin, $ydb->plugins ) )
+        if( $this->has_active_plugins() && in_array( $plugin, $ydb->plugins ) )
 
             return _( 'Plugin already activated' );
 
@@ -488,10 +488,10 @@ class Plugins {
      * @return mixed string if error or true if success
      */
     public function deactivate_plugin( $plugin ) {
-        $plugin = plugin_basename( $plugin );
+        $plugin = $this->plugin_basename( $plugin );
 
         // Check plugin is active
-        if( !is_active_plugin( $plugin ) )
+        if( !$this->is_active_plugin( $plugin ) )
 
             return _( 'Plugin not active' );
 
@@ -527,7 +527,7 @@ class Plugins {
      * Return the URL of the directory a plugin
      */
     public function plugin_url( $file ) {
-        $url = YOURLS_PLUGINURL . '/' . plugin_basename( $file );
+        $url = YOURLS_PLUGINURL . '/' . $this->plugin_basename( $file );
         if( is_ssl() or needs_ssl() )
             $url = str_replace( 'http://', 'https://', $url );
 
@@ -575,7 +575,7 @@ class Plugins {
      * Handle plugin or theme administration page
      *
      */
-    public function plugin_admin_page( $plugin_page, $type = 'plugin' ) {
+    public function admin_page( $plugin_page, $type = 'plugin' ) {
         global $ydb;
 
         // Check the plugin page is actually registered
@@ -603,7 +603,7 @@ class Plugins {
      * @param array $plugin_b
      * @return int 0, 1 or -1, see uasort()
      */
-    public function plugins_sort_callback( $plugin_a, $plugin_b ) {
+    public function sort_callback( $plugin_a, $plugin_b ) {
         $orderby = apply_filters( 'plugins_sort_callback', 'Plugin Name' );
         $order   = apply_filters( 'plugins_sort_callback', 'ASC' );
 
