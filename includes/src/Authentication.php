@@ -41,7 +41,7 @@ class Authentication {
         // Logout request
         if( isset( $_GET['action'] ) && $_GET['action'] == 'logout' ) {
             do_action( 'logout' );
-            store_cookie( null );
+            $this->store_cookie( null );
 
             return array( _( 'Logged out successfully' ), 'success' );
         }
@@ -60,7 +60,7 @@ class Authentication {
             )
         {
             do_action( 'pre_login_signature_timestamp' );
-            $unfiltered_valid = check_signature_timestamp();
+            $unfiltered_valid = $this->check_signature_timestamp();
         }
 
         elseif
@@ -72,7 +72,7 @@ class Authentication {
             )
         {
             do_action( 'pre_login_signature' );
-            $unfiltered_valid = check_signature();
+            $unfiltered_valid = $this->check_signature();
         }
 
         elseif
@@ -81,7 +81,7 @@ class Authentication {
               && !empty( $_REQUEST['username'] ) && !empty( $_REQUEST['password']  ) )
         {
             do_action( 'pre_login_username_password' );
-            $unfiltered_valid = check_username_password();
+            $unfiltered_valid = $this->check_username_password();
         }
 
         elseif
@@ -90,7 +90,7 @@ class Authentication {
               isset( $_YOURLS_COOKIE['username'] ) )
         {
             do_action( 'pre_login_cookie' );
-            $unfiltered_valid = check_auth_cookie();
+            $unfiltered_valid = $this->check_auth_cookie();
         }
 
         // Regardless of validity, allow plugins to filter the boolean and have final word
@@ -102,7 +102,7 @@ class Authentication {
 
             // (Re)store encrypted cookie if needed
             if ( !is_API() ) {
-                store_cookie( YOURLS_USER );
+                $this->store_cookie( YOURLS_USER );
 
                 // Login form : redirect to requested URL to avoid re-submitting the login form on page reload
                 if( isset( $_REQUEST['username'] ) && isset( $_REQUEST['password'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
@@ -131,8 +131,8 @@ class Authentication {
      */
     public function check_username_password() {
         global $user_passwords;
-        if( isset( $user_passwords[ $_REQUEST['username'] ] ) && check_password_hash( $_REQUEST['username'], $_REQUEST['password'] ) ) {
-            set_user( $_REQUEST['username'] );
+        if( isset( $user_passwords[ $_REQUEST['username'] ] ) && $this->check_password_hash( $_REQUEST['username'], $_REQUEST['password'] ) ) {
+            $this->set_user( $_REQUEST['username'] );
 
             return true;
         }
@@ -151,13 +151,13 @@ class Authentication {
 
             return false;
 
-        if ( has_phpass_password( $user ) ) {
+        if ( $this->has_phpass_password( $user ) ) {
             // Stored password is hashed with phpass
             list( , $hash ) = explode( ':', $user_passwords[ $user ] );
             $hash = str_replace( '!', '$', $hash );
 
-            return ( phpass_check( $submitted_password, $hash ) );
-        } else if( has_md5_password( $user ) ) {
+            return ( $this->phpass_check( $submitted_password, $hash ) );
+        } else if( $this->has_md5_password( $user ) ) {
             // Stored password is a salted md5 hash: "md5:<$r = rand(10000,99999)>:<md5($r.'thepassword')>"
             list( , $salt, ) = explode( ':', $user_passwords[ $user ] );
 
@@ -198,9 +198,9 @@ class Authentication {
 
         $to_hash = 0; // keep track of number of passwords that need hashing
         foreach ( $user_passwords as $user => $password ) {
-            if ( !has_phpass_password( $user ) && !has_md5_password( $user ) ) {
+            if ( !$this->has_phpass_password( $user ) && !$this->has_md5_password( $user ) ) {
                 $to_hash++;
-                $hash = phpass_hash( $password );
+                $hash = $this->phpass_hash( $password );
                 // PHP would interpret $ as a variable, so replace it in storage.
                 $hash = str_replace( '$', '!', $hash );
                 $quotes = "'" . '"';
@@ -239,7 +239,7 @@ class Authentication {
      * @return string hashed password
      */
     public function phpass_hash( $password ) {
-        $hasher = phpass_instance();
+        $hasher = $this->phpass_instance();
 
         return $hasher->HashPassword( $password );
     }
@@ -253,7 +253,7 @@ class Authentication {
      * @return bool true if the hash matches the password once hashed by phpass, false otherwise
      */
     public function phpass_check( $password, $hash ) {
-        $hasher = phpass_instance();
+        $hasher = $this->phpass_instance();
 
         return $hasher->CheckPassword( $password, $hash );
     }
@@ -288,7 +288,7 @@ class Authentication {
     public function has_cleartext_passwords() {
         global $user_passwords;
         foreach ( $user_passwords as $user => $pwdata ) {
-            if ( !has_md5_password( $user ) && !has_phpass_password( $user ) ) {
+            if ( !$this->has_md5_password( $user ) && !$this->has_phpass_password( $user ) ) {
                 return true;
             }
         }
@@ -341,7 +341,7 @@ class Authentication {
         global $user_passwords;
         foreach( $user_passwords as $valid_user => $valid_password ) {
             if ( salt( $valid_user ) == $_YOURLS_COOKIE['username'] ) {
-                set_user( $valid_user );
+                $this->set_user( $valid_user );
 
                 return true;
             }
@@ -361,14 +361,14 @@ class Authentication {
         foreach( $user_passwords as $valid_user => $valid_password ) {
             if (
                 (
-                    md5( $_REQUEST['timestamp'].auth_signature( $valid_user ) ) == $_REQUEST['signature']
+                    md5( $_REQUEST['timestamp'].$this->auth_signature( $valid_user ) ) == $_REQUEST['signature']
                     or
-                    md5( auth_signature( $valid_user ).$_REQUEST['timestamp'] ) == $_REQUEST['signature']
+                    md5( $this->auth_signature( $valid_user ).$_REQUEST['timestamp'] ) == $_REQUEST['signature']
                 )
                 &&
-                check_timestamp( $_REQUEST['timestamp'] )
+                $this->check_timestamp( $_REQUEST['timestamp'] )
                 ) {
-                set_user( $valid_user );
+                $this->set_user( $valid_user );
 
                 return true;
             }
@@ -384,8 +384,8 @@ class Authentication {
     public function check_signature() {
         global $user_passwords;
         foreach( $user_passwords as $valid_user => $valid_password ) {
-            if ( auth_signature( $valid_user ) == $_REQUEST['signature'] ) {
-                set_user( $valid_user );
+            if ( $this->auth_signature( $valid_user ) == $_REQUEST['signature'] ) {
+                $this->set_user( $valid_user );
 
                 return true;
             }
