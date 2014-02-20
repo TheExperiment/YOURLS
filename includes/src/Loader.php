@@ -184,7 +184,7 @@ class Loader {
             yourls_do_action( 'admin_init' );
         }
     }
-    
+
     public function run() {
         // Get request in YOURLS base (eg in 'http://site.com/yourls/abcd' get 'abdc')
         $request = yourls_get_request();
@@ -244,5 +244,5 @@ class Loader {
         yourls_redirect( YOURLS_SITE, 302 );
         exit;
     }
-    
+
 }
