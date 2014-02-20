@@ -18,7 +18,7 @@ class Install {
      * Check if server has MySQL 5.0+
      *
      */
-    function check_database_version() {
+    public function check_database_version() {
         global $ydb;
 
         // Attempt to get MySQL server version, check result and if error count increased
@@ -47,7 +47,7 @@ class Install {
      * @since 1.7
      * @return string sanitized DB version
      */
-    function get_database_version() {
+    public function get_database_version() {
         global $ydb;
 
         return preg_replace( '/(^[^0-9]*)|[^0-9.].*/', '', $ydb->mysql_version() );
@@ -57,7 +57,7 @@ class Install {
      * Check if PHP > 5.2
      *
      */
-    function check_php_version() {
+    public function check_php_version() {
         return ( version_compare( '5.2', phpversion() ) <= 0 );
     }
 
@@ -65,7 +65,7 @@ class Install {
      * Check if server is an Apache
      *
      */
-    function is_apache() {
+    public function is_apache() {
         if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) )
 
             return false;
@@ -79,7 +79,7 @@ class Install {
      * Check if server is running IIS
      *
      */
-    function is_iis() {
+    public function is_iis() {
         return ( array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ? ( strpos( $_SERVER['SERVER_SOFTWARE'], 'IIS' ) !== false ) : false );
     }
 
@@ -87,7 +87,7 @@ class Install {
      * Create .htaccess or web.config. Returns boolean
      *
      */
-    function create_htaccess() {
+    public function create_htaccess() {
         $host = parse_url( SITE );
         $path = ( isset( $host['path'] ) ? $host['path'] : '' );
 
@@ -143,7 +143,7 @@ class Install {
      * Inserts $insertion (text in an array of lines) into $filename (.htaccess) between BEGIN/END $marker block. Returns bool. Stolen from WP
      *
      */
-    function insert_with_markers( $filename, $marker, $insertion ) {
+    public function insert_with_markers( $filename, $marker, $insertion ) {
         if ( !file_exists( $filename ) || is_writeable( $filename ) ) {
             if ( !file_exists( $filename ) ) {
                 $markerdata = '';
@@ -199,7 +199,7 @@ class Install {
      * Create MySQL tables. Return array( 'success' => array of success strings, 'errors' => array of error strings )
      *
      */
-    function create_sql_tables() {
+    public function create_sql_tables() {
         global $ydb;
 
         $error_msg = array();
@@ -286,7 +286,7 @@ class Install {
      * @since 1.7
      * @return bool
      */
-    function initialize_options() {
+    public function initialize_options() {
         return ( bool ) (
               update_option( 'version', VERSION )
             & update_option( 'db_version', DB_VERSION )
@@ -300,7 +300,7 @@ class Install {
      * @since 1.7
      * @return bool
      */
-    function insert_sample_links() {
+    public function insert_sample_links() {
         $link1 = add_new_link( 'http://blog.yourls.org/', 'yourlsblog', 'YOURLS\' Blog' );
         $link2 = add_new_link( 'http://yourls.org/',      'yourls',     'YOURLS: Your Own URL Shortener' );
         $link3 = add_new_link( 'http://ozh.org/',         'ozh',        'ozh.org' );
@@ -316,7 +316,7 @@ class Install {
      * Toggle maintenance mode. Inspired from WP. Returns true for success, false otherwise
      *
      */
-    function maintenance_mode( $maintenance = true ) {
+    public function maintenance_mode( $maintenance = true ) {
 
         $file = ABSPATH . '/.maintenance' ;
 

@@ -39,7 +39,7 @@ class Localization {
      *
      * @return string The locale of the blog or from the 'get_locale' hook.
      */
-    function get_locale() {
+    public function get_locale() {
         global $locale;
 
         if ( !isset( $locale ) ) {
@@ -67,7 +67,7 @@ class Localization {
      * @param string $domain Domain to retrieve the translated text.
      * @return string Translated text
      */
-    function translate( $text, $domain = 'default' ) {
+    public function translate( $text, $domain = 'default' ) {
         $translations = get_translations_for_domain( $domain );
 
         return apply_filters( 'translate', $translations->translate( $text ), $text, $domain );
@@ -89,7 +89,7 @@ class Localization {
      * @param string $domain Domain to retrieve the translated text.
      * @return string Translated text
      */
-    function translate_with_context( $text, $context, $domain = 'default' ) {
+    public function translate_with_context( $text, $context, $domain = 'default' ) {
         $translations = get_translations_for_domain( $domain );
 
         return apply_filters( 'translate_with_context', $translations->translate( $text, $context ), $text, $context, $domain );
@@ -106,7 +106,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated text
      */
-    function _( $text, $domain = 'default' ) {
+    public function _( $text, $domain = 'default' ) {
         return translate( $text, $domain );
     }
 
@@ -128,7 +128,7 @@ class Localization {
      * @param string $arg1, $arg2... Optional: sprintf tokens, and translation domain
      * @return string Translated text
      */
-    function s( $pattern ) {
+    public function s( $pattern ) {
         // Get pattern and pattern arguments
         $args = func_get_args();
         // If s() called by se(), all arguments are wrapped in the same array key
@@ -170,7 +170,7 @@ class Localization {
      * @param string $arg1, $arg2... Optional: sprintf tokens, and translation domain
      * @return string Translated text
      */
-    function se( $pattern ) {
+    public function se( $pattern ) {
         echo s( func_get_args() );
     }
 
@@ -187,7 +187,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated text
      */
-    function esc_attr__( $text, $domain = 'default' ) {
+    public function esc_attr__( $text, $domain = 'default' ) {
         return esc_attr( translate( $text, $domain ) );
     }
 
@@ -203,7 +203,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated text
      */
-    function esc_html__( $text, $domain = 'default' ) {
+    public function esc_html__( $text, $domain = 'default' ) {
         return esc_html( translate( $text, $domain ) );
     }
 
@@ -216,7 +216,7 @@ class Localization {
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      */
-    function e( $text, $domain = 'default' ) {
+    public function e( $text, $domain = 'default' ) {
         echo translate( $text, $domain );
     }
 
@@ -230,7 +230,7 @@ class Localization {
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      */
-    function esc_attr_e( $text, $domain = 'default' ) {
+    public function esc_attr_e( $text, $domain = 'default' ) {
         echo esc_attr( translate( $text, $domain ) );
     }
 
@@ -244,7 +244,7 @@ class Localization {
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      */
-    function esc_html_e( $text, $domain = 'default' ) {
+    public function esc_html_e( $text, $domain = 'default' ) {
         echo esc_html( translate( $text, $domain ) );
     }
 
@@ -264,7 +264,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated context string without pipe
      */
-    function x( $text, $context, $domain = 'default' ) {
+    public function x( $text, $context, $domain = 'default' ) {
         return translate_with_context( $text, $context, $domain );
     }
 
@@ -279,7 +279,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated context string without pipe
      */
-    function ex( $text, $context, $domain = 'default' ) {
+    public function ex( $text, $context, $domain = 'default' ) {
         echo x( $text, $context, $domain );
     }
 
@@ -298,7 +298,7 @@ class Localization {
      * @internal param string $text Text to translate
      * @return string
      */
-    function esc_attr_x( $single, $context, $domain = 'default' ) {
+    public function esc_attr_x( $single, $context, $domain = 'default' ) {
         return esc_attr( translate_with_context( $single, $context, $domain ) );
     }
 
@@ -316,7 +316,7 @@ class Localization {
      * @internal param string $text Text to translate
      * @return string
      */
-    function esc_html_x( $single, $context, $domain = 'default' ) {
+    public function esc_html_x( $single, $context, $domain = 'default' ) {
         return esc_html( translate_with_context( $single, $context, $domain ) );
     }
 
@@ -342,7 +342,7 @@ class Localization {
      * @param string $domain Optional. The domain identifier the text should be retrieved in
      * @return string Either $single or $plural translated text
      */
-    function n( $single, $plural, $number, $domain = 'default' ) {
+    public function n( $single, $plural, $number, $domain = 'default' ) {
         $translations = get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number );
 
@@ -357,7 +357,7 @@ class Localization {
      * @see x()
      *
      */
-    function nx($single, $plural, $number, $context, $domain = 'default') {
+    public function nx($single, $plural, $number, $context, $domain = 'default') {
         $translations = get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number, $context );
 
@@ -385,7 +385,7 @@ class Localization {
      * @param string $domain Optional. The domain identifier the text will be retrieved in
      * @return array array($singular, $plural)
      */
-    function n_noop( $singular, $plural, $domain = null ) {
+    public function n_noop( $singular, $plural, $domain = null ) {
         return array(
             0 => $singular,
             1 => $plural,
@@ -402,7 +402,7 @@ class Localization {
      * @since 1.6
      * @see n_noop()
      */
-    function nx_noop( $singular, $plural, $context, $domain = null ) {
+    public function nx_noop( $singular, $plural, $context, $domain = null ) {
         return array(
             0 => $singular,
             1 => $plural,
@@ -424,7 +424,7 @@ class Localization {
      * 	a domain passed to n_noop() or nx_noop(), it will override this value.
      * @return string
      */
-    function translate_nooped_plural( $nooped_plural, $count, $domain = 'default' ) {
+    public function translate_nooped_plural( $nooped_plural, $count, $domain = 'default' ) {
         if ( $nooped_plural['domain'] )
             $domain = $nooped_plural['domain'];
 
@@ -450,7 +450,7 @@ class Localization {
      * @param string $mofile Path to the .mo file
      * @return bool True on success, false on failure
      */
-    function load_textdomain( $domain, $mofile ) {
+    public function load_textdomain( $domain, $mofile ) {
         global $l10n;
 
         $plugin_override = apply_filters( 'override_load_textdomain', false, $domain, $mofile );
@@ -489,7 +489,7 @@ class Localization {
      * @param string $domain Textdomain to be unloaded
      * @return bool Whether textdomain was unloaded
      */
-    function unload_textdomain( $domain ) {
+    public function unload_textdomain( $domain ) {
         global $l10n;
 
         $plugin_override = apply_filters( 'override_unload_textdomain', false, $domain );
@@ -517,7 +517,7 @@ class Localization {
      * @since 1.6
      * @return bool True on success, false on failure
      */
-    function load_default_textdomain() {
+    public function load_default_textdomain() {
         $locale = get_locale();
 
         if( !empty( $locale ) )
@@ -532,7 +532,7 @@ class Localization {
      * @param string $domain
      * @return object A Translation instance
      */
-    function get_translations_for_domain( $domain ) {
+    public function get_translations_for_domain( $domain ) {
         global $l10n;
         if ( !isset( $l10n[$domain] ) ) {
             $l10n[$domain] = new NOOPTranslations;
@@ -548,7 +548,7 @@ class Localization {
      * @param string $domain
      * @return bool Whether there are translations
      */
-    function is_textdomain_loaded( $domain ) {
+    public function is_textdomain_loaded( $domain ) {
         global $l10n;
 
         return isset( $l10n[$domain] );
@@ -564,7 +564,7 @@ class Localization {
      *
      * @since 1.6
      */
-    function translate_user_role( $name ) {
+    public function translate_user_role( $name ) {
         return translate_with_context( $name, 'User role' );
     }
 
@@ -576,7 +576,7 @@ class Localization {
      * @param string $dir A directory in which to search for language files. The default directory is LANG_DIR.
      * @return array Array of language codes or an empty array if no languages are present. Language codes are formed by stripping the .mo extension from the language file names.
      */
-    function get_available_languages( $dir = null ) {
+    public function get_available_languages( $dir = null ) {
         $languages = array();
 
         $dir = is_null( $dir) ? LANG_DIR : $dir;
@@ -597,7 +597,7 @@ class Localization {
      * @param int $decimals Precision of the number of decimal places.
      * @return string Converted number in string format.
      */
-    function number_format_i18n( $number, $decimals = 0 ) {
+    public function number_format_i18n( $number, $decimals = 0 ) {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
@@ -621,7 +621,7 @@ class Localization {
      * @param bool     $gmt              Optional, default is false. Whether to convert to GMT for time.
      * @return string The date, translated if locale specifies it.
      */
-    function date_i18n( $dateformatstring, $unixtimestamp = false, $gmt = false ) {
+    public function date_i18n( $dateformatstring, $unixtimestamp = false, $gmt = false ) {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
@@ -703,7 +703,7 @@ class Localization {
      * @param int|bool $gmt Optional. Whether to use GMT timezone. Default is false.
      * @return int|string String if $type is 'gmt', int if $type is 'timestamp'.
      */
-    function current_time( $type, $gmt = 0 ) {
+    public function current_time( $type, $gmt = 0 ) {
         switch ( $type ) {
             case 'mysql':
                 return ( $gmt ) ? gmdate( 'Y-m-d H:i:s' ) : gmdate( 'Y-m-d H:i:s', time() + HOURS_OFFSET * 3600 );
@@ -727,7 +727,7 @@ class Localization {
      * @param string $path Full path to directory containing MO files.
      * @return bool True on success, false on failure
      */
-    function load_custom_textdomain( $domain, $path ) {
+    public function load_custom_textdomain( $domain, $path ) {
         $locale = apply_filters( 'load_custom_textdomain', get_locale(), $domain );
         $mofile = trim( $path, '/' ) . '/'. $domain . '-' . $locale . '.mo';
 
@@ -740,7 +740,7 @@ class Localization {
      * @since 1.6
      * @return bool Whether locale is RTL.
      */
-    function is_rtl() {
+    public function is_rtl() {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
@@ -758,7 +758,7 @@ class Localization {
      * @param mixed $weekday A full textual weekday, eg "Friday", or an integer (0 = Sunday, 1 = Monday, .. 6 = Saturday)
      * @return mixed Translated weekday abbreviation, eg "Ven" (abbrev of "Vendredi") for "Friday" or 5, or array of all weekday abbrev
      */
-    function l10n_weekday_abbrev( $weekday = '' ){
+    public function l10n_weekday_abbrev( $weekday = '' ){
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
@@ -786,7 +786,7 @@ class Localization {
      * @param mixed $weekday A full textual weekday, eg "Friday", an integer (0 = Sunday, 1 = Monday, .. 6 = Saturday) or empty string
      * @return mixed Translated weekday initial, eg "V" (initial of "Vendredi") for "Friday" or 5, or array of all weekday initials
      */
-    function l10n_weekday_initial( $weekday = '' ){
+    public function l10n_weekday_initial( $weekday = '' ){
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
@@ -814,7 +814,7 @@ class Localization {
      * @param mixed $month Empty string, a full textual weekday, eg "November", or an integer (1 = January, .., 12 = December)
      * @return mixed Translated month abbrev (eg "Nov"), or array of all translated abbrev months
      */
-    function l10n_month_abbrev( $month = '' ){
+    public function l10n_month_abbrev( $month = '' ){
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
@@ -838,7 +838,7 @@ class Localization {
      * @since 1.6
      * @return array Array of all translated months
      */
-    function l10n_months(){
+    public function l10n_months(){
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();

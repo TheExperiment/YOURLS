@@ -44,7 +44,7 @@ class Plugins {
      * @param int $accepted_args optional. The number of arguments the function accept (default is the number provided).
      * @param string $type
      */
-    function add_filter( $hook, $function_name, $priority = 10, $accepted_args = NULL, $type = 'filter' ) {
+    public function add_filter( $hook, $function_name, $priority = 10, $accepted_args = NULL, $type = 'filter' ) {
         global $filters;
         // At this point, we cannot check if the function exists, as it may well be defined later (which is OK)
         $id = filter_unique_id( $hook, $function_name, $priority );
@@ -69,7 +69,7 @@ class Plugins {
      * @param int $priority optional. Used to specify the order in which the functions associated with a particular action are executed (default: 10). Lower numbers correspond with earlier execution, and functions with the same priority are executed in the order in which they were added to the action.
      * @param int $accepted_args optional. The number of arguments the function accept (default 1).
      */
-    function add_action( $hook, $function_name, $priority = 10, $accepted_args = 1 ) {
+    public function add_action( $hook, $function_name, $priority = 10, $accepted_args = 1 ) {
         return add_filter( $hook, $function_name, $priority, $accepted_args, 'action' );
     }
 
@@ -84,7 +84,7 @@ class Plugins {
      * @param int|bool $priority used in counting how many hooks were applied.  If === false and $function is an object reference, we return the unique id only if it already has one, false otherwise.
      * @return string unique ID for usage as array key
      */
-    function filter_unique_id( $hook, $function, $priority ) {
+    public function filter_unique_id( $hook, $function, $priority ) {
         global $filters;
 
         // If function then just skip all of the tests and not overwrite the following.
@@ -131,7 +131,7 @@ class Plugins {
      * @param mixed $value the value of the element before filtering
      * @return mixed
      */
-    function apply_filter( $hook, $value = '' ) {
+    public function apply_filter( $hook, $value = '' ) {
         global $filters;
         if ( !isset( $filters[ $hook ] ) )
             return $value;
@@ -177,7 +177,7 @@ class Plugins {
      * @param mixed $value the value of the element before filtering
      * @return mixed
      */
-    function apply_filters( $hook, $value = '' ) {
+    public function apply_filters( $hook, $value = '' ) {
         return apply_filter( $hook, $value );
     }
 
@@ -187,7 +187,7 @@ class Plugins {
      * @param string $hook the name of the YOURLS action
      * @param mixed $arg action arguments
      */
-    function do_action( $hook, $arg = '' ) {
+    public function do_action( $hook, $arg = '' ) {
         global $actions;
 
         // Keep track of actions that are "done"
@@ -215,7 +215,7 @@ class Plugins {
     * @param string $hook Name of the action hook.
     * @return int The number of times action hook $hook is fired
     */
-    function did_action( $hook ) {
+    public function did_action( $hook ) {
         global $actions;
         if ( !isset( $actions ) || !isset( $actions[ $hook ] ) )
             return 0;
@@ -239,7 +239,7 @@ class Plugins {
      * @param int $accepted_args optional. The number of arguments the function accepts (default: 1).
      * @return boolean Whether the function was registered as a filter before it was removed.
      */
-    function remove_filter( $hook, $function_to_remove, $priority = 10, $accepted_args = 1 ) {
+    public function remove_filter( $hook, $function_to_remove, $priority = 10, $accepted_args = 1 ) {
         global $filters;
 
         $function_to_remove = filter_unique_id( $hook, $function_to_remove, $priority );
@@ -263,7 +263,7 @@ class Plugins {
      * @param callback $function_to_check optional.  If specified, return the priority of that function on this hook or false if not attached.
      * @return int|boolean Optionally returns the priority on that hook for the specified function.
      */
-    function has_filter( $hook, $function_to_check = false ) {
+    public function has_filter( $hook, $function_to_check = false ) {
         global $filters;
 
         $has = !empty( $filters[ $hook ] );
@@ -289,7 +289,7 @@ class Plugins {
      * @param string $function_to_check
      * @return bool
      */
-    function has_action( $hook, $function_to_check = false ) {
+    public function has_action( $hook, $function_to_check = false ) {
         return has_filter( $hook, $function_to_check );
     }
 
@@ -298,7 +298,7 @@ class Plugins {
      *
      * @return integer Number of activated plugins
      */
-    function has_active_plugins( ) {
+    public function has_active_plugins( ) {
         global $ydb;
 
         if( !property_exists( $ydb, 'plugins' ) || !$ydb->plugins )
@@ -313,7 +313,7 @@ class Plugins {
      * @global object $ydb Storage of mostly everything YOURLS needs to know
      * @return array Array of [/plugindir/plugin.php]=>array('Name'=>'Ozh', 'Title'=>'Hello', )
      */
-    function get_plugins( $category = 'plugins' ) {
+    public function get_plugins( $category = 'plugins' ) {
         if( $category == 'themes' )
             $plugins = (array) glob( THEMEDIR .'/*/theme.css');
         else
@@ -338,7 +338,7 @@ class Plugins {
      * @param string $plugin Physical path to plugin file
      * @return bool
      */
-    function is_active_plugin( $plugin ) {
+    public function is_active_plugin( $plugin ) {
         if( !has_active_plugins( ) )
 
             return false;
@@ -356,7 +356,7 @@ class Plugins {
      * @param string $file Physical path to plugin file
      * @return array Array of 'Field'=>'Value' from plugin comment header lines of the form "Field: Value"
      */
-    function get_plugin_data( $file ) {
+    public function get_plugin_data( $file ) {
         $fp = fopen( $file, 'r' ); // assuming $file is readable, since load_plugins() filters this
         $data = fread( $fp, 8192 ); // get first 8kb
         fclose( $fp );
@@ -386,7 +386,7 @@ class Plugins {
     /**
      * Include active plugins
      */
-    function load_plugins() {
+    public function load_plugins() {
         // Don't load plugins when installing or updating
         if( is_installing() OR is_upgrading() )
 
@@ -426,7 +426,7 @@ class Plugins {
      * @param string $file Full pathname to a file
      * @return bool
      */
-    function validate_plugin_file( $file ) {
+    public function validate_plugin_file( $file ) {
         if (
             false !== strpos( $file, '..' )
             OR
@@ -448,7 +448,7 @@ class Plugins {
      * @param string $plugin Plugin filename (full or relative to plugins directory)
      * @return mixed string if error or true if success
      */
-    function activate_plugin( $plugin ) {
+    public function activate_plugin( $plugin ) {
         // validate file
         $plugin = plugin_basename( $plugin );
         $plugindir = sanitize_filename( PLUGINDIR );
@@ -487,7 +487,7 @@ class Plugins {
      * @param string $plugin Plugin filename (full relative to plugins directory)
      * @return mixed string if error or true if success
      */
-    function deactivate_plugin( $plugin ) {
+    public function deactivate_plugin( $plugin ) {
         $plugin = plugin_basename( $plugin );
 
         // Check plugin is active
@@ -512,7 +512,7 @@ class Plugins {
     /**
      * Return the path of a plugin file, relative to the plugins directory
      */
-    function plugin_basename( $file, $category = 'plugins' ) {
+    public function plugin_basename( $file, $category = 'plugins' ) {
         $file = sanitize_filename( $file );
         if( $category == 'themes' )
             $plugindir = sanitize_filename( THEMEDIR );
@@ -526,7 +526,7 @@ class Plugins {
     /**
      * Return the URL of the directory a plugin
      */
-    function plugin_url( $file ) {
+    public function plugin_url( $file ) {
         $url = PLUGINURL . '/' . plugin_basename( $file );
         if( is_ssl() or needs_ssl() )
             $url = str_replace( 'http://', 'https://', $url );
@@ -537,7 +537,7 @@ class Plugins {
     /**
      * Display list of links to plugin admin pages, if any
      */
-    function list_plugin_admin_pages() {
+    public function list_plugin_admin_pages() {
         global $ydb;
 
         if( !property_exists( $ydb, 'plugin_pages' ) || !$ydb->plugin_pages )
@@ -558,7 +558,7 @@ class Plugins {
     /**
      * Register a plugin administration page
      */
-    function register_plugin_page( $slug, $title, $function ) {
+    public function register_plugin_page( $slug, $title, $function ) {
         global $ydb;
 
         if( !property_exists( $ydb, 'plugin_pages' ) || !$ydb->plugin_pages )
@@ -575,7 +575,7 @@ class Plugins {
      * Handle plugin or theme administration page
      *
      */
-    function plugin_admin_page( $plugin_page, $type = 'plugin' ) {
+    public function plugin_admin_page( $plugin_page, $type = 'plugin' ) {
         global $ydb;
 
         // Check the plugin page is actually registered
@@ -603,7 +603,7 @@ class Plugins {
      * @param array $plugin_b
      * @return int 0, 1 or -1, see uasort()
      */
-    function plugins_sort_callback( $plugin_a, $plugin_b ) {
+    public function plugins_sort_callback( $plugin_a, $plugin_b ) {
         $orderby = apply_filters( 'plugins_sort_callback', 'Plugin Name' );
         $order   = apply_filters( 'plugins_sort_callback', 'ASC' );
 

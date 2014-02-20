@@ -23,7 +23,7 @@ class API {
      * @since 1.6
      * @return array Result of API call
      */
-    function api_action_shorturl() {
+    public function api_action_shorturl() {
         $url = ( isset( $_REQUEST['url'] ) ? $_REQUEST['url'] : '' );
         $keyword = ( isset( $_REQUEST['keyword'] ) ? $_REQUEST['keyword'] : '' );
         $title = ( isset( $_REQUEST['title'] ) ? $_REQUEST['title'] : '' );
@@ -40,7 +40,7 @@ class API {
      * @since 1.6
      * @return array Result of API call
      */
-    function api_action_stats() {
+    public function api_action_stats() {
         $filter = ( isset( $_REQUEST['filter'] ) ? $_REQUEST['filter'] : '' );
         $limit = ( isset( $_REQUEST['limit'] ) ? $_REQUEST['limit'] : '' );
         $start = ( isset( $_REQUEST['start'] ) ? $_REQUEST['start'] : '' );
@@ -54,7 +54,7 @@ class API {
      * @since 1.6
      * @return array Result of API call
      */
-    function api_action_db_stats() {
+    public function api_action_db_stats() {
         return apply_filter( 'api_result_db_stats', api_db_stats() );
     }
 
@@ -64,7 +64,7 @@ class API {
      * @since 1.6
      * @return array Result of API call
      */
-    function api_action_url_stats() {
+    public function api_action_url_stats() {
         $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
 
         return apply_filter( 'api_result_url_stats', api_url_stats( $shorturl ) );
@@ -76,7 +76,7 @@ class API {
      * @since 1.6
      * @return array Result of API call
      */
-    function api_action_expand() {
+    public function api_action_expand() {
         $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
 
         return apply_filter( 'api_result_expand', api_expand( $shorturl ) );
@@ -88,7 +88,7 @@ class API {
      * @since 1.6
      * @return array Result of API call
      */
-    function api_action_version() {
+    public function api_action_version() {
         $return['version'] = $return['simple'] = VERSION;
         if( isset( $_REQUEST['db'] ) && $_REQUEST['db'] == 1 )
             $return['db_version'] = DB_VERSION;
@@ -100,7 +100,7 @@ class API {
      * Return API result. Dies after this
      *
      */
-    function api_output( $mode, $return ) {
+    public function api_output( $mode, $return ) {
         if( isset( $return['simple'] ) ) {
             $simple = $return['simple'];
             unset( $return['simple'] );
@@ -150,7 +150,7 @@ class API {
      * Return array for API stat requests
      *
      */
-    function api_stats( $filter = 'top', $limit = 10, $start = 0 ) {
+    public function api_stats( $filter = 'top', $limit = 10, $start = 0 ) {
         $return = get_stats( $filter, $limit, $start );
         $return['simple']  = 'Need either XML or JSON format for stats';
         $return['message'] = 'success';
@@ -162,7 +162,7 @@ class API {
      * Return array for counts of shorturls and clicks
      *
      */
-    function api_db_stats() {
+    public function api_db_stats() {
         $return = array(
             'db-stats'   => get_db_stats(),
             'statusCode' => 200,
@@ -177,7 +177,7 @@ class API {
      * Return array for API stat requests
      *
      */
-    function api_url_stats( $shorturl ) {
+    public function api_url_stats( $shorturl ) {
         $keyword = str_replace( SITE . '/' , '', $shorturl ); // accept either 'http://ozh.in/abc' or 'abc'
         $keyword = sanitize_string( $keyword );
 
@@ -191,7 +191,7 @@ class API {
      * Expand short url to long url
      *
      */
-    function api_expand( $shorturl ) {
+    public function api_expand( $shorturl ) {
         $keyword = str_replace( SITE . '/' , '', $shorturl ); // accept either 'http://ozh.in/abc' or 'abc'
         $keyword = sanitize_string( $keyword );
 

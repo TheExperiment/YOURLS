@@ -22,7 +22,7 @@ class Locale_Formats {
      * @var array
      * @access private
      */
-    var $weekday;
+    public $weekday;
 
     /**
      * Stores the translated strings for the one character weekday names.
@@ -36,7 +36,7 @@ class Locale_Formats {
      * @var array
      * @access private
      */
-    var $weekday_initial;
+    public $weekday_initial;
 
     /**
      * Stores the translated strings for the abbreviated weekday names.
@@ -45,7 +45,7 @@ class Locale_Formats {
      * @var array
      * @access private
      */
-    var $weekday_abbrev;
+    public $weekday_abbrev;
 
     /**
      * Stores the translated strings for the full month names.
@@ -54,7 +54,7 @@ class Locale_Formats {
      * @var array
      * @access private
      */
-    var $month;
+    public $month;
 
     /**
      * Stores the translated strings for the abbreviated month names.
@@ -63,7 +63,7 @@ class Locale_Formats {
      * @var array
      * @access private
      */
-    var $month_abbrev;
+    public $month_abbrev;
 
     /**
      * Stores the translated strings for 'am' and 'pm'.
@@ -74,7 +74,7 @@ class Locale_Formats {
      * @var array
      * @access private
      */
-    var $meridiem;
+    public $meridiem;
 
     /**
      * Stores the translated number format
@@ -83,7 +83,7 @@ class Locale_Formats {
      * @var array
      * @access private
      */
-    var $number_format;
+    public $number_format;
 
     /**
      * The text direction of the locale language.
@@ -94,7 +94,7 @@ class Locale_Formats {
      * @var string
      * @access private
      */
-    var $text_direction = 'ltr';
+    public $text_direction = 'ltr';
 
     /**
      * Sets up the translated strings and object properties.
@@ -106,7 +106,7 @@ class Locale_Formats {
      * @since 1.6
      * @access private
      */
-    function init() {
+    public function init() {
         // The Weekdays
         $this->weekday[0] = /* //translators: weekday */ _( 'Sunday' );
         $this->weekday[1] = /* //translators: weekday */ _( 'Monday' );
@@ -210,7 +210,7 @@ class Locale_Formats {
      * @param int $weekday_number 0 for Sunday through 6 Saturday
      * @return string Full translated weekday
      */
-    function get_weekday( $weekday_number ) {
+    public function get_weekday( $weekday_number ) {
         return $this->weekday[ $weekday_number ];
     }
 
@@ -228,7 +228,7 @@ class Locale_Formats {
      * @param string $weekday_name
      * @return string
      */
-    function get_weekday_initial( $weekday_name ) {
+    public function get_weekday_initial( $weekday_name ) {
         return $this->weekday_initial[ $weekday_name ];
     }
 
@@ -244,7 +244,7 @@ class Locale_Formats {
      * @param string $weekday_name Full translated weekday word
      * @return string Translated weekday abbreviation
      */
-    function get_weekday_abbrev( $weekday_name ) {
+    public function get_weekday_abbrev( $weekday_name ) {
         return $this->weekday_abbrev[ $weekday_name ];
     }
 
@@ -265,7 +265,7 @@ class Locale_Formats {
      * @param string|int $month_number '01' through '12'
      * @return string Translated full month name
      */
-    function get_month( $month_number ) {
+    public function get_month( $month_number ) {
         return $this->month[ sprintf( '%02s', $month_number ) ];
     }
 
@@ -281,7 +281,7 @@ class Locale_Formats {
      * @param string $month_name Translated month to get abbreviated version
      * @return string Translated abbreviated month
      */
-    function get_month_abbrev( $month_name ) {
+    public function get_month_abbrev( $month_name ) {
         return $this->month_abbrev[ $month_name ];
     }
 
@@ -296,7 +296,7 @@ class Locale_Formats {
      * @param string $meridiem Either 'am', 'pm', 'AM', or 'PM'. Not translated version.
      * @return string Translated version
      */
-    function get_meridiem( $meridiem ) {
+    public function get_meridiem( $meridiem ) {
         return $this->meridiem[ $meridiem ];
     }
 
@@ -308,7 +308,7 @@ class Locale_Formats {
      *
      * @since 1.6
      */
-    function register_globals() {
+    public function register_globals() {
         $GLOBALS['weekday']         = $this->weekday;
         $GLOBALS['weekday_initial'] = $this->weekday_initial;
         $GLOBALS['weekday_abbrev']  = $this->weekday_abbrev;
@@ -325,7 +325,7 @@ class Locale_Formats {
      *
      * @return Locale_Formats
      */
-    function __construct() {
+    public function __construct() {
         $this->init();
         $this->register_globals();
     }
@@ -336,7 +336,7 @@ class Locale_Formats {
      * @since 1.6
      * @return bool Whether locale is RTL.
      */
-    function is_rtl() {
+    public function is_rtl() {
         return 'rtl' == $this->text_direction;
     }
 }

@@ -20,7 +20,7 @@ class HTML {
      * @param string $context Context of the page (stats, index, infos, ...)
      * @param string $title HTML title of the page
      */
-    function html_head( $context = 'index', $title = '' ) {
+    public function html_head( $context = 'index', $title = '' ) {
 
         do_action( 'pre_html_head', $context, $title );
 
@@ -86,7 +86,7 @@ class HTML {
      *
      * @param bool $linked true if a link is wanted
      */
-    function html_logo( $linked = true ) {
+    public function html_logo( $linked = true ) {
         do_action( 'pre_html_logo' );
         $logo = '<img class="yourls-logo-img" src="' . site_url( false, ASSETURL . '/img/yourls-logo.png' ) . '" alt="YOURLS" title="YOURLS"/>';
         if ( $linked )
@@ -109,7 +109,7 @@ class HTML {
      * @param string $class     Optional html class
      * @param bool   $echo
      */
-    function html_htag( $title, $size = 1, $subtitle = null, $class = null, $echo = true ) {
+    public function html_htag( $title, $size = 1, $subtitle = null, $class = null, $echo = true ) {
         $size = intval( $size );
         if( $size < 1 )
             $size = 1;
@@ -136,7 +136,7 @@ class HTML {
      *
      * @param string $current_page Which page is loaded?
      */
-    function html_menu( $current_page = null ) {
+    public function html_menu( $current_page = null ) {
         // Build menu links
         $help_link   = apply_filter( 'help-link', '<a href="' . site_url( false ) .'/docs/"><i class="fa fa-question-circle fa-fw"></i> ' . _( 'Help' ) . '</a>' );
 
@@ -241,7 +241,7 @@ class HTML {
      *
      * @since 2.0
      */
-    function html_global_stats() {
+    public function html_global_stats() {
         list( $total_urls, $total_clicks ) = array_values( get_db_stats() );
         // @FIXME: this SQL query is also used in admin/index.php - reduce query count
         $html  = '<div class="global-stats"><div class="global-stats-data">';
@@ -257,7 +257,7 @@ class HTML {
      * @param string $message The message showed
      * @param string $style notice / error / info / warning / success
      */
-    function add_notice( $message, $style = 'notice' ) {
+    public function add_notice( $message, $style = 'notice' ) {
         // Escape single quotes in $message to avoid breaking the anonymous function
         $message = notice_box( strtr( $message, array( "'" => "\'" ) ), $style );
         add_action( 'admin_notice', create_function( '', "echo '$message';" ) );
@@ -269,7 +269,7 @@ class HTML {
      * @param string $message The message showed
      * @param string $style notice / error / info / warning / success
      */
-    function notice_box( $message, $style = 'notice' ) {
+    public function notice_box( $message, $style = 'notice' ) {
         return '<div class="alert alert-' . $style . '"><a class="close" data-dismiss="alert" href="#">&times;</a>' . $message . '</div>';
     }
 
@@ -280,7 +280,7 @@ class HTML {
      * @param string $message The message showed
      * @param string $style notice / error / info / warning / success
      */
-    function add_label( $message, $style = 'normal', $space = null ) {
+    public function add_label( $message, $style = 'normal', $space = null ) {
         $label = '<span class="label label-' . $style . '">' . $message . '</span>';
         if ( $space )
             $label = $space == 'before' ? ' ' . $label : $label . ' ';
@@ -291,7 +291,7 @@ class HTML {
      * Display a page
      *
      */
-    function page( $page ) {
+    public function page( $page ) {
         $include = PAGEDIR . "/$page.php";
         if( !file_exists( $include ) ) {
             die( "Page '$page' not found", 'Not found', 404 );
@@ -310,7 +310,7 @@ class HTML {
      *
      * @since 1.6
      */
-    function html_language_attributes() {
+    public function html_language_attributes() {
         $attributes = array();
         $output = '';
 
@@ -335,7 +335,7 @@ class HTML {
      * Display HTML footer (including closing body & html tags)
      *
      */
-    function html_footer() {
+    public function html_footer() {
         echo '<hr /><div class="footer" role="contentinfo"><p>';
         $footer  = s( 'Powered by %s', html_link( 'http://yourls.org/', 'YOURLS', 'YOURLS', false, false ) );
             echo apply_filters( 'html_footer_text', $footer );
@@ -346,7 +346,7 @@ class HTML {
      * Display HTML debug infos
      *
      */
-    function html_debug() {
+    public function html_debug() {
         global $ydb;
         echo '<pre class="debug-info"><button type="button" class="close" onclick="$(this).parent().fadeOut();return false;" title="Dismiss">&times;</button>';
         echo  'Queries: ' . $ydb->num_queries . "\n";
@@ -361,7 +361,7 @@ class HTML {
      * @param string $url URL to prefill the input with
      * @param string $keyword Keyword to prefill the input with
      */
-    function html_addnew( $url = '', $keyword = '' ) {
+    public function html_addnew( $url = '', $keyword = '' ) {
         ?>
             <div class="new-url-form">
                 <div class="new-url-long">
@@ -390,7 +390,7 @@ class HTML {
      * @param array $params Array of all required parameters
      * @return string Result
      */
-    function html_search( $params = array() ) {
+    public function html_search( $params = array() ) {
         extract( $params ); // extract $search_text, $search_in ...
         ?>
             <form class="search-form" action="" method="get" role="search">
@@ -483,7 +483,7 @@ class HTML {
      *
      * @param array $params
      */
-    function html_pagination( $params = array() ) {
+    public function html_pagination( $params = array() ) {
         extract( $params ); // extract $page, ...
         if( $total_pages > 1 ) {
                 ?>
@@ -528,7 +528,7 @@ class HTML {
      * @param int $max_on_page
      * @param int $total_items Total of items in data
      */
-    function html_displaying_count( $item_type, $min_on_page, $max_on_page, $total_items ) {
+    public function html_displaying_count( $item_type, $min_on_page, $max_on_page, $total_items ) {
         if( $max_on_page - $min_on_page + 1 >= $total_items )
             printf( _( 'Displaying <strong class="increment">all %1$s</strong> %2$s' ), $max_on_page, $item_type );
         else
@@ -546,7 +546,7 @@ class HTML {
      * @param boolean $display false (default) to return, true to echo
      * @return string HTML content of the select element
      */
-    function html_select( $name, $options, $selected = '', $display = false ) {
+    public function html_select( $name, $options, $selected = '', $display = false ) {
         $html = '<select name="' . $name . '" class="input-group-addon">';
         foreach( $options as $value => $text ) {
             $html .= '<option value="' . $value .'"';
@@ -565,7 +565,7 @@ class HTML {
      * Display the Quick Share box
      *
      */
-    function share_box( $longurl, $shorturl, $title = '', $text='', $shortlink_title = '', $share_title = '', $hidden = false ) {
+    public function share_box( $longurl, $shorturl, $title = '', $text='', $shortlink_title = '', $share_title = '', $hidden = false ) {
         // @TODO: HTML Clean up
         if ( $shortlink_title == '' )
             $shortlink_title = '<h2>' . _( 'Your short link' ) . '</h2>';
@@ -634,7 +634,7 @@ class HTML {
      * @param string $clipboard_target Id of the fetched element to copy value
      * @param bool $echo true to print, false to return
      */
-    function html_zeroclipboard( $clipboard_target, $echo = true ) {
+    public function html_zeroclipboard( $clipboard_target, $echo = true ) {
         $html = apply_filter( 'html_zeroclipboard',
         '<button class="btn-clipboard" data-copied-hint="' . _( 'Copied!' ) . '" data-clipboard-target="' . $clipboard_target . '" data-placement="bottom" data-trigger="manual" data-original-title="' . _( 'Copy to clipboard' ) . '"><i class="fa fa-copy"></i></button>',
         $clipboard_target );
@@ -648,7 +648,7 @@ class HTML {
      * Die die die
      *
      */
-    function die( $message = '', $title = '', $header_code = 200 ) {
+    public function die( $message = '', $title = '', $header_code = 200 ) {
         status_header( $header_code );
 
         if( !$head = did_action( 'html_head' ) ) {
@@ -672,7 +672,7 @@ class HTML {
      * @param string $keyword Keyword to edit
      * @return string HTML of the edit row
      */
-    function table_edit_row( $keyword ) {
+    public function table_edit_row( $keyword ) {
         $keyword = sanitize_string( $keyword );
         $id = string2htmlid( $keyword ); // used as HTML #id
         $url = get_keyword_longurl( $keyword );
@@ -730,7 +730,7 @@ class HTML {
      *
      * @return string HTML of the edit row
      */
-    function table_add_row( $keyword, $url, $title = '', $ip, $clicks, $timestamp ) {
+    public function table_add_row( $keyword, $url, $title = '', $ip, $clicks, $timestamp ) {
         $keyword  = sanitize_string( $keyword );
         $id       = string2htmlid( $keyword ); // used as HTML #id
         $shorturl = link( $keyword );
@@ -855,7 +855,7 @@ class HTML {
      * Echo the main table head
      *
      */
-    function table_head( $data = null ) {
+    public function table_head( $data = null ) {
         echo apply_filter( 'table_head_start', '<thead><tr>' );
 
         if( $data === null )  {
@@ -878,7 +878,7 @@ class HTML {
      * Echo the tbody start tag
      *
      */
-    function table_tbody_start() {
+    public function table_tbody_start() {
         echo apply_filter( 'table_tbody_start', '<tbody class="list">' );
     }
 
@@ -886,7 +886,7 @@ class HTML {
      * Echo the tbody end tag
      *
      */
-    function table_tbody_end() {
+    public function table_tbody_end() {
         echo apply_filter( 'table_tbody_end', '</tbody>' );
     }
 
@@ -894,7 +894,7 @@ class HTML {
      * Echo the table start tag
      *
      */
-    function table_start( $div_id = '', $table_class = '' ) {
+    public function table_start( $div_id = '', $table_class = '' ) {
         echo apply_filter( 'table_start', '<div id="' . $div_id . '"><table class="' . $table_class . '">', $table_class );
     }
 
@@ -902,7 +902,7 @@ class HTML {
      * Echo the table end tag
      *
      */
-    function table_end() {
+    public function table_end() {
         echo apply_filter( 'table_end', '</table></div>' );
     }
 
@@ -911,7 +911,7 @@ class HTML {
      *
      * @since 2.0
      */
-    function wrapper_start() {
+    public function wrapper_start() {
         do_action( 'admin_notice' );
         echo apply_filter( 'wrapper_start', '<div class="content" role="main">' );
     }
@@ -921,7 +921,7 @@ class HTML {
      *
      * @since 2.0
      */
-    function wrapper_end() {
+    public function wrapper_end() {
         echo apply_filter( 'wrapper_end', '</div></div>' );
         if( defined( 'DEBUG' ) && DEBUG == true ) {
             html_debug();
@@ -933,7 +933,7 @@ class HTML {
      *
      * @since 2.0
      */
-    function sidebar_start() {
+    public function sidebar_start() {
         echo apply_filter( 'sidebar_start', '<div class="sidebar-container"><div class="sidebar">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-responsive-collapse">
           <i class="fa fa-bars"></i>
@@ -945,7 +945,7 @@ class HTML {
      *
      * @since 2.0
      */
-    function sidebar_end() {
+    public function sidebar_end() {
         echo apply_filter( 'sidebar_end', '</div></div>' );
     }
 
@@ -959,7 +959,7 @@ class HTML {
      * @param bool $echo
      * @return HTML tag with all contents
      */
-    function html_link( $href, $content = '', $title = '', $class = false, $echo = true ) {
+    public function html_link( $href, $content = '', $title = '', $class = false, $echo = true ) {
         if( !$content )
             $content = esc_html( $href );
         if( $title ) {
@@ -978,7 +978,7 @@ class HTML {
      * Display the login screen. Nothing past this point.
      *
      */
-    function login_screen( $error_msg = '' ) {
+    public function login_screen( $error_msg = '' ) {
         // Since the user is not authed, we don't disclose any kind of stats
         remove_from_template( 'html_global_stats' );
 
@@ -1026,7 +1026,7 @@ class HTML {
      *
      * @since 1.6
      */
-    function l10n_calendar_strings() {
+    public function l10n_calendar_strings() {
         echo "<script>";
         echo "var l10n_cal_month = " . json_encode( array_values( l10n_months() ) ) . ";";
         echo "var l10n_cal_days = " . json_encode( array_values( l10n_weekday_initial() ) ) . ";";
@@ -1045,7 +1045,7 @@ class HTML {
      *
      * @since 1.7
      */
-    function new_core_version_notice() {
+    public function new_core_version_notice() {
 
         debug_log( 'Check for new version: ' . ( maybe_check_core_version() ? 'yes' : 'no' ) );
 
@@ -1064,7 +1064,7 @@ class HTML {
      * @param string $type content type ('text/html', 'application/json', ...)
      * @return bool whether header was sent
      */
-    function content_type_header( $type ) {
+    public function content_type_header( $type ) {
         if( !headers_sent() ) {
             $charset = apply_filters( 'content_type_header_charset', 'utf-8' );
             header( "Content-Type: $type; charset=$charset" );
@@ -1086,7 +1086,7 @@ class HTML {
      * @since 1.7
      * @return string Search string
      */
-    function get_search_text() {
+    public function get_search_text() {
         $search = '';
         if( isset( $_GET['search_protocol'] ) )
             $search .= $_GET['search_protocol'];
@@ -1103,7 +1103,7 @@ class HTML {
      *
      * @since 1.7
      */
-    function display_login_message() {
+    public function display_login_message() {
         if( !isset( $_GET['login_msg'] ) )
 
             return;
@@ -1124,7 +1124,7 @@ class HTML {
      *
      * @since 2.0
      */
-    function html_ending() {
+    public function html_ending() {
         do_action( 'html_ending' );
         echo '</div></body></html>';
     }
@@ -1134,7 +1134,7 @@ class HTML {
      *
      * @since 2.0
      */
-    function html_callout( $type, $content, $title = '' ) {
+    public function html_callout( $type, $content, $title = '' ) {
         echo '<div class="callout callout-' . $type . '">';
         if ( $title != '' )
             html_htag( $title, 4 );

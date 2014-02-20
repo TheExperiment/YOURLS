@@ -34,7 +34,7 @@ class HTTP {
      * @see http_request
      * @return mixed Response object, or error string
      */
-    function http_get( $url, $headers = array(), $data = array(), $options = array() ) {
+    public function http_get( $url, $headers = array(), $data = array(), $options = array() ) {
         return http_request( 'GET', $url, $headers, $data, $options );
     }
 
@@ -45,7 +45,7 @@ class HTTP {
      * @see http_request
      * @return mixed String (page body) or null if error
      */
-    function http_get_body( $url, $headers = array(), $data = array(), $options = array() ) {
+    public function http_get_body( $url, $headers = array(), $data = array(), $options = array() ) {
         $return = http_get( $url, $headers, $data, $options );
 
         return isset( $return->body ) ? $return->body : null;
@@ -60,7 +60,7 @@ class HTTP {
      * @see http_request
      * @return mixed Response object, or error string
      */
-    function http_post( $url, $headers = array(), $data = array(), $options = array() ) {
+    public function http_post( $url, $headers = array(), $data = array(), $options = array() ) {
         return http_request( 'POST', $url, $headers, $data, $options );
     }
 
@@ -73,7 +73,7 @@ class HTTP {
      * @see http_request
      * @return mixed String (page body) or null if error
      */
-    function http_post_body( $url, $headers = array(), $data = array(), $options = array() ) {
+    public function http_post_body( $url, $headers = array(), $data = array(), $options = array() ) {
         $return = http_post( $url, $headers, $data, $options );
 
         return isset( $return->body ) ? $return->body : null;
@@ -86,7 +86,7 @@ class HTTP {
      * @since 1.7
      * @return bool true if a proxy is defined, false otherwise
      */
-    function http_proxy_is_defined() {
+    public function http_proxy_is_defined() {
         return apply_filter( 'http_proxy_is_defined', defined( 'PROXY' ) );
     }
 
@@ -101,7 +101,7 @@ class HTTP {
      * @since 1.7
      * @return array Options
      */
-    function http_default_options() {
+    public function http_default_options() {
         $options = array(
             'timeout'          => apply_filter( 'http_default_options_timeout', 3 ),
             'useragent'        => http_user_agent(),
@@ -132,7 +132,7 @@ class HTTP {
      * @param string $url URL to check
      * @return bool true to request through proxy, false to request directly
      */
-    function send_through_proxy( $url ) {
+    public function send_through_proxy( $url ) {
 
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_send_through_proxy', null, $url );
@@ -187,7 +187,7 @@ class HTTP {
      * @param array $options Options for the request (see /includes/Requests/Requests.php:request())
      * @return object Requests_Response object
      */
-    function http_request( $type, $url, $headers, $data, $options ) {
+    public function http_request( $type, $url, $headers, $data, $options ) {
         $options = array_merge( http_default_options(), $options );
 
         if( http_proxy_is_defined() && !send_through_proxy( $url ) )
@@ -209,7 +209,7 @@ class HTTP {
      * @since 1.5
      * @return string UA string
      */
-    function http_user_agent() {
+    public function http_user_agent() {
         return apply_filter( 'http_user_agent', 'YOURLS v'.VERSION.' +http://yourls.org/ (running on '.SITE.')' );
     }
 
@@ -228,7 +228,7 @@ class HTTP {
      * @since 1.7
      * @return mixed JSON data if api.yourls.org successfully requested, false otherwise
      */
-    function check_core_version() {
+    public function check_core_version() {
 
         global $ydb, $user_passwords;
 
@@ -326,7 +326,7 @@ class HTTP {
      * @since 1.7
      * @return bool true if a check was needed and successfully performed, false otherwise
      */
-    function maybe_check_core_version() {
+    public function maybe_check_core_version() {
 
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_maybe_check_core_version', null );
@@ -378,7 +378,7 @@ class HTTP {
      * @since 1.7.1
      * @return bool whether the server can perform HTTP requests over SSL
      */
-    function can_http_over_ssl() {
+    public function can_http_over_ssl() {
         $ssl_curl = $ssl_socket = false;
 
         if( function_exists( 'curl_exec' ) ) {

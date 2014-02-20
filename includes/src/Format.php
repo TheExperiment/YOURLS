@@ -18,7 +18,7 @@ class Format {
      * Convert an integer (1337) to a string (3jk).
      *
      */
-    function int2string( $num, $chars = null ) {
+    public function int2string( $num, $chars = null ) {
         if( $chars == null )
             $chars = get_shorturl_charset();
         $string = '';
@@ -37,7 +37,7 @@ class Format {
      * Convert a string (3jk) to an integer (1337)
      *
      */
-    function string2int( $string, $chars = null ) {
+    public function string2int( $string, $chars = null ) {
         if( $chars == null )
             $chars = get_shorturl_charset();
         $integer = 0;
@@ -56,7 +56,7 @@ class Format {
      * Return a unique(ish) hash for a string to be used as a valid HTML id
      *
      */
-    function string2htmlid( $string ) {
+    public function string2htmlid( $string ) {
         return apply_filter( 'string2htmlid', 'y'.abs( crc32( $string ) ) );
     }
 
@@ -64,7 +64,7 @@ class Format {
      * Make sure a link keyword (ie "1fv" as in "site.com/1fv") is valid.
      *
      */
-    function sanitize_string( $string ) {
+    public function sanitize_string( $string ) {
         // make a regexp pattern with the shorturl charset, and remove everything but this
         $pattern = make_regexp_pattern( get_shorturl_charset() );
         $valid = substr( preg_replace( '![^'.$pattern.']!', '', $string ), 0, 199 );
@@ -76,7 +76,7 @@ class Format {
      * Alias function. I was always getting it wrong.
      *
      */
-    function sanitize_keyword( $keyword ) {
+    public function sanitize_keyword( $keyword ) {
         return sanitize_string( $keyword );
     }
 
@@ -84,7 +84,7 @@ class Format {
      * Sanitize a page title. No HTML per W3C http://www.w3.org/TR/html401/struct/global.html#h-7.4.2
      *
      */
-    function sanitize_title( $unsafe_title ) {
+    public function sanitize_title( $unsafe_title ) {
         $title = $unsafe_title;
         $title = strip_tags( $title );
         $title = preg_replace( "/\s+/", ' ', trim( $title ) );
@@ -99,7 +99,7 @@ class Format {
      * @param array $protocols Optional allowed protocols, default to global $allowedprotocols
      * @return string Safe URL
      */
-    function sanitize_url( $unsafe_url, $protocols = array() ) {
+    public function sanitize_url( $unsafe_url, $protocols = array() ) {
         $url = esc_url( $unsafe_url, 'redirection', $protocols );
 
         return apply_filter( 'sanitize_url', $url, $unsafe_url );
@@ -111,7 +111,7 @@ class Format {
      * Stolen from WP's _deep_replace
      *
      */
-    function deep_replace( $search, $subject ){
+    public function deep_replace( $search, $subject ){
         $found = true;
         while($found) {
             $found = false;
@@ -130,7 +130,7 @@ class Format {
      * Make sure an integer is a valid integer (PHP's intval() limits to too small numbers)
      *
      */
-    function sanitize_int( $in ) {
+    public function sanitize_int( $in ) {
         return ( substr( preg_replace( '/[^0-9]/', '', strval( $in ) ), 0, 20 ) );
     }
 
@@ -140,7 +140,7 @@ class Format {
      * @param string|array $data string or array of strings to be escaped
      * @return string|array escaped data
      */
-    function escape( $data ) {
+    public function escape( $data ) {
         if( is_array( $data ) ) {
             foreach( $data as $k => $v ) {
                 if( is_array( $v ) ) {
@@ -168,7 +168,7 @@ class Format {
      * @param string $a string to be escaped
      * @return string escaped string
      */
-    function escape_real( $string ) {
+    public function escape_real( $string ) {
         global $ydb;
         if( isset( $ydb ) && ( $ydb instanceof ezSQLcore ) )
 
@@ -182,7 +182,7 @@ class Format {
      * Sanitize an IP address
      *
      */
-    function sanitize_ip( $ip ) {
+    public function sanitize_ip( $ip ) {
         return preg_replace( '/[^0-9a-fA-F:., ]/', '', $ip );
     }
 
@@ -190,7 +190,7 @@ class Format {
      * Make sure a date is m(m)/d(d)/yyyy, return false otherwise
      *
      */
-    function sanitize_date( $date ) {
+    public function sanitize_date( $date ) {
         if( !preg_match( '!^\d{1,2}/\d{1,2}/\d{4}$!' , $date ) ) {
             return false;
         }
@@ -202,7 +202,7 @@ class Format {
      * Sanitize a date for SQL search. Return false if malformed input.
      *
      */
-    function sanitize_date_for_sql( $date ) {
+    public function sanitize_date_for_sql( $date ) {
         if( !sanitize_date( $date ) )
 
             return false;
@@ -213,7 +213,7 @@ class Format {
      * Return trimmed string
      *
      */
-    function trim_long_string( $string, $length = 60, $append = '[...]' ) {
+    public function trim_long_string( $string, $length = 60, $append = '[...]' ) {
         $newstring = $string;
         if( function_exists( 'mb_substr' ) ) {
             if ( mb_strlen( $newstring ) > $length ) {
@@ -232,7 +232,7 @@ class Format {
      * Sanitize a version number (1.4.1-whatever -> 1.4.1)
      *
      */
-    function sanitize_version( $ver ) {
+    public function sanitize_version( $ver ) {
         return preg_replace( '/[^0-9.]/', '', $ver );
     }
 
@@ -240,7 +240,7 @@ class Format {
      * Sanitize a filename (no Win32 stuff)
      *
      */
-    function sanitize_filename( $file ) {
+    public function sanitize_filename( $file ) {
         $file = str_replace( '\\', '/', $file ); // sanitize for Win32 installs
         $file = preg_replace( '|/+|' ,'/', $file ); // remove any duplicate slash
 
@@ -251,7 +251,7 @@ class Format {
      * Check if a string seems to be UTF-8. Stolen from WP.
      *
      */
-    function seems_utf8( $str ) {
+    public function seems_utf8( $str ) {
         $length = strlen( $str );
         for ( $i=0; $i < $length; $i++ ) {
             $c = ord( $str[ $i ] );
@@ -280,7 +280,7 @@ class Format {
      * @param boolean $strip Optional. Whether to attempt to strip out invalid UTF8. Default is false.
      * @return string The checked text.
      */
-    function check_invalid_utf8( $string, $strip = false ) {
+    public function check_invalid_utf8( $string, $strip = false ) {
         $string = (string) $string;
 
         if ( 0 === strlen( $string ) ) {
@@ -325,7 +325,7 @@ class Format {
      * @param boolean $double_encode Optional. Whether to encode existing html entities. Default is false.
      * @return string The encoded text with HTML entities.
      */
-    function specialchars( $string, $quote_style = ENT_NOQUOTES, $double_encode = false ) {
+    public function specialchars( $string, $quote_style = ENT_NOQUOTES, $double_encode = false ) {
         $string = (string) $string;
 
         if ( 0 === strlen( $string ) )
@@ -392,7 +392,7 @@ class Format {
      * @param mixed $quote_style Optional. Converts double quotes if set to ENT_COMPAT, both single and double if set to ENT_QUOTES or none if set to ENT_NOQUOTES. Also compatible with old _wp_specialchars() values; converting single quotes if set to 'single', double if set to 'double' or both if otherwise set. Default is ENT_NOQUOTES.
      * @return string The decoded text without HTML entities.
      */
-    function specialchars_decode( $string, $quote_style = ENT_NOQUOTES ) {
+    public function specialchars_decode( $string, $quote_style = ENT_NOQUOTES ) {
         $string = (string) $string;
 
         if ( 0 === strlen( $string ) ) {
@@ -448,7 +448,7 @@ class Format {
      * @param string $text
      * @return string
      */
-    function esc_html( $text ) {
+    public function esc_html( $text ) {
         $safe_text = check_invalid_utf8( $text );
         $safe_text = specialchars( $safe_text, ENT_QUOTES );
 
@@ -463,7 +463,7 @@ class Format {
      * @param string $text
      * @return string
      */
-    function esc_attr( $text ) {
+    public function esc_attr( $text ) {
         $safe_text = check_invalid_utf8( $text );
         $safe_text = specialchars( $safe_text, ENT_QUOTES );
 
@@ -483,7 +483,7 @@ class Format {
      * @param array $protocols Optional. Array of allowed protocols, defaults to global $allowedprotocols
      * @return string The cleaned $url
      */
-    function esc_url( $url, $context = 'display', $protocols = array() ) {
+    public function esc_url( $url, $context = 'display', $protocols = array() ) {
         // make sure there's only one 'http://' at the beginning (prevents pasting a URL right after the default 'http://')
         $url = str_replace(
             array( 'http://http://', 'http://https://' ),
@@ -553,7 +553,7 @@ class Format {
      * @param string $text The text to be escaped.
      * @return string Escaped text.
      */
-    function esc_js( $text ) {
+    public function esc_js( $text ) {
         $safe_text = check_invalid_utf8( $text );
         $safe_text = specialchars( $safe_text, ENT_COMPAT );
         $safe_text = preg_replace( '/&#(x)?0*(?(1)27|39);?/i', "'", stripslashes( $safe_text ) );
@@ -571,7 +571,7 @@ class Format {
      * @param string $text
      * @return string
      */
-    function esc_textarea( $text ) {
+    public function esc_textarea( $text ) {
         $safe_text = htmlspecialchars( $text, ENT_QUOTES );
 
         return apply_filters( 'esc_textarea', $safe_text, $text );
@@ -585,7 +585,7 @@ class Format {
      * @param $url
      * @return string
      */
-    function encodeURI( $url ) {
+    public function encodeURI( $url ) {
         // Decode URL all the way
         $result = rawurldecode_while_encoded( $url );
         // Encode once
@@ -608,7 +608,7 @@ class Format {
      * @param string $string Value to which backslashes will be added.
      * @return string String with backslashes inserted.
      */
-    function backslashit($string) {
+    public function backslashit($string) {
         $string = preg_replace('/^([0-9])/', '\\\\\\\\\1', $string);
         $string = preg_replace('/([a-z])/i', '\\\\\1', $string);
 
@@ -624,7 +624,7 @@ class Format {
      * @param string $string
      * @return bool
      */
-    function is_rawurlencoded( $string ) {
+    public function is_rawurlencoded( $string ) {
         return rawurldecode( $string ) != $string;
     }
 
@@ -638,7 +638,7 @@ class Format {
      * @param string $string
      * @return string
      */
-    function rawurldecode_while_encoded( $string ) {
+    public function rawurldecode_while_encoded( $string ) {
         $string = rawurldecode( $string );
         if( is_rawurlencoded( $string ) ) {
             $string = rawurldecode_while_encoded( $string );
@@ -667,7 +667,7 @@ class Format {
      * @param array $default   optional, defaults to '', string to replace unfound tokens
      * @return string          the formatted string
      */
-    function replace_string_tokens( $format, array $tokens, $default = '' ) {
+    public function replace_string_tokens( $format, array $tokens, $default = '' ) {
         preg_match_all( '/%([a-zA-Z0-9-_]+)%/', $format, $matches );
 
         foreach( (array)$matches[1] as $token ) {

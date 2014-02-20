@@ -18,7 +18,7 @@ class Info {
      * Echoes an image tag of Google Charts map from sorted array of 'country_code' => 'number of visits' (sort by DESC)
      *
      */
-    function stats_countries_map( $countries, $id = null ) {
+    public function stats_countries_map( $countries, $id = null ) {
 
         do_action( 'pre_stats_countries_map' );
 
@@ -47,7 +47,7 @@ class Info {
      * Echoes an image tag of Google Charts pie from sorted array of 'data' => 'value' (sort by DESC). Optional $limit = (integer) limit list of X first countries, sorted by most visits
      *
      */
-    function stats_pie( $data, $limit = 10, $size = '340x220', $id = null ) {
+    public function stats_pie( $data, $limit = 10, $size = '340x220', $id = null ) {
 
         do_action( 'pre_stats_pie' );
 
@@ -98,7 +98,7 @@ class Info {
      * Build a list of all daily values between d1/m1/y1 to d2/m2/y2.
      *
      */
-    function build_list_of_days( $dates ) {
+    public function build_list_of_days( $dates ) {
         /* Say we have an array like:
         $dates = array (
         2009 => array (
@@ -174,7 +174,7 @@ class Info {
      * $legend1_list & legend2_list are values used for the 2 x-axis labels. $id is an HTML/JS id
      *
      */
-    function stats_line( $values, $id = null ) {
+    public function stats_line( $values, $id = null ) {
 
         do_action( 'pre_stats_line' );
 
@@ -214,7 +214,7 @@ class Info {
      * Return the number of days in a month. From php.net, used if PHP built without calendar functions
      *
      */
-    function days_in_month( $month, $year ) {
+    public function days_in_month( $month, $year ) {
         // calculate number of days in a month
         return $month == 2 ? ( $year % 4 ? 28 : ( $year % 100 ? 29 : ( $year % 400 ? 28 : 29 ) ) ) : ( ( $month - 1 ) % 7 % 2 ? 30 : 31 );
     }
@@ -223,7 +223,7 @@ class Info {
      * Get max value from date array of 'Aug 12, 2012' = '1337'
      *
      */
-    function stats_get_best_day( $list_of_days ) {
+    public function stats_get_best_day( $list_of_days ) {
         $max = max( $list_of_days );
         foreach( $list_of_days as $k=>$v ) {
             if ( $v == $max )
@@ -235,7 +235,7 @@ class Info {
      * Return domain of a URL
      *
      */
-    function get_domain( $url, $include_scheme = false ) {
+    public function get_domain( $url, $include_scheme = false ) {
         $parse = @parse_url( $url ); // Hiding ugly stuff coming from malformed referrer URLs
 
         // Get host & scheme. Fall back to path if not found.
@@ -255,7 +255,7 @@ class Info {
      * Return favicon URL
      *
      */
-    function get_favicon_url( $url ) {
+    public function get_favicon_url( $url ) {
         return match_current_protocol( 'http://www.google.com/s2/u/0/favicons?domain=' . get_domain( $url, false ) );
     }
 
@@ -263,7 +263,7 @@ class Info {
      * Scale array of data from 0 to 100 max
      *
      */
-    function scale_data( $data ) {
+    public function scale_data( $data ) {
         $max = max( $data );
         if( $max > 100 ) {
             foreach( $data as $k=>$v ) {
@@ -278,7 +278,7 @@ class Info {
      * Tweak granularity of array $array: keep only $grain values. This make less accurate but less messy graphs when too much values. See http://code.google.com/apis/chart/formats.html#granularity
      *
      */
-    function array_granularity( $array, $grain = 100, $preserve_max = true ) {
+    public function array_granularity( $array, $grain = 100, $preserve_max = true ) {
         if ( count( $array ) > $grain ) {
             $max = max( $array );
             $step = intval( count( $array ) / $grain );
@@ -304,7 +304,7 @@ class Info {
      * Transform data array to data table for Google API
      *
      */
-    function google_array_to_data_table( $data ){
+    public function google_array_to_data_table( $data ){
         $str  = "var data = google.visualization.arrayToDataTable([";
         foreach( $data as $label => $values ){
             if( !is_array( $values ) ) {
@@ -329,7 +329,7 @@ class Info {
      * Return javascript code that will display the Google Chart
      *
      */
-    function google_viz_code( $graph_type, $data, $options, $id ) {
+    public function google_viz_code( $graph_type, $data, $options, $id ) {
         $function_name = 'graph' . $id;
         $code  = "<script id=\"$function_name\" type=\"text/javascript\">";
         $code .= "function $function_name() { ";

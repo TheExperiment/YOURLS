@@ -23,7 +23,7 @@ class MySQL {
      * @param string $extension Optional: user defined choice
      * @return class $ydb DB class instance
      */
-    function set_DB_driver( ) {
+    public function set_DB_driver( ) {
 
         // Auto-pick the driver. Priority: user defined, then PDO, then mysqli, then mysql
         if ( defined( 'DB_DRIVER' ) ) {
@@ -71,7 +71,7 @@ class MySQL {
      * @param string $driver DB driver
      * @return string name of the DB class to instantiate
      */
-    function require_db_files( $driver ) {
+    public function require_db_files( $driver ) {
         require_once( INC . '/ezSQL/ez_sql_core.php' );
         require_once( INC . '/ezSQL/ez_sql_core_yourls.php' );
         require_once( INC . '/ezSQL/ez_sql_' . $driver . '.php' );
@@ -85,7 +85,7 @@ class MySQL {
      *
      * @since 1.0
      */
-    function db_connect() {
+    public function db_connect() {
         global $ydb;
 
         if (   !defined( 'DB_USER' )
@@ -113,7 +113,7 @@ class MySQL {
      *
      * @since 1.7.1
      */
-    function is_db_alive() {
+    public function is_db_alive() {
         global $ydb;
 
         $alive = false;
@@ -145,7 +145,7 @@ class MySQL {
      *
      * @since 1.7.1
      */
-    function db_dead() {
+    public function db_dead() {
         // Use any /user/db_error.php file
         if( file_exists( USERDIR . '/db_error.php' ) ) {
             include_once( USERDIR . '/db_error.php' );

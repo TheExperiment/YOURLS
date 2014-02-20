@@ -21,7 +21,7 @@ class Functions {
      * Determine the allowed character set in short URLs
      *
      */
-    function get_shorturl_charset() {
+    public function get_shorturl_charset() {
         static $charset = null;
         if( $charset !== null )
 
@@ -43,7 +43,7 @@ class Functions {
      * Make an optimized regexp pattern from a string of characters
      *
      */
-    function make_regexp_pattern( $string ) {
+    public function make_regexp_pattern( $string ) {
         $pattern = preg_quote( $string, '-' ); // add - as an escaped characters -- this is fixed in PHP 5.3
         // TODO: replace char sequences by smart sequences such as 0-9, a-z, A-Z ... ?
         return $pattern;
@@ -53,7 +53,7 @@ class Functions {
      * Is a URL a short URL? Accept either 'http://sho.rt/abc' or 'abc'
      *
      */
-    function is_shorturl( $shorturl ) {
+    public function is_shorturl( $shorturl ) {
         // TODO: make sure this function evolves with the feature set.
 
         $is_short = false;
@@ -77,7 +77,7 @@ class Functions {
      * Check to see if a given keyword is reserved (ie reserved URL or an existing page). Returns bool
      *
      */
-    function keyword_is_reserved( $keyword ) {
+    public function keyword_is_reserved( $keyword ) {
         global $reserved_URL;
         $keyword = sanitize_keyword( $keyword );
         $reserved = false;
@@ -96,7 +96,7 @@ class Functions {
      * Function: Get client IP Address. Returns a DB safe string.
      *
      */
-    function get_IP() {
+    public function get_IP() {
         $ip = '';
 
         // Precedence: if set, X-Forwarded-For > HTTP_X_FORWARDED_FOR > HTTP_CLIENT_IP > HTTP_VIA > REMOTE_ADDR
@@ -119,7 +119,7 @@ class Functions {
      * Get next id a new link will have if no custom keyword provided
      *
      */
-    function get_next_decimal() {
+    public function get_next_decimal() {
         return apply_filter( 'get_next_decimal', (int)get_option( 'next_id' ) );
     }
 
@@ -127,7 +127,7 @@ class Functions {
      * Update id for next link with no custom keyword
      *
      */
-    function update_next_decimal( $int = '' ) {
+    public function update_next_decimal( $int = '' ) {
         $int = ( $int == '' ) ? get_next_decimal() + 1 : (int)$int ;
         $update = update_option( 'next_id', $int );
         do_action( 'update_next_decimal', $int, $update );
@@ -139,7 +139,7 @@ class Functions {
      * Delete a link in the DB
      *
      */
-    function delete_link_by_keyword( $keyword ) {
+    public function delete_link_by_keyword( $keyword ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_delete_link_by_keyword', null, $keyword );
         if ( null !== $pre )
@@ -159,7 +159,7 @@ class Functions {
      * SQL query to insert a new link in the DB. Returns boolean for success or failure of the inserting
      *
      */
-    function insert_link_in_db( $url, $keyword, $title = '' ) {
+    public function insert_link_in_db( $url, $keyword, $title = '' ) {
         global $ydb;
 
         $url     = escape( sanitize_url( $url ) );
@@ -180,7 +180,7 @@ class Functions {
      * Check if a URL already exists in the DB. Return NULL (doesn't exist) or an object with URL informations.
      *
      */
-    function url_exists( $url ) {
+    public function url_exists( $url ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_url_exists', false, $url );
         if ( false !== $pre )
@@ -198,7 +198,7 @@ class Functions {
      * Add a new link in the DB, either with custom keyword, or find one
      *
      */
-    function add_new_link( $url, $keyword = '', $title = '' ) {
+    public function add_new_link( $url, $keyword = '', $title = '' ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_add_new_link', false, $url, $keyword, $title );
         if ( false !== $pre )
@@ -326,7 +326,7 @@ class Functions {
      * Edit a link
      *
      */
-    function edit_link( $url, $keyword, $newkeyword='', $title='' ) {
+    public function edit_link( $url, $keyword, $newkeyword='', $title='' ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_edit_link', null, $keyword, $url, $keyword, $newkeyword, $title );
         if ( null !== $pre )
@@ -384,7 +384,7 @@ class Functions {
      * Update a title link (no checks for duplicates etc..)
      *
      */
-    function edit_link_title( $keyword, $title ) {
+    public function edit_link_title( $keyword, $title ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_edit_link_title', null, $keyword, $title );
         if ( null !== $pre )
@@ -405,7 +405,7 @@ class Functions {
      * Check if keyword id is free (ie not already taken, and not reserved). Return bool.
      *
      */
-    function keyword_is_free( $keyword ) {
+    public function keyword_is_free( $keyword ) {
         $free = true;
         if ( keyword_is_reserved( $keyword ) or keyword_is_taken( $keyword ) )
             $free = false;
@@ -417,7 +417,7 @@ class Functions {
      * Check if a keyword is taken (ie there is already a short URL with this id). Return bool.
      *
      */
-    function keyword_is_taken( $keyword ) {
+    public function keyword_is_taken( $keyword ) {
 
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_keyword_is_taken', false, $keyword );
@@ -439,7 +439,7 @@ class Functions {
      * Return XML output.
      *
      */
-    function xml_encode( $array ) {
+    public function xml_encode( $array ) {
         require_once INC . '/functions-xml.php';
         $converter= new array2xml;
 
@@ -450,7 +450,7 @@ class Functions {
      * Return array of all information associated with keyword. Returns false if keyword not found. Set optional $use_cache to false to force fetching from DB
      *
      */
-    function get_keyword_infos( $keyword, $use_cache = true ) {
+    public function get_keyword_infos( $keyword, $use_cache = true ) {
         global $ydb;
         $keyword = escape( sanitize_string( $keyword ) );
 
@@ -479,7 +479,7 @@ class Functions {
      * Return (string) selected information associated with a keyword. Optional $notfound = string default message if nothing found
      *
      */
-    function get_keyword_info( $keyword, $field, $notfound = false ) {
+    public function get_keyword_info( $keyword, $field, $notfound = false ) {
 
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_get_keyword_info', false, $keyword, $field, $notfound );
@@ -500,7 +500,7 @@ class Functions {
      * Return title associated with keyword. Optional $notfound = string default message if nothing found
      *
      */
-    function get_keyword_title( $keyword, $notfound = false ) {
+    public function get_keyword_title( $keyword, $notfound = false ) {
         return get_keyword_info( $keyword, 'title', $notfound );
     }
 
@@ -508,7 +508,7 @@ class Functions {
      * Return long URL associated with keyword. Optional $notfound = string default message if nothing found
      *
      */
-    function get_keyword_longurl( $keyword, $notfound = false ) {
+    public function get_keyword_longurl( $keyword, $notfound = false ) {
         return get_keyword_info( $keyword, 'url', $notfound );
     }
 
@@ -516,7 +516,7 @@ class Functions {
      * Return number of clicks on a keyword. Optional $notfound = string default message if nothing found
      *
      */
-    function get_keyword_clicks( $keyword, $notfound = false ) {
+    public function get_keyword_clicks( $keyword, $notfound = false ) {
         return get_keyword_info( $keyword, 'clicks', $notfound );
     }
 
@@ -524,7 +524,7 @@ class Functions {
      * Return IP that added a keyword. Optional $notfound = string default message if nothing found
      *
      */
-    function get_keyword_IP( $keyword, $notfound = false ) {
+    public function get_keyword_IP( $keyword, $notfound = false ) {
         return get_keyword_info( $keyword, 'ip', $notfound );
     }
 
@@ -532,7 +532,7 @@ class Functions {
      * Return timestamp associated with a keyword. Optional $notfound = string default message if nothing found
      *
      */
-    function get_keyword_timestamp( $keyword, $notfound = false ) {
+    public function get_keyword_timestamp( $keyword, $notfound = false ) {
         return get_keyword_info( $keyword, 'timestamp', $notfound );
     }
 
@@ -540,7 +540,7 @@ class Functions {
      * Update click count on a short URL. Return 0/1 for error/success.
      *
      */
-    function update_clicks( $keyword, $clicks = false ) {
+    public function update_clicks( $keyword, $clicks = false ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_update_clicks', false, $keyword, $clicks );
         if ( false !== $pre )
@@ -563,7 +563,7 @@ class Functions {
      * Return array of stats. (string)$filter is 'bottom', 'last', 'rand' or 'top'. (int)$limit is the number of links to return
      *
      */
-    function get_stats( $filter = 'top', $limit = 10, $start = 0 ) {
+    public function get_stats( $filter = 'top', $limit = 10, $start = 0 ) {
         global $ydb;
 
         switch( $filter ) {
@@ -621,7 +621,7 @@ class Functions {
      * Return array of stats. (string)$filter is 'bottom', 'last', 'rand' or 'top'. (int)$limit is the number of links to return
      *
      */
-    function get_link_stats( $shorturl ) {
+    public function get_link_stats( $shorturl ) {
         global $ydb;
 
         $table_url = DB_TABLE_URL;
@@ -661,7 +661,7 @@ class Functions {
      * before calling this function.
      *
      */
-    function get_db_stats( $where = '' ) {
+    public function get_db_stats( $where = '' ) {
         global $ydb;
         $table_url = DB_TABLE_URL;
 
@@ -675,7 +675,7 @@ class Functions {
      * Get number of SQL queries performed
      *
      */
-    function get_num_queries() {
+    public function get_num_queries() {
         global $ydb;
 
         return apply_filter( 'get_num_queries', $ydb->num_queries );
@@ -685,7 +685,7 @@ class Functions {
      * Returns a sanitized a user agent string. Given what I found on http://www.user-agents.org/ it should be OK.
      *
      */
-    function get_user_agent() {
+    public function get_user_agent() {
         if ( !isset( $_SERVER['HTTP_USER_AGENT'] ) )
             return '-';
 
@@ -699,7 +699,7 @@ class Functions {
      * Redirect to another page
      *
      */
-    function redirect( $location, $code = 301 ) {
+    public function redirect( $location, $code = 301 ) {
         do_action( 'pre_redirect', $location, $code );
         $location = apply_filter( 'redirect_location', $location, $code );
         $code     = apply_filter( 'redirect_code', $code, $location );
@@ -717,7 +717,7 @@ class Functions {
      * Set HTTP status header
      *
      */
-    function status_header( $code = 200 ) {
+    public function status_header( $code = 200 ) {
         if( headers_sent() )
 
             return;
@@ -737,7 +737,7 @@ class Functions {
      * Redirect to another page using Javascript. Set optional (bool)$dontwait to false to force manual redirection (make sure a message has been read by user)
      *
      */
-    function redirect_javascript( $location, $dontwait = true ) {
+    public function redirect_javascript( $location, $dontwait = true ) {
         do_action( 'pre_redirect_javascript', $location, $dontwait );
         $location = apply_filter( 'redirect_javascript', $location, $dontwait );
         if( $dontwait ) {
@@ -758,7 +758,7 @@ REDIR;
      * Return a HTTP status code
      *
      */
-    function get_HTTP_status( $code ) {
+    public function get_HTTP_status( $code ) {
         $code = intval( $code );
         $headers_desc = array(
             100 => 'Continue',
@@ -834,7 +834,7 @@ REDIR;
      * @param string $keyword short URL keyword
      * @return mixed Result of the INSERT query (1 on success)
      */
-    function log_redirect( $keyword ) {
+    public function log_redirect( $keyword ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_log_redirect', false, $keyword );
         if ( false !== $pre )
@@ -859,7 +859,7 @@ REDIR;
      * Check if we want to not log redirects (for stats)
      *
      */
-    function do_log_redirect() {
+    public function do_log_redirect() {
         return ( !defined( 'NOSTATS' ) || NOSTATS != true );
     }
 
@@ -871,7 +871,7 @@ REDIR;
      * @param string $defaut Default string to return if IP doesn't resolve to a country (malformed, private IP...)
      * @return string 2 letter country code (eg 'US') or $default
      */
-    function geo_ip_to_countrycode( $ip = '', $default = '' ) {
+    public function geo_ip_to_countrycode( $ip = '', $default = '' ) {
         // Allow plugins to short-circuit the Geo IP API
         $location = apply_filter( 'shunt_geo_ip_to_countrycode', false, $ip, $default ); // at this point $ip can be '', check if your plugin hooks in here
         if ( false !== $location )
@@ -912,7 +912,7 @@ REDIR;
      * Converts a 2 letter country code to long name (ie AU -> Australia)
      *
      */
-    function geo_countrycode_to_countryname( $code ) {
+    public function geo_countrycode_to_countryname( $code ) {
         // Allow plugins to short-circuit the Geo IP API
         $country = apply_filter( 'shunt_geo_countrycode_to_countryname', false, $code );
         if ( false !== $country )
@@ -938,7 +938,7 @@ REDIR;
      * Return flag URL from 2 letter country code
      *
      */
-    function geo_get_flag( $code ) {
+    public function geo_get_flag( $code ) {
         return apply_filter( 'geo_get_flag', 'flag-' . strtolower( $code ), $code );
     }
 
@@ -947,7 +947,7 @@ REDIR;
      * Check if an upgrade is needed
      *
      */
-    function upgrade_is_needed() {
+    public function upgrade_is_needed() {
         // check DB_VERSION exist && match values stored in DB_TABLE_OPTIONS
         list( $currentver, $currentsql ) = get_current_version_from_sql();
         if( $currentsql < DB_VERSION )
@@ -961,7 +961,7 @@ REDIR;
      * Get current version & db version as stored in the options DB. Prior to 1.4 there's no option table.
      *
      */
-    function get_current_version_from_sql() {
+    public function get_current_version_from_sql() {
         $currentver = get_option( 'version' );
         $currentsql = get_option( 'db_version' );
 
@@ -984,7 +984,7 @@ REDIR;
      * @param mixed $default Optional value to return if option doesn't exist. Default false.
      * @return mixed Value set for the option.
      */
-    function get_option( $option_name, $default = false ) {
+    public function get_option( $option_name, $default = false ) {
         global $ydb;
 
         // Allow plugins to short-circuit options
@@ -1018,7 +1018,7 @@ REDIR;
      *
      * @since 1.4
      */
-    function get_all_options() {
+    public function get_all_options() {
         global $ydb;
 
         // Allow plugins to short-circuit all options. (Note: regular plugins are loaded after all options)
@@ -1056,7 +1056,7 @@ REDIR;
      * @param mixed $newvalue Option value. Must be serializable if non-scalar. Expected to not be SQL-escaped.
      * @return bool False if value was not updated, true otherwise.
      */
-    function update_option( $option_name, $newvalue ) {
+    public function update_option( $option_name, $newvalue ) {
         global $ydb;
         $table = DB_TABLE_OPTIONS;
 
@@ -1107,7 +1107,7 @@ REDIR;
      * @param mixed $value Optional option value. Must be serializable if non-scalar. Expected to not be SQL-escaped.
      * @return bool False if option was not added and true otherwise.
      */
-    function add_option( $name, $value = '' ) {
+    public function add_option( $name, $value = '' ) {
         global $ydb;
         $table = DB_TABLE_OPTIONS;
 
@@ -1144,7 +1144,7 @@ REDIR;
      * @param string $option Option name to delete. Expected to not be SQL-escaped.
      * @return bool True, if option is successfully deleted. False on failure.
      */
-    function delete_option( $name ) {
+    public function delete_option( $name ) {
         global $ydb;
         $table = DB_TABLE_OPTIONS;
         $name = escape( $name );
@@ -1169,7 +1169,7 @@ REDIR;
      * @param mixed $data Data that might be serialized.
      * @return mixed A scalar data
      */
-    function maybe_serialize( $data ) {
+    public function maybe_serialize( $data ) {
         if ( is_array( $data ) || is_object( $data ) )
             return serialize( $data );
 
@@ -1187,7 +1187,7 @@ REDIR;
      * @param bool $strict Optional. Whether to be strict about the end of the string. Defaults true.
      * @return bool False if not serialized and true if it was.
      */
-    function is_serialized( $data, $strict = true ) {
+    public function is_serialized( $data, $strict = true ) {
         // if it isn't a string, it isn't serialized
         if ( ! is_string( $data ) )
             return false;
@@ -1246,7 +1246,7 @@ REDIR;
      * @param string $original Maybe unserialized original, if is needed.
      * @return mixed Unserialized data can be any type.
      */
-    function maybe_unserialize( $original ) {
+    public function maybe_unserialize( $original ) {
         if ( is_serialized( $original ) ) // don't attempt to unserialize data that wasn't serialized going in
             return @unserialize( $original );
         return $original;
@@ -1256,7 +1256,7 @@ REDIR;
      * Determine if the current page is private
      *
      */
-    function is_private() {
+    public function is_private() {
         $private = false;
 
         if ( defined('PRIVATE') && PRIVATE == true ) {
@@ -1287,7 +1287,7 @@ REDIR;
      * Show login form if required
      *
      */
-    function maybe_require_auth() {
+    public function maybe_require_auth() {
         if( is_private() ) {
             do_action( 'require_auth' );
             require_once INC . '/auth.php';
@@ -1300,7 +1300,7 @@ REDIR;
      * Allow several short URLs for the same long URL ?
      *
      */
-    function allow_duplicate_longurls() {
+    public function allow_duplicate_longurls() {
         // special treatment if API to check for WordPress plugin requests
         if( is_API() ) {
             if ( isset($_REQUEST['source']) && $_REQUEST['source'] == 'plugin' )
@@ -1319,7 +1319,7 @@ REDIR;
      * @param string $order Optional SORT order (can be 'ASC' or 'DESC')
      * @return array array of keywords
      */
-    function get_longurl_keywords( $longurl, $sort = 'none', $order = 'ASC' ) {
+    public function get_longurl_keywords( $longurl, $sort = 'none', $order = 'ASC' ) {
         global $ydb;
         $longurl = escape( sanitize_url( $longurl ) );
         $table   = DB_TABLE_URL;
@@ -1340,7 +1340,7 @@ REDIR;
      * Check if an IP shortens URL too fast to prevent DB flood. Return true, or die.
      *
      */
-    function check_IP_flood( $ip = '' ) {
+    public function check_IP_flood( $ip = '' ) {
 
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_check_IP_flood', false, $ip );
@@ -1403,7 +1403,7 @@ REDIR;
      * @return bool
      * @since 1.6
      */
-    function is_installing() {
+    public function is_installing() {
         $installing = defined( 'INSTALLING' ) && INSTALLING == true;
 
         return apply_filter( 'is_installing', $installing );
@@ -1415,7 +1415,7 @@ REDIR;
      * @return bool
      * @since 1.6
      */
-    function is_upgrading() {
+    public function is_upgrading() {
         $upgrading = defined( 'UPGRADING' ) && UPGRADING == true;
 
         return apply_filter( 'is_upgrading', $upgrading );
@@ -1429,7 +1429,7 @@ REDIR;
      * See inline comment for updating from 1.3 or prior.
      *
      */
-    function is_installed() {
+    public function is_installed() {
         global $ydb;
         $is_installed = ( property_exists( $ydb, 'installed' ) && $ydb->installed == true );
 
@@ -1445,7 +1445,7 @@ REDIR;
      * Generate random string of (int)$length length and type $type (see function for details)
      *
      */
-    function rnd_string ( $length = 5, $type = 0, $charlist = '' ) {
+    public function rnd_string ( $length = 5, $type = 0, $charlist = '' ) {
         $str = '';
         $length = intval( $length );
 
@@ -1498,7 +1498,7 @@ REDIR;
      * Return salted string
      *
      */
-    function salt( $string ) {
+    public function salt( $string ) {
         $salt = defined('COOKIEKEY') ? COOKIEKEY : md5(__FILE__) ;
 
         return apply_filter( 'salt', md5 ($string . $salt), $string );
@@ -1515,7 +1515,7 @@ REDIR;
      * If $url omitted, uses $_SERVER['REQUEST_URI']
      *
      */
-    function add_query_arg() {
+    public function add_query_arg() {
         $ret = '';
         if ( is_array( func_get_arg(0) ) ) {
             if ( @func_num_args() < 2 || false === @func_get_arg( 1 ) )
@@ -1588,7 +1588,7 @@ REDIR;
      * Navigates through an array and encodes the values to be used in a URL. Stolen from WP, used in add_query_arg()
      *
      */
-    function urlencode_deep( $value ) {
+    public function urlencode_deep( $value ) {
         $value = is_array( $value ) ? array_map( 'urlencode_deep', $value ) : urlencode( $value );
 
         return $value;
@@ -1598,7 +1598,7 @@ REDIR;
      * Remove arg from query. Opposite of add_query_arg. Stolen from WP.
      *
      */
-    function remove_query_arg( $key, $query = false ) {
+    public function remove_query_arg( $key, $query = false ) {
         if ( is_array( $key ) ) { // removing multiple keys
             foreach ( $key as $k )
                 $query = add_query_arg( $k, false, $query );
@@ -1613,7 +1613,7 @@ REDIR;
      * Return a time-dependent string for nonce creation
      *
      */
-    function tick() {
+    public function tick() {
         return ceil( time() / NONCE_LIFE );
     }
 
@@ -1621,7 +1621,7 @@ REDIR;
      * Create a time limited, action limited and user limited token
      *
      */
-    function create_nonce( $action, $user = false ) {
+    public function create_nonce( $action, $user = false ) {
         if( false == $user )
             $user = defined( 'USER' ) ? USER : '-1';
         $tick = tick();
@@ -1633,7 +1633,7 @@ REDIR;
      * Create a nonce field for inclusion into a form
      *
      */
-    function nonce_field( $action, $name = 'nonce', $user = false, $echo = true ) {
+    public function nonce_field( $action, $name = 'nonce', $user = false, $echo = true ) {
         $field = '<input type="hidden" id="'.$name.'" name="'.$name.'" value="'.create_nonce( $action, $user ).'" />';
         if( $echo )
             echo $field;
@@ -1645,7 +1645,7 @@ REDIR;
      * Add a nonce to a URL. If URL omitted, adds nonce to current URL
      *
      */
-    function nonce_url( $action, $url = false, $name = 'nonce', $user = false ) {
+    public function nonce_url( $action, $url = false, $name = 'nonce', $user = false ) {
         $nonce = create_nonce( $action, $user );
 
         return add_query_arg( $name, $nonce, $url );
@@ -1658,7 +1658,7 @@ REDIR;
      * if $nonce is false or unspecified, it will use $_REQUEST['nonce']
      *
      */
-    function verify_nonce( $action, $nonce = false, $user = false, $return = '' ) {
+    public function verify_nonce( $action, $nonce = false, $user = false, $return = '' ) {
         // get user
         if( false == $user )
             $user = defined( 'USER' ) ? USER : '-1';
@@ -1683,7 +1683,7 @@ REDIR;
      * Converts keyword into short link (prepend with YOURLS base URL)
      *
      */
-    function link( $keyword = '' ) {
+    public function link( $keyword = '' ) {
         $link = SITE . '/' . sanitize_keyword( $keyword );
 
         return apply_filter( 'link', $link, $keyword );
@@ -1693,7 +1693,7 @@ REDIR;
      * Converts keyword into stat link (prepend with YOURLS base URL, append +)
      *
      */
-    function statlink( $keyword = '' ) {
+    public function statlink( $keyword = '' ) {
         $link = SITE . '/' . sanitize_keyword( $keyword ) . '+';
         if( is_ssl() )
             $link = set_url_scheme( $link, 'https' );
@@ -1705,7 +1705,7 @@ REDIR;
      * Check if we're in API mode. Returns bool
      *
      */
-    function is_API() {
+    public function is_API() {
         if ( defined( 'API' ) && API == true )
             return true;
         return false;
@@ -1715,7 +1715,7 @@ REDIR;
      * Check if we're in Ajax mode. Returns bool
      *
      */
-    function is_Ajax() {
+    public function is_Ajax() {
         if ( defined( 'AJAX' ) && AJAX == true )
             return true;
         return false;
@@ -1725,7 +1725,7 @@ REDIR;
      * Check if we're in GO mode (yourls-go.php). Returns bool
      *
      */
-    function is_GO() {
+    public function is_GO() {
         if ( defined( 'GO' ) && GO == true )
             return true;
         return false;
@@ -1735,7 +1735,7 @@ REDIR;
      * Check if we're displaying stats infos (yourls-infos.php). Returns bool
      *
      */
-    function is_infos() {
+    public function is_infos() {
         if ( defined( 'INFOS' ) && INFOS == true )
             return true;
         return false;
@@ -1745,7 +1745,7 @@ REDIR;
      * Check if we'll need interface display function (ie not API or redirection)
      *
      */
-    function has_interface() {
+    public function has_interface() {
         if( is_API() or is_GO() )
 
             return false;
@@ -1756,7 +1756,7 @@ REDIR;
      * Check if we're in the admin area. Returns bool
      *
      */
-    function is_admin() {
+    public function is_admin() {
         if ( defined( 'ADMIN' ) && ADMIN == true )
             return true;
         return false;
@@ -1766,7 +1766,7 @@ REDIR;
      * Check if current session is valid and secure as configurated
      *
      */
-    function is_public_or_logged() {
+    public function is_public_or_logged() {
         if ( !is_private() )
             return true;
         else
@@ -1777,7 +1777,7 @@ REDIR;
      * Check if the server seems to be running on Windows. Not exactly sure how reliable this is.
      *
      */
-    function is_windows() {
+    public function is_windows() {
         return defined( 'DIRECTORY_SEPARATOR' ) && DIRECTORY_SEPARATOR == '\\';
     }
 
@@ -1785,7 +1785,7 @@ REDIR;
      * Check if SSL is required. Returns bool.
      *
      */
-    function needs_ssl() {
+    public function needs_ssl() {
         if ( defined('ADMIN_SSL') && ADMIN_SSL == true )
             return true;
         return false;
@@ -1795,7 +1795,7 @@ REDIR;
      * Return admin link, with SSL preference if applicable.
      *
      */
-    function admin_url( $page = '' ) {
+    public function admin_url( $page = '' ) {
         $admin = SITE . '/' . ADMIN_LOCATION . '/' . $page;
         if( is_ssl() or needs_ssl() )
             $admin = set_url_scheme( $admin, 'https' );
@@ -1807,7 +1807,7 @@ REDIR;
      * Return SITE or URL under YOURLS setup, with SSL preference
      *
      */
-    function site_url( $echo = true, $url = '' ) {
+    public function site_url( $echo = true, $url = '' ) {
         $url = get_relative_url( $url );
         $url = trim( SITE . '/' . $url, '/' );
 
@@ -1825,7 +1825,7 @@ REDIR;
      * Check if SSL is used, returns bool. Stolen from WP.
      *
      */
-    function is_ssl() {
+    public function is_ssl() {
         $is_ssl = false;
         if ( isset( $_SERVER['HTTPS'] ) ) {
             if ( 'on' == strtolower( $_SERVER['HTTPS'] ) )
@@ -1849,7 +1849,7 @@ REDIR;
      * @param string $url URL
      * @return string Title (sanitized) or the URL if no title found
      */
-    function get_remote_title( $url ) {
+    public function get_remote_title( $url ) {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_get_remote_title', false, $url );
         if ( false !== $pre )
@@ -1926,7 +1926,7 @@ REDIR;
      * Quick UA check for mobile devices. Return boolean.
      *
      */
-    function is_mobile_device() {
+    public function is_mobile_device() {
         // Strings searched
         $mobiles = array(
             'android', 'blackberry', 'blazer',
@@ -1950,7 +1950,7 @@ REDIR;
      * Get request in YOURLS base (eg in 'http://site.com/yourls/abcd' get 'abdc')
      *
      */
-    function get_request() {
+    public function get_request() {
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_get_request', false );
         if ( false !== $pre )
@@ -1981,7 +1981,7 @@ REDIR;
      * Change protocol to match current scheme used (http or https)
      *
      */
-    function match_current_protocol( $url, $normal = 'http://', $ssl = 'https://' ) {
+    public function match_current_protocol( $url, $normal = 'http://', $ssl = 'https://' ) {
         if( is_ssl() )
             $url = str_replace( $normal, $ssl, $url );
 
@@ -1992,7 +1992,7 @@ REDIR;
      * Fix $_SERVER['REQUEST_URI'] variable for various setups. Stolen from WP.
      *
      */
-    function fix_request_uri() {
+    public function fix_request_uri() {
 
         $default_server_values = array(
             'SERVER_SOFTWARE' => '',
@@ -2035,7 +2035,7 @@ REDIR;
      * Shutdown function, runs just before PHP shuts down execution. Stolen from WP
      *
      */
-    function shutdown() {
+    public function shutdown() {
         do_action( 'shutdown' );
     }
 
@@ -2043,7 +2043,7 @@ REDIR;
      * Auto detect custom favicon in /user directory, fallback to YOURLS favicon, and echo/return its URL
      *
      */
-    function favicon( $echo = true ) {
+    public function favicon( $echo = true ) {
         static $favicon = null;
         if( $favicon !== null )
 
@@ -2069,7 +2069,7 @@ REDIR;
      * Check for maintenance mode. If yes, die. See maintenance_mode(). Stolen from WP.
      *
      */
-    function check_maintenance_mode() {
+    public function check_maintenance_mode() {
 
         $file = ABSPATH . '/.maintenance' ;
         if ( !file_exists( $file ) || is_upgrading() || is_installing() )
@@ -2102,7 +2102,7 @@ REDIR;
      * @return mixed string if admin page, null if not an admin page
      * @since 1.6
      */
-    function current_admin_page() {
+    public function current_admin_page() {
         if( is_admin() ) {
             $current = substr( get_request(), 6 );
             if( $current === false )
@@ -2127,7 +2127,7 @@ REDIR;
      * @param array $protocols Optional. Array of protocols, defaults to global $allowedprotocols
      * @return boolean true if protocol allowed, false otherwise
      */
-    function is_allowed_protocol( $url, $protocols = array() ) {
+    public function is_allowed_protocol( $url, $protocols = array() ) {
         if( ! $protocols ) {
             global $allowedprotocols;
             $protocols = $allowedprotocols;
@@ -2146,7 +2146,7 @@ REDIR;
      * @param string $url URL to be check
      * @return string Protocol, with slash slash if applicable. Empty string if no protocol
      */
-    function get_protocol( $url ) {
+    public function get_protocol( $url ) {
         preg_match( '!^[a-zA-Z0-9\+\.-]+:(//)?!', $url, $matches );
         /*
         http://en.wikipedia.org/wiki/URI_scheme#Generic_syntax
@@ -2171,7 +2171,7 @@ REDIR;
      * @param bool $strict if true and if URL isn't relative to YOURLS install, return empty string
      * @return string URL
      */
-    function get_relative_url( $url, $strict = true ) {
+    public function get_relative_url( $url, $strict = true ) {
         $url = sanitize_url( $url );
 
         // Remove protocols to make it easier
@@ -2207,7 +2207,7 @@ REDIR;
      * @param string $version The version of WordPress that deprecated the function
      * @param string $replacement Optional. The function that should have been called
      */
-    function deprecated_function( $function, $version, $replacement = null ) {
+    public function deprecated_function( $function, $version, $replacement = null ) {
 
         do_action( 'deprecated_function', $function, $replacement, $version );
 
@@ -2229,7 +2229,7 @@ REDIR;
      * @param mixed $val Value to test against ''
      * @return bool True if not an empty string
      */
-    function return_if_not_empty_string( $val ) {
+    public function return_if_not_empty_string( $val ) {
         return( $val !== '' );
     }
 
@@ -2243,7 +2243,7 @@ REDIR;
      * @param string $msg Message to add to the debug log
      * @return string The message itself
      */
-    function debug_log( $msg ) {
+    public function debug_log( $msg ) {
         global $ydb;
         $ydb->debug_log[] = $msg;
 
@@ -2273,7 +2273,7 @@ REDIR;
      * @param array $array Optional, array of key names to be used in returned array
      * @return mixed false if no protocol found, array of ('protocol' , 'slashes', 'rest') otherwise
      */
-    function get_protocol_slashes_and_rest( $url, $array = array( 'protocol', 'slashes', 'rest' ) ) {
+    public function get_protocol_slashes_and_rest( $url, $array = array( 'protocol', 'slashes', 'rest' ) ) {
         $proto = get_protocol( $url );
 
         if( !$proto or count( $array ) != 3 )
@@ -2295,7 +2295,7 @@ REDIR;
      * @param string $scheme scheme, either 'http' or 'https'
      * @return string URL with chosen scheme
      */
-    function set_url_scheme( $url, $scheme = false ) {
+    public function set_url_scheme( $url, $scheme = false ) {
         if( $scheme != 'http' && $scheme != 'https' ) {
             return $url;
         }

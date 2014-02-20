@@ -18,7 +18,7 @@ class Upgrade {
      * Upgrade YOURLS and DB schema
      *
      */
-    function upgrade( $step, $oldver, $newver, $oldsql, $newsql ) {
+    public function upgrade( $step, $oldver, $newver, $oldsql, $newsql ) {
         // special case for 1.3: the upgrade is a multi step procedure
         if( $oldsql == 100 ) {
             upgrade_to_14( $step );
@@ -57,7 +57,7 @@ class Upgrade {
      * Upgrade r482
      *
      */
-    function upgrade_482() {
+    public function upgrade_482() {
         // Change URL title charset to UTF8
         global $ydb;
         $table_url = DB_TABLE_URL;
@@ -72,7 +72,7 @@ class Upgrade {
      * Main func for upgrade from 1.4.3 to 1.5
      *
      */
-    function upgrade_to_15( ) {
+    public function upgrade_to_15( ) {
         // Create empty 'active_plugins' entry in the option if needed
         if( get_option( 'active_plugins' ) === false )
             add_option( 'active_plugins', array() );
@@ -96,7 +96,7 @@ class Upgrade {
      * Main func for upgrade from 1.4.1 to 1.4.3
      *
      */
-    function upgrade_to_143( ) {
+    public function upgrade_to_143( ) {
         // Check if we have 'keyword' (borked install) or 'shorturl' (ok install)
         global $ydb;
         $table_log = DB_TABLE_LOG;
@@ -115,7 +115,7 @@ class Upgrade {
      * Main func for upgrade from 1.4 to 1.4.1
      *
      */
-    function upgrade_to_141( ) {
+    public function upgrade_to_141( ) {
         // Kill old cookies from 1.3 and prior
         setcookie('username', null, time() - 3600 );
         setcookie('password', null, time() - 3600 );
@@ -129,7 +129,7 @@ class Upgrade {
      * Alter table URL to 1.4.1
      *
      */
-    function alter_url_table_to_141() {
+    public function alter_url_table_to_141() {
         global $ydb;
         $table_url = DB_TABLE_URL;
         $alter = "ALTER TABLE `$table_url` CHANGE `keyword` `keyword` VARCHAR( 200 ) BINARY, CHANGE `url` `url` TEXT BINARY ";
@@ -143,7 +143,7 @@ class Upgrade {
      * Main func for upgrade from 1.3-RC1 to 1.4
      *
      */
-    function upgrade_to_14( $step ) {
+    public function upgrade_to_14( $step ) {
 
         switch( $step ) {
             case 1:
@@ -180,7 +180,7 @@ class Upgrade {
      * Update options to reflect new version
      *
      */
-    function update_options_to_14() {
+    public function update_options_to_14() {
         update_option( 'version', '1.4' );
         update_option( 'db_version', '200' );
 
@@ -199,7 +199,7 @@ class Upgrade {
      * Create new tables for YOURLS 1.4: options & log
      *
      */
-    function create_tables_for_14() {
+    public function create_tables_for_14() {
         global $ydb;
 
         $queries = array();
@@ -238,7 +238,7 @@ class Upgrade {
      * Alter table structure, part 1 (change schema, drop index)
      *
      */
-    function alter_url_table_to_14() {
+    public function alter_url_table_to_14() {
         global $ydb;
         $table = DB_TABLE_URL;
 
@@ -259,7 +259,7 @@ class Upgrade {
      * Alter table structure, part 2 (recreate indexes after the table is up to date)
      *
      */
-    function alter_url_table_to_14_part_two() {
+    public function alter_url_table_to_14_part_two() {
         global $ydb;
         $table = DB_TABLE_URL;
 
@@ -279,7 +279,7 @@ class Upgrade {
      * Convert each link from 1.3 (id) to 1.4 (keyword) structure
      *
      */
-    function update_table_to_14() {
+    public function update_table_to_14() {
         global $ydb;
         $table = DB_TABLE_URL;
 
@@ -334,7 +334,7 @@ class Upgrade {
      * Clean .htaccess as it existed before 1.4. Returns boolean
      *
      */
-    function clean_htaccess_for_14() {
+    public function clean_htaccess_for_14() {
         $filename = ABSPATH.'/.htaccess';
 
         $result = false;

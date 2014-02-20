@@ -30,7 +30,7 @@ class Themes {
      *
      * @since 1.7
      */
-    function set_template_content() {
+    public function set_template_content() {
         global $ydb;
 
         // Page structure
@@ -60,7 +60,7 @@ class Themes {
      * @param string $replace_with  Optional, callable function to replace with
      * @param string $where         Optional, only remove/replace $function in $where part ('before' or 'after')
      */
-    function remove_from_template( $function, $replace_with = null, $where = null ) {
+    public function remove_from_template( $function, $replace_with = null, $where = null ) {
         global $ydb;
 
         if( $where ) {
@@ -78,7 +78,7 @@ class Themes {
      * @param string $replace_with  Optional, element to replace with
      * @return unknown
      */
-    function remove_from_array_deep( &$array, $remove, $replace_with = null ) {
+    public function remove_from_array_deep( &$array, $remove, $replace_with = null ) {
         foreach( $array as $key => &$value ) {
             if( is_array( $value ) ) {
                 remove_from_array_deep( $value, $remove, $replace_with );
@@ -100,7 +100,7 @@ class Themes {
      * @since 1.7
      * @param string $template_part what template part (eg 'before' or 'after' the page main content)
      */
-    function template_content( $template_part ) {
+    public function template_content( $template_part ) {
         global $ydb;
 
         // Collect additional optional arguments, for instance the page context ('admin', 'plugins'...)
@@ -132,7 +132,7 @@ class Themes {
      * @since 1.7
      * @return array   arrays of core assets
      */
-    function core_assets() {
+    public function core_assets() {
         return array(
             'js'  => array(
                 // 'handle' => 'file basename'
@@ -153,7 +153,7 @@ class Themes {
      *
      * @since 1.7
      */
-    function output_asset_queue() {
+    public function output_asset_queue() {
         global $ydb;
 
         // Filter the asset list before echoing links
@@ -200,7 +200,7 @@ class Themes {
      * @param $string $type  type of asset ('css' or 'js')
      * @return bool          true if asset dequeued, false if unfound
      */
-    function dequeue_asset( $name, $type ) {
+    public function dequeue_asset( $name, $type ) {
         // Check file type
         if( !in_array( $type, array( 'css', 'js' ) ) ) {
             return false;
@@ -226,7 +226,7 @@ class Themes {
      * @param mixed  $deps  dependencies required first - a string or an array of strings
      * @return bool         false on error, true otherwise
      */
-    function enqueue_asset( $name, $type, $src = '', $deps = array() ) {
+    public function enqueue_asset( $name, $type, $src = '', $deps = array() ) {
         // Check file type
         if( !in_array( $type, array( 'css', 'js' ) ) ) {
             add_notice( _( 'You can only enqueue "css" or "js" files' ) );
@@ -264,7 +264,7 @@ class Themes {
      * @param mixed  $deps  dependencies required first - a string or an array of strings
      * @return bool         false on error, true otherwise
      */
-    function enqueue_style( $name, $src = '', $deps = array() ) {
+    public function enqueue_style( $name, $src = '', $deps = array() ) {
         return enqueue_asset( $name, 'css', $src, $deps  );
     }
 
@@ -280,7 +280,7 @@ class Themes {
      * @param mixed  $deps  dependencies required first - a string or an array of strings
      * @return bool         false on error, true otherwise
      */
-    function enqueue_script( $name, $src = '', $deps = array() ) {
+    public function enqueue_script( $name, $src = '', $deps = array() ) {
         return enqueue_asset( $name, 'js', $src, $deps );
     }
 
@@ -294,7 +294,7 @@ class Themes {
      * @param string $name  name of the asset
      * @return bool         false on error, true otherwise
      */
-    function dequeue_style( $name ) {
+    public function dequeue_style( $name ) {
         return dequeue_asset( $name, 'css' );
     }
 
@@ -308,7 +308,7 @@ class Themes {
      * @param string $name  name of the asset
      * @return bool         false on error, true otherwise
      */
-    function dequeue_script( $name ) {
+    public function dequeue_script( $name ) {
         return dequeue_asset( $name, 'js' );
     }
 
@@ -320,7 +320,7 @@ class Themes {
      * @param string $type  type of the asset ('css' or 'js')
      * @return bool         true if the asset is in the queue, false otherwise
      */
-    function is_asset_queued( $name, $type ) {
+    public function is_asset_queued( $name, $type ) {
         global $ydb;
 
         return( property_exists( $ydb, 'assets' ) && isset( $ydb->assets[ $type ][ $name ] ) );
@@ -335,7 +335,7 @@ class Themes {
      * @param string $name  name of the script
      * @return bool         true if the script is in the queue, false otherwise
      */
-    function is_script_queued( $name ) {
+    public function is_script_queued( $name ) {
         return is_asset_queued( $name, 'js' );
     }
 
@@ -348,7 +348,7 @@ class Themes {
      * @param string $name  name of the stylesheet
      * @return bool         true if the stylesheet is in the queue, false otherwise
      */
-    function is_style_queued( $name ) {
+    public function is_style_queued( $name ) {
         return is_asset_queued( $name, 'css' );
     }
 
@@ -359,7 +359,7 @@ class Themes {
      * @global object $ydb Storage of mostly everything YOURLS needs to know
      * @return array Array of [/themedir/theme.css]=>array('Name'=>'Leo', 'Title'=>'My Theme', ... )
      */
-    function get_themes() {
+    public function get_themes() {
         return get_plugins( 'themes' );
     }
 
@@ -368,7 +368,7 @@ class Themes {
      *
      * @since 1.7
      */
-    function init_theme() {
+    public function init_theme() {
         do_action( 'pre_init_theme' );
 
         // Enqueue default asset files - $ydb->assets will keep a list of needed CSS and JS
@@ -398,7 +398,7 @@ class Themes {
      * @since 1.7
      * @return mixed  true if active theme loaded, false if no active theme, error message if problem
      */
-    function load_active_theme() {
+    public function load_active_theme() {
 
         do_action( 'pre_load_active_theme' );
 
@@ -437,7 +437,7 @@ class Themes {
      * @param string $theme   theme directory inside THEMEDIR
      * @return mixed          true, or an error message
      */
-    function load_theme( $theme ) {
+    public function load_theme( $theme ) {
         $theme_php     = get_theme_dir( $theme ) . '/theme.php';
         $theme_css     = get_theme_dir( $theme ) . '/theme.css';
         $theme_css_url = get_theme_url( $theme ) . '/theme.css';
@@ -475,7 +475,7 @@ class Themes {
      * @param string $theme   theme directory inside THEMEDIR
      * @return mixed          true, or an error message
      */
-    function activate_theme( $theme ) {
+    public function activate_theme( $theme ) {
         if ( $theme == 'default' ) {
             update_option( 'active_theme', '' );
             do_action( 'activated_theme', $theme );
@@ -526,7 +526,7 @@ class Themes {
      * @since 1.7
      * @return string name of theme directory, or empty string if no theme
      */
-    function get_active_theme() {
+    public function get_active_theme() {
         global $ydb;
         if( !property_exists( $ydb, 'theme' ) || $ydb->theme == '' ) {
             $ydb->theme = ( get_option( 'active_theme' ) ) ? get_option( 'active_theme' ) : '';
@@ -544,7 +544,7 @@ class Themes {
      * @param string $theme  theme (its directory)
      * @return string        sanitized physical path
      */
-    function get_theme_dir( $theme ) {
+    public function get_theme_dir( $theme ) {
         return sanitize_filename( THEMEDIR . "/$theme" );
     }
 
@@ -555,7 +555,7 @@ class Themes {
      * @param string $theme  theme (its directory)
      * @return string        sanitized URL
      */
-    function get_theme_url( $theme ) {
+    public function get_theme_url( $theme ) {
         return sanitize_url( THEMEURL . "/$theme" );
     }
 
@@ -565,7 +565,7 @@ class Themes {
      * @since 1.7
      * @return string        sanitized physical path, or an empty string
      */
-    function get_active_theme_dir( ) {
+    public function get_active_theme_dir( ) {
         return ( get_active_theme() ? get_theme_dir( get_active_theme() ) : '' );
     }
 
@@ -575,7 +575,7 @@ class Themes {
      * @since 1.7
      * @return string        sanitized URL,  or an empty string
      */
-    function get_active_theme_url( ) {
+    public function get_active_theme_url( ) {
         return ( get_active_theme() ? get_theme_url( get_active_theme() ) : '' );
     }
 
@@ -591,7 +591,7 @@ class Themes {
      * @param array $plugin_b
      * @return int 0, 1 or -1, see uasort()
      */
-    function themes_sort_callback( $theme_a, $theme_b ) {
+    public function themes_sort_callback( $theme_a, $theme_b ) {
         $orderby = apply_filters( 'themes_sort_callback', 'Theme Name' );
         $order   = apply_filters( 'themes_sort_callback', 'ASC' );
 
@@ -616,7 +616,7 @@ class Themes {
      * @param string $theme_dir Theme directory to search
      * @return string screenshot filename, empty string if not found
      */
-    function get_theme_screenshot( $theme_dir ) {
+    public function get_theme_screenshot( $theme_dir ) {
         $screenshot = '';
 
         // search for screenshot.(gif|jpg|png)
