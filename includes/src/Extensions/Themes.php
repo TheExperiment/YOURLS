@@ -7,7 +7,7 @@
  * @copyright 2009-2014 YOURLS - MIT
  */
 
-namespace YOURLS;
+namespace YOURLS\Extensions;
 
 /**
  * The theme API, which allows designing and customizing the interface.

@@ -7,7 +7,7 @@
  * @copyright 2009-2014 YOURLS - MIT
  */
 
-namespace YOURLS;
+namespace YOURLS\Extensions;
 
 /**
  * The filter/plugin API which allows for creating filters
