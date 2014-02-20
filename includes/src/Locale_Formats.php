@@ -30,7 +30,7 @@ class Locale_Formats {
      * There is a hack to make sure that Tuesday and Thursday, as well
      * as Sunday and Saturday, don't conflict. See init() method for more.
      *
-     * @see YOURLS_Locale_Formats::init() for how to handle the hack.
+     * @see Locale_Formats::init() for how to handle the hack.
      *
      * @since 1.6
      * @var array
@@ -108,92 +108,92 @@ class Locale_Formats {
      */
     function init() {
         // The Weekdays
-        $this->weekday[0] = /* //translators: weekday */ yourls__( 'Sunday' );
-        $this->weekday[1] = /* //translators: weekday */ yourls__( 'Monday' );
-        $this->weekday[2] = /* //translators: weekday */ yourls__( 'Tuesday' );
-        $this->weekday[3] = /* //translators: weekday */ yourls__( 'Wednesday' );
-        $this->weekday[4] = /* //translators: weekday */ yourls__( 'Thursday' );
-        $this->weekday[5] = /* //translators: weekday */ yourls__( 'Friday' );
-        $this->weekday[6] = /* //translators: weekday */ yourls__( 'Saturday' );
+        $this->weekday[0] = /* //translators: weekday */ _( 'Sunday' );
+        $this->weekday[1] = /* //translators: weekday */ _( 'Monday' );
+        $this->weekday[2] = /* //translators: weekday */ _( 'Tuesday' );
+        $this->weekday[3] = /* //translators: weekday */ _( 'Wednesday' );
+        $this->weekday[4] = /* //translators: weekday */ _( 'Thursday' );
+        $this->weekday[5] = /* //translators: weekday */ _( 'Friday' );
+        $this->weekday[6] = /* //translators: weekday */ _( 'Saturday' );
 
         // The first letter of each day. The _%day%_initial suffix is a hack to make
         // sure the day initials are unique.
-        $this->weekday_initial[yourls__( 'Sunday' )]    = /* //translators: one-letter abbreviation of the weekday */ yourls__( 'S_Sunday_initial' );
-        $this->weekday_initial[yourls__( 'Monday' )]    = /* //translators: one-letter abbreviation of the weekday */ yourls__( 'M_Monday_initial' );
-        $this->weekday_initial[yourls__( 'Tuesday' )]   = /* //translators: one-letter abbreviation of the weekday */ yourls__( 'T_Tuesday_initial' );
-        $this->weekday_initial[yourls__( 'Wednesday' )] = /* //translators: one-letter abbreviation of the weekday */ yourls__( 'W_Wednesday_initial' );
-        $this->weekday_initial[yourls__( 'Thursday' )]  = /* //translators: one-letter abbreviation of the weekday */ yourls__( 'T_Thursday_initial' );
-        $this->weekday_initial[yourls__( 'Friday' )]    = /* //translators: one-letter abbreviation of the weekday */ yourls__( 'F_Friday_initial' );
-        $this->weekday_initial[yourls__( 'Saturday' )]  = /* //translators: one-letter abbreviation of the weekday */ yourls__( 'S_Saturday_initial' );
+        $this->weekday_initial[_( 'Sunday' )]    = /* //translators: one-letter abbreviation of the weekday */ _( 'S_Sunday_initial' );
+        $this->weekday_initial[_( 'Monday' )]    = /* //translators: one-letter abbreviation of the weekday */ _( 'M_Monday_initial' );
+        $this->weekday_initial[_( 'Tuesday' )]   = /* //translators: one-letter abbreviation of the weekday */ _( 'T_Tuesday_initial' );
+        $this->weekday_initial[_( 'Wednesday' )] = /* //translators: one-letter abbreviation of the weekday */ _( 'W_Wednesday_initial' );
+        $this->weekday_initial[_( 'Thursday' )]  = /* //translators: one-letter abbreviation of the weekday */ _( 'T_Thursday_initial' );
+        $this->weekday_initial[_( 'Friday' )]    = /* //translators: one-letter abbreviation of the weekday */ _( 'F_Friday_initial' );
+        $this->weekday_initial[_( 'Saturday' )]  = /* //translators: one-letter abbreviation of the weekday */ _( 'S_Saturday_initial' );
 
         foreach ($this->weekday_initial as $weekday_ => $weekday_initial_) {
             $this->weekday_initial[$weekday_] = preg_replace('/_.+_initial$/', '', $weekday_initial_);
         }
 
         // Abbreviations for each day.
-        $this->weekday_abbrev[ yourls__( 'Sunday' ) ]    = /* //translators: three-letter abbreviation of the weekday */ yourls__( 'Sun' );
-        $this->weekday_abbrev[ yourls__( 'Monday' ) ]    = /* //translators: three-letter abbreviation of the weekday */ yourls__( 'Mon' );
-        $this->weekday_abbrev[ yourls__( 'Tuesday' ) ]   = /* //translators: three-letter abbreviation of the weekday */ yourls__( 'Tue' );
-        $this->weekday_abbrev[ yourls__( 'Wednesday' ) ] = /* //translators: three-letter abbreviation of the weekday */ yourls__( 'Wed' );
-        $this->weekday_abbrev[ yourls__( 'Thursday' ) ]  = /* //translators: three-letter abbreviation of the weekday */ yourls__( 'Thu' );
-        $this->weekday_abbrev[ yourls__( 'Friday' ) ]    = /* //translators: three-letter abbreviation of the weekday */ yourls__( 'Fri' );
-        $this->weekday_abbrev[ yourls__( 'Saturday' ) ]  = /* //translators: three-letter abbreviation of the weekday */ yourls__( 'Sat' );
+        $this->weekday_abbrev[ _( 'Sunday' ) ]    = /* //translators: three-letter abbreviation of the weekday */ _( 'Sun' );
+        $this->weekday_abbrev[ _( 'Monday' ) ]    = /* //translators: three-letter abbreviation of the weekday */ _( 'Mon' );
+        $this->weekday_abbrev[ _( 'Tuesday' ) ]   = /* //translators: three-letter abbreviation of the weekday */ _( 'Tue' );
+        $this->weekday_abbrev[ _( 'Wednesday' ) ] = /* //translators: three-letter abbreviation of the weekday */ _( 'Wed' );
+        $this->weekday_abbrev[ _( 'Thursday' ) ]  = /* //translators: three-letter abbreviation of the weekday */ _( 'Thu' );
+        $this->weekday_abbrev[ _( 'Friday' ) ]    = /* //translators: three-letter abbreviation of the weekday */ _( 'Fri' );
+        $this->weekday_abbrev[ _( 'Saturday' ) ]  = /* //translators: three-letter abbreviation of the weekday */ _( 'Sat' );
 
         // The Months
-        $this->month['01'] = /* //translators: month name */ yourls__( 'January' );
-        $this->month['02'] = /* //translators: month name */ yourls__( 'February' );
-        $this->month['03'] = /* //translators: month name */ yourls__( 'March' );
-        $this->month['04'] = /* //translators: month name */ yourls__( 'April' );
-        $this->month['05'] = /* //translators: month name */ yourls__( 'May' );
-        $this->month['06'] = /* //translators: month name */ yourls__( 'June' );
-        $this->month['07'] = /* //translators: month name */ yourls__( 'July' );
-        $this->month['08'] = /* //translators: month name */ yourls__( 'August' );
-        $this->month['09'] = /* //translators: month name */ yourls__( 'September' );
-        $this->month['10'] = /* //translators: month name */ yourls__( 'October' );
-        $this->month['11'] = /* //translators: month name */ yourls__( 'November' );
-        $this->month['12'] = /* //translators: month name */ yourls__( 'December' );
+        $this->month['01'] = /* //translators: month name */ _( 'January' );
+        $this->month['02'] = /* //translators: month name */ _( 'February' );
+        $this->month['03'] = /* //translators: month name */ _( 'March' );
+        $this->month['04'] = /* //translators: month name */ _( 'April' );
+        $this->month['05'] = /* //translators: month name */ _( 'May' );
+        $this->month['06'] = /* //translators: month name */ _( 'June' );
+        $this->month['07'] = /* //translators: month name */ _( 'July' );
+        $this->month['08'] = /* //translators: month name */ _( 'August' );
+        $this->month['09'] = /* //translators: month name */ _( 'September' );
+        $this->month['10'] = /* //translators: month name */ _( 'October' );
+        $this->month['11'] = /* //translators: month name */ _( 'November' );
+        $this->month['12'] = /* //translators: month name */ _( 'December' );
 
         // Abbreviations for each month. Uses the same hack as above to get around the
         // 'May' duplication.
-        $this->month_abbrev[ yourls__( 'January' ) ]   = /* //translators: three-letter abbreviation of the month */ yourls__( 'Jan_January_abbreviation' );
-        $this->month_abbrev[ yourls__( 'February' ) ]  = /* //translators: three-letter abbreviation of the month */ yourls__( 'Feb_February_abbreviation' );
-        $this->month_abbrev[ yourls__( 'March' ) ]     = /* //translators: three-letter abbreviation of the month */ yourls__( 'Mar_March_abbreviation' );
-        $this->month_abbrev[ yourls__( 'April' ) ]     = /* //translators: three-letter abbreviation of the month */ yourls__( 'Apr_April_abbreviation' );
-        $this->month_abbrev[ yourls__( 'May' ) ]       = /* //translators: three-letter abbreviation of the month */ yourls__( 'May_May_abbreviation' );
-        $this->month_abbrev[ yourls__( 'June' ) ]      = /* //translators: three-letter abbreviation of the month */ yourls__( 'Jun_June_abbreviation' );
-        $this->month_abbrev[ yourls__( 'July' ) ]      = /* //translators: three-letter abbreviation of the month */ yourls__( 'Jul_July_abbreviation' );
-        $this->month_abbrev[ yourls__( 'August' ) ]    = /* //translators: three-letter abbreviation of the month */ yourls__( 'Aug_August_abbreviation' );
-        $this->month_abbrev[ yourls__( 'September' ) ] = /* //translators: three-letter abbreviation of the month */ yourls__( 'Sep_September_abbreviation' );
-        $this->month_abbrev[ yourls__( 'October' ) ]   = /* //translators: three-letter abbreviation of the month */ yourls__( 'Oct_October_abbreviation' );
-        $this->month_abbrev[ yourls__( 'November' ) ]  = /* //translators: three-letter abbreviation of the month */ yourls__( 'Nov_November_abbreviation' );
-        $this->month_abbrev[ yourls__( 'December' ) ]  = /* //translators: three-letter abbreviation of the month */ yourls__( 'Dec_December_abbreviation' );
+        $this->month_abbrev[ _( 'January' ) ]   = /* //translators: three-letter abbreviation of the month */ _( 'Jan_January_abbreviation' );
+        $this->month_abbrev[ _( 'February' ) ]  = /* //translators: three-letter abbreviation of the month */ _( 'Feb_February_abbreviation' );
+        $this->month_abbrev[ _( 'March' ) ]     = /* //translators: three-letter abbreviation of the month */ _( 'Mar_March_abbreviation' );
+        $this->month_abbrev[ _( 'April' ) ]     = /* //translators: three-letter abbreviation of the month */ _( 'Apr_April_abbreviation' );
+        $this->month_abbrev[ _( 'May' ) ]       = /* //translators: three-letter abbreviation of the month */ _( 'May_May_abbreviation' );
+        $this->month_abbrev[ _( 'June' ) ]      = /* //translators: three-letter abbreviation of the month */ _( 'Jun_June_abbreviation' );
+        $this->month_abbrev[ _( 'July' ) ]      = /* //translators: three-letter abbreviation of the month */ _( 'Jul_July_abbreviation' );
+        $this->month_abbrev[ _( 'August' ) ]    = /* //translators: three-letter abbreviation of the month */ _( 'Aug_August_abbreviation' );
+        $this->month_abbrev[ _( 'September' ) ] = /* //translators: three-letter abbreviation of the month */ _( 'Sep_September_abbreviation' );
+        $this->month_abbrev[ _( 'October' ) ]   = /* //translators: three-letter abbreviation of the month */ _( 'Oct_October_abbreviation' );
+        $this->month_abbrev[ _( 'November' ) ]  = /* //translators: three-letter abbreviation of the month */ _( 'Nov_November_abbreviation' );
+        $this->month_abbrev[ _( 'December' ) ]  = /* //translators: three-letter abbreviation of the month */ _( 'Dec_December_abbreviation' );
 
         foreach ($this->month_abbrev as $month_ => $month_abbrev_) {
             $this->month_abbrev[$month_] = preg_replace('/_.+_abbreviation$/', '', $month_abbrev_);
         }
 
         // The Meridiems
-        $this->meridiem['am'] = yourls__( 'am' );
-        $this->meridiem['pm'] = yourls__( 'pm' );
-        $this->meridiem['AM'] = yourls__( 'AM' );
-        $this->meridiem['PM'] = yourls__( 'PM' );
+        $this->meridiem['am'] = _( 'am' );
+        $this->meridiem['pm'] = _( 'pm' );
+        $this->meridiem['AM'] = _( 'AM' );
+        $this->meridiem['PM'] = _( 'PM' );
 
         // Numbers formatting
         // See http://php.net/number_format
 
         /* //translators: $thousands_sep argument for http://php.net/number_format, default is , */
-        $trans = yourls__( 'number_format_thousands_sep' );
+        $trans = _( 'number_format_thousands_sep' );
         $this->number_format['thousands_sep'] = ('number_format_thousands_sep' == $trans) ? ',' : $trans;
 
         /* //translators: $dec_point argument for http://php.net/number_format, default is . */
-        $trans = yourls__( 'number_format_decimal_point' );
+        $trans = _( 'number_format_decimal_point' );
         $this->number_format['decimal_point'] = ('number_format_decimal_point' == $trans) ? '.' : $trans;
 
         // Set text direction.
         if ( isset( $GLOBALS['text_direction'] ) )
             $this->text_direction = $GLOBALS['text_direction'];
         /* //translators: 'rtl' or 'ltr'. This sets the text direction for YOURLS. */
-        elseif ( 'rtl' == yourls_x( 'ltr', 'text direction' ) )
+        elseif ( 'rtl' == x( 'ltr', 'text direction' ) )
             $this->text_direction = 'rtl';
     }
 
@@ -319,11 +319,11 @@ class Locale_Formats {
     /**
      * Constructor which calls helper methods to set up object variables
      *
-     * @uses YOURLS_Locale_Formats::init()
-     * @uses YOURLS_Locale_Formats::register_globals()
+     * @uses Locale_Formats::init()
+     * @uses Locale_Formats::register_globals()
      * @since 1.6
      *
-     * @return YOURLS_Locale_Formats
+     * @return Locale_Formats
      */
     function __construct() {
         $this->init();

@@ -18,16 +18,16 @@ class Install {
      * Check if server has MySQL 5.0+
      *
      */
-    function yourls_check_database_version() {
+    function check_database_version() {
         global $ydb;
         
         // Attempt to get MySQL server version, check result and if error count increased
         $num_errors1 = count( $ydb->captured_errors );
-        $version     = yourls_get_database_version();
+        $version     = get_database_version();
         $num_errors2 = count( $ydb->captured_errors );
         
         if( $version == NULL || ( $num_errors2 > $num_errors1 ) ) {
-            yourls_die( yourls__( 'Incorrect DB config, or could not connect to DB' ), yourls__( 'Fatal error' ), 503 );
+            die( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );
         }
         
         return ( version_compare( '5.0', $version ) <= 0 );
@@ -47,7 +47,7 @@ class Install {
      * @since 1.7
      * @return string sanitized DB version
      */
-    function yourls_get_database_version() {
+    function get_database_version() {
         global $ydb;
         
         return preg_replace( '/(^[^0-9]*)|[^0-9.].*/', '', $ydb->mysql_version() );
@@ -57,7 +57,7 @@ class Install {
      * Check if PHP > 5.2
      *
      */
-    function yourls_check_php_version() {
+    function check_php_version() {
         return ( version_compare( '5.2', phpversion() ) <= 0 );
     }
 
@@ -65,7 +65,7 @@ class Install {
      * Check if server is an Apache
      *
      */
-    function yourls_is_apache() {
+    function is_apache() {
         if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) )
             return false;
         return (
@@ -78,7 +78,7 @@ class Install {
      * Check if server is running IIS
      *
      */
-    function yourls_is_iis() {
+    function is_iis() {
         return ( array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ? ( strpos( $_SERVER['SERVER_SOFTWARE'], 'IIS' ) !== false ) : false );
     }
 
@@ -87,11 +87,11 @@ class Install {
      * Create .htaccess or web.config. Returns boolean
      *
      */
-    function yourls_create_htaccess() {
-        $host = parse_url( YOURLS_SITE );
+    function create_htaccess() {
+        $host = parse_url( SITE );
         $path = ( isset( $host['path'] ) ? $host['path'] : '' );
 
-        if ( yourls_is_iis() ) {
+        if ( is_iis() ) {
             // Prepare content for a web.config file
             $content = array(
                 '<?'.'xml version="1.0" encoding="UTF-8"?>',
@@ -116,7 +116,7 @@ class Install {
                 '</configuration>',
             );
             
-            $filename = YOURLS_ABSPATH.'/web.config';
+            $filename = ABSPATH.'/web.config';
             $marker = 'none';
 
         } else {
@@ -131,19 +131,19 @@ class Install {
                 '</IfModule>',
             );
             
-            $filename = YOURLS_ABSPATH.'/.htaccess';
+            $filename = ABSPATH.'/.htaccess';
             $marker = 'YOURLS';
             
         }
         
-        return ( yourls_insert_with_markers( $filename, $marker, $content ) );
+        return ( insert_with_markers( $filename, $marker, $content ) );
     }
 
     /**
      * Inserts $insertion (text in an array of lines) into $filename (.htaccess) between BEGIN/END $marker block. Returns bool. Stolen from WP
      *
      */
-    function yourls_insert_with_markers( $filename, $marker, $insertion ) {
+    function insert_with_markers( $filename, $marker, $insertion ) {
         if ( !file_exists( $filename ) || is_writeable( $filename ) ) {
             if ( !file_exists( $filename ) ) {
                 $markerdata = '';
@@ -198,7 +198,7 @@ class Install {
      * Create MySQL tables. Return array( 'success' => array of success strings, 'errors' => array of error strings )
      *
      */
-    function yourls_create_sql_tables() {
+    function create_sql_tables() {
         global $ydb;
         
         $error_msg = array();
@@ -206,8 +206,8 @@ class Install {
 
         // Create Table Query
         $create_tables = array();
-        $create_tables[YOURLS_DB_TABLE_URL] =
-            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_URL.'` ('.
+        $create_tables[DB_TABLE_URL] =
+            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_URL.'` ('.
             '`keyword` varchar(200) BINARY NOT NULL,'.
             '`url` text BINARY NOT NULL,'.
             '`title` text CHARACTER SET utf8,'.
@@ -219,8 +219,8 @@ class Install {
             ' KEY `ip` (`ip`)'.
             ');';
 
-        $create_tables[YOURLS_DB_TABLE_OPTIONS] = 
-            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_OPTIONS.'` ('.
+        $create_tables[DB_TABLE_OPTIONS] = 
+            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_OPTIONS.'` ('.
             '`option_id` bigint(20) unsigned NOT NULL auto_increment,'.
             '`option_name` varchar(64) NOT NULL default "",'.
             '`option_value` longtext NOT NULL,'.
@@ -228,8 +228,8 @@ class Install {
             'KEY `option_name` (`option_name`)'.
             ') AUTO_INCREMENT=1 ;';
         
-        $create_tables[YOURLS_DB_TABLE_LOG] = 
-            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_LOG.'` ('.
+        $create_tables[DB_TABLE_LOG] = 
+            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_LOG.'` ('.
             '`click_id` int(11) NOT NULL auto_increment,'.
             '`click_time` datetime NOT NULL,'.
             '`shorturl` varchar(200) BINARY NOT NULL,'.
@@ -252,25 +252,25 @@ class Install {
             $create_success = $ydb->query( "SHOW TABLES LIKE '$table_name'" );
             if( $create_success ) {
                 $create_table_count++;
-                $success_msg[] = yourls_s( "Table '%s' created.", $table_name ); 
+                $success_msg[] = s( "Table '%s' created.", $table_name ); 
             } else {
-                $error_msg[] = yourls_s( "Error creating table '%s'.", $table_name ); 
+                $error_msg[] = s( "Error creating table '%s'.", $table_name ); 
             }
         }
         
         // Initializes the option table
-        if( !yourls_initialize_options() )
-            $error_msg[] = yourls__( 'Could not initialize options' );
+        if( !initialize_options() )
+            $error_msg[] = _( 'Could not initialize options' );
         
         // Insert sample links
-        if( !yourls_insert_sample_links() )
-            $error_msg[] = yourls__( 'Could not insert sample short URLs' );
+        if( !insert_sample_links() )
+            $error_msg[] = _( 'Could not insert sample short URLs' );
         
         // Check results of operations
         if ( sizeof( $create_tables ) == $create_table_count ) {
-            $success_msg[] = yourls__( 'YOURLS tables successfully created.' );
+            $success_msg[] = _( 'YOURLS tables successfully created.' );
         } else {
-            $error_msg[] = yourls__( 'Error creating YOURLS tables.' ); 
+            $error_msg[] = _( 'Error creating YOURLS tables.' ); 
         }
 
         return array( 'success' => $success_msg, 'error' => $error_msg );
@@ -279,18 +279,18 @@ class Install {
     /**
      * Initializes the option table
      *
-     * Each yourls_update_option() returns either true on success (option updated) or false on failure (new value == old value, or 
+     * Each update_option() returns either true on success (option updated) or false on failure (new value == old value, or 
      * for some reason it could not save to DB).
      * Since true & true & true = 1, we cast it to boolean type to return true (or false)
      *
      * @since 1.7
      * @return bool
      */
-    function yourls_initialize_options() {
+    function initialize_options() {
         return ( bool ) (
-              yourls_update_option( 'version', YOURLS_VERSION )
-            & yourls_update_option( 'db_version', YOURLS_DB_VERSION )
-            & yourls_update_option( 'next_id', 1 )
+              update_option( 'version', VERSION )
+            & update_option( 'db_version', DB_VERSION )
+            & update_option( 'next_id', 1 )
         );
     }
 
@@ -300,10 +300,10 @@ class Install {
      * @since 1.7
      * @return bool
      */
-    function yourls_insert_sample_links() {
-        $link1 = yourls_add_new_link( 'http://blog.yourls.org/', 'yourlsblog', 'YOURLS\' Blog' );
-        $link2 = yourls_add_new_link( 'http://yourls.org/',      'yourls',     'YOURLS: Your Own URL Shortener' );
-        $link3 = yourls_add_new_link( 'http://ozh.org/',         'ozh',        'ozh.org' );
+    function insert_sample_links() {
+        $link1 = add_new_link( 'http://blog.yourls.org/', 'yourlsblog', 'YOURLS\' Blog' );
+        $link2 = add_new_link( 'http://yourls.org/',      'yourls',     'YOURLS: Your Own URL Shortener' );
+        $link3 = add_new_link( 'http://ozh.org/',         'ozh',        'ozh.org' );
         return ( bool ) ( 
               $link1['status'] == 'success'
             & $link2['status'] == 'success'
@@ -316,9 +316,9 @@ class Install {
      * Toggle maintenance mode. Inspired from WP. Returns true for success, false otherwise
      *
      */
-    function yourls_maintenance_mode( $maintenance = true ) {
+    function maintenance_mode( $maintenance = true ) {
 
-        $file = YOURLS_ABSPATH . '/.maintenance' ;
+        $file = ABSPATH . '/.maintenance' ;
 
         // Turn maintenance mode on : create .maintenance file
         if ( (bool)$maintenance ) {

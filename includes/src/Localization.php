@@ -26,7 +26,7 @@ class Localization {
      * If the locale is set, then it will filter the locale in the 'get_locale' filter
      * hook and return the value.
      *
-     * If the locale is not set already, then the YOURLS_LANG constant is used if it is
+     * If the locale is not set already, then the LANG constant is used if it is
      * defined. Then it is filtered through the 'get_locale' filter hook and the value
      * for the locale global set and the locale is returned.
      *
@@ -34,42 +34,42 @@ class Localization {
      * always be filtered using the 'get_locale' hook.
      *
      * @since 1.6
-     * @uses yourls_apply_filters() Calls 'get_locale' hook on locale value.
-     * @uses $yourls_locale Gets the locale stored in the global.
+     * @uses apply_filters() Calls 'get_locale' hook on locale value.
+     * @uses $locale Gets the locale stored in the global.
      *
      * @return string The locale of the blog or from the 'get_locale' hook.
      */
-    function yourls_get_locale() {
-        global $yourls_locale;
+    function get_locale() {
+        global $locale;
 
-        if ( !isset( $yourls_locale ) ) {
-            // YOURLS_LANG is defined in config.
-            if ( defined( 'YOURLS_LANG' ) )
-                $yourls_locale = YOURLS_LANG;
+        if ( !isset( $locale ) ) {
+            // LANG is defined in config.
+            if ( defined( 'LANG' ) )
+                $locale = LANG;
         }
 
-        if ( !$yourls_locale )
-            $yourls_locale = '';
+        if ( !$locale )
+            $locale = '';
 
-        return yourls_apply_filters( 'get_locale', $yourls_locale );
+        return apply_filters( 'get_locale', $locale );
     }
 
     /**
      * Retrieves the translation of $text. If there is no translation, or
      * the domain isn't loaded, the original text is returned.
      *
-     * @see yourls__() Don't use yourls_translate() directly, use yourls__()
+     * @see _() Don't use translate() directly, use _()
      * @since 1.6
-     * @uses yourls_apply_filters() Calls 'translate' on domain translated text
+     * @uses apply_filters() Calls 'translate' on domain translated text
      *		with the untranslated text as second parameter.
      *
      * @param string $text Text to translate.
      * @param string $domain Domain to retrieve the translated text.
      * @return string Translated text
      */
-    function yourls_translate( $text, $domain = 'default' ) {
-        $translations = yourls_get_translations_for_domain( $domain );
-        return yourls_apply_filters( 'translate', $translations->translate( $text ), $text, $domain );
+    function translate( $text, $domain = 'default' ) {
+        $translations = get_translations_for_domain( $domain );
+        return apply_filters( 'translate', $translations->translate( $text ), $text, $domain );
     }
 
     /**
@@ -88,31 +88,31 @@ class Localization {
      * @param string $domain Domain to retrieve the translated text.
      * @return string Translated text
      */
-    function yourls_translate_with_context( $text, $context, $domain = 'default' ) {
-        $translations = yourls_get_translations_for_domain( $domain );
-        return yourls_apply_filters( 'translate_with_context', $translations->translate( $text, $context ), $text, $context, $domain );
+    function translate_with_context( $text, $context, $domain = 'default' ) {
+        $translations = get_translations_for_domain( $domain );
+        return apply_filters( 'translate_with_context', $translations->translate( $text, $context ), $text, $context, $domain );
     }
 
     /**
      * Retrieves the translation of $text. If there is no translation, or
      * the domain isn't loaded, the original text is returned.
      *
-     * @see yourls_translate() An alias of yourls_translate()
+     * @see translate() An alias of translate()
      * @since 1.6
      *
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated text
      */
-    function yourls__( $text, $domain = 'default' ) {
-        return yourls_translate( $text, $domain );
+    function _( $text, $domain = 'default' ) {
+        return translate( $text, $domain );
     }
 
     /**
-     * Return a translated sprintf() string (mix yourls__() and sprintf() in one func)
+     * Return a translated sprintf() string (mix _() and sprintf() in one func)
      *
-     * Instead of doing sprintf( yourls__( 'string %s' ), $arg ) you can simply use:
-     * yourls_s( 'string %s', $arg )
+     * Instead of doing sprintf( _( 'string %s' ), $arg ) you can simply use:
+     * s( 'string %s', $arg )
      * This function accepts an arbitrary number of arguments:
      * - first one will be the string to translate, eg "hello %s my name is %s"
      * - following ones will be the sprintf arguments, eg "world" and "Ozh"
@@ -126,10 +126,10 @@ class Localization {
      * @param string $arg1, $arg2... Optional: sprintf tokens, and translation domain
      * @return string Translated text
      */
-    function yourls_s( $pattern ) {
+    function s( $pattern ) {
         // Get pattern and pattern arguments 
         $args = func_get_args();
-        // If yourls_s() called by yourls_se(), all arguments are wrapped in the same array key
+        // If s() called by se(), all arguments are wrapped in the same array key
         if( count( $args ) == 1 && is_array( $args[0] ) ) {
             $args = $args[0];
         }
@@ -145,22 +145,22 @@ class Localization {
         }
         
         // Translate text
-        $args[0] = yourls__( $pattern, $domain );
+        $args[0] = _( $pattern, $domain );
         
         return call_user_func_array( 'sprintf', $args );	
     }
 
     /**
-     * Echo a translated sprintf() string (mix yourls__() and sprintf() in one func)
+     * Echo a translated sprintf() string (mix _() and sprintf() in one func)
      *
-     * Instead of doing printf( yourls__( 'string %s' ), $arg ) you can simply use:
-     * yourls_se( 'string %s', $arg )
+     * Instead of doing printf( _( 'string %s' ), $arg ) you can simply use:
+     * se( 'string %s', $arg )
      * This function accepts an arbitrary number of arguments:
      * - first one will be the string to translate, eg "hello %s my name is %s"
      * - following ones will be the sprintf arguments, eg "world" and "Ozh"
      * - if there are more arguments passed than needed, the last one will be used as the translation domain
      *
-     * @see yourls_s()
+     * @see s()
      * @see sprintf()
      * @since 1.6
      *
@@ -168,8 +168,8 @@ class Localization {
      * @param string $arg1, $arg2... Optional: sprintf tokens, and translation domain
      * @return string Translated text
      */
-    function yourls_se( $pattern ) {
-        echo yourls_s( func_get_args() );
+    function se( $pattern ) {
+        echo s( func_get_args() );
     }
 
 
@@ -177,73 +177,73 @@ class Localization {
      * Retrieves the translation of $text and escapes it for safe use in an attribute.
      * If there is no translation, or the domain isn't loaded, the original text is returned.
      *
-     * @see yourls_translate() An alias of yourls_translate()
-     * @see yourls_esc_attr()
+     * @see translate() An alias of translate()
+     * @see esc_attr()
      * @since 1.6
      *
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated text
      */
-    function yourls_esc_attr__( $text, $domain = 'default' ) {
-        return yourls_esc_attr( yourls_translate( $text, $domain ) );
+    function esc_attr__( $text, $domain = 'default' ) {
+        return esc_attr( translate( $text, $domain ) );
     }
 
     /**
      * Retrieves the translation of $text and escapes it for safe use in HTML output.
      * If there is no translation, or the domain isn't loaded, the original text is returned.
      *
-     * @see yourls_translate() An alias of yourls_translate()
-     * @see yourls_esc_html()
+     * @see translate() An alias of translate()
+     * @see esc_html()
      * @since 1.6
      *
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated text
      */
-    function yourls_esc_html__( $text, $domain = 'default' ) {
-        return yourls_esc_html( yourls_translate( $text, $domain ) );
+    function esc_html__( $text, $domain = 'default' ) {
+        return esc_html( translate( $text, $domain ) );
     }
 
     /**
-     * Displays the returned translated text from yourls_translate().
+     * Displays the returned translated text from translate().
      *
-     * @see yourls_translate() Echoes returned yourls_translate() string
+     * @see translate() Echoes returned translate() string
      * @since 1.6
      *
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      */
-    function yourls_e( $text, $domain = 'default' ) {
-        echo yourls_translate( $text, $domain );
+    function e( $text, $domain = 'default' ) {
+        echo translate( $text, $domain );
     }
 
     /**
      * Displays translated text that has been escaped for safe use in an attribute.
      *
-     * @see yourls_translate() Echoes returned yourls_translate() string
-     * @see yourls_esc_attr()
+     * @see translate() Echoes returned translate() string
+     * @see esc_attr()
      * @since 1.6
      *
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      */
-    function yourls_esc_attr_e( $text, $domain = 'default' ) {
-        echo yourls_esc_attr( yourls_translate( $text, $domain ) );
+    function esc_attr_e( $text, $domain = 'default' ) {
+        echo esc_attr( translate( $text, $domain ) );
     }
 
     /**
      * Displays translated text that has been escaped for safe use in HTML output.
      *
-     * @see yourls_translate() Echoes returned yourls_translate() string
-     * @see yourls_esc_html()
+     * @see translate() Echoes returned translate() string
+     * @see esc_html()
      * @since 1.6
      *
      * @param string $text Text to translate
      * @param string $domain Optional. Domain to retrieve the translated text
      */
-    function yourls_esc_html_e( $text, $domain = 'default' ) {
-        echo yourls_esc_html( yourls_translate( $text, $domain ) );
+    function esc_html_e( $text, $domain = 'default' ) {
+        echo esc_html( translate( $text, $domain ) );
     }
 
     /**
@@ -262,14 +262,14 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated context string without pipe
      */
-    function yourls_x( $text, $context, $domain = 'default' ) {
-        return yourls_translate_with_context( $text, $context, $domain );
+    function x( $text, $context, $domain = 'default' ) {
+        return translate_with_context( $text, $context, $domain );
     }
 
     /**
      * Displays translated string with gettext context
      *
-     * @see yourls_x()
+     * @see x()
      * @since 1.6
      *
      * @param string $text Text to translate
@@ -277,17 +277,17 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      * @return string Translated context string without pipe
      */
-    function yourls_ex( $text, $context, $domain = 'default' ) {
-        echo yourls_x( $text, $context, $domain );
+    function ex( $text, $context, $domain = 'default' ) {
+        echo x( $text, $context, $domain );
     }
 
 
     /**
      * Return translated text, with context, that has been escaped for safe use in an attribute
      *
-     * @see yourls_translate() Return returned yourls_translate() string
-     * @see yourls_esc_attr()
-     * @see yourls_x()
+     * @see translate() Return returned translate() string
+     * @see esc_attr()
+     * @see x()
      * @since 1.6
      *
      * @param string   $single
@@ -296,16 +296,16 @@ class Localization {
      * @internal param string $text Text to translate
      * @return string
      */
-    function yourls_esc_attr_x( $single, $context, $domain = 'default' ) {
-        return yourls_esc_attr( yourls_translate_with_context( $single, $context, $domain ) );
+    function esc_attr_x( $single, $context, $domain = 'default' ) {
+        return esc_attr( translate_with_context( $single, $context, $domain ) );
     }
 
     /**
      * Return translated text, with context, that has been escaped for safe use in HTML output
      *
-     * @see yourls_translate() Return returned yourls_translate() string
-     * @see yourls_esc_attr()
-     * @see yourls_x()
+     * @see translate() Return returned translate() string
+     * @see esc_attr()
+     * @see x()
      * @since 1.6
      *
      * @param string   $single
@@ -314,14 +314,14 @@ class Localization {
      * @internal param string $text Text to translate
      * @return string
      */
-    function yourls_esc_html_x( $single, $context, $domain = 'default' ) {
-        return yourls_esc_html( yourls_translate_with_context( $single, $context, $domain ) );
+    function esc_html_x( $single, $context, $domain = 'default' ) {
+        return esc_html( translate_with_context( $single, $context, $domain ) );
     }
 
     /**
      * Retrieve the plural or single form based on the amount.
      *
-     * If the domain is not set in the $yourls_l10n list, then a comparison will be made
+     * If the domain is not set in the $l10n list, then a comparison will be made
      * and either $plural or $single parameters returned.
      *
      * If the domain does exist, then the parameters $single, $plural, and $number
@@ -330,8 +330,8 @@ class Localization {
      * type will be a string.
      *
      * @since 1.6
-     * @uses $yourls_l10n Gets list of domain translated string (gettext_reader) objects
-     * @uses yourls_apply_filters() Calls 'translate_n' hook on domains text returned,
+     * @uses $l10n Gets list of domain translated string (gettext_reader) objects
+     * @uses apply_filters() Calls 'translate_n' hook on domains text returned,
      *		along with $single, $plural, and $number parameters. Expected to return string.
      *
      * @param string $single The text that will be used if $number is 1
@@ -340,24 +340,24 @@ class Localization {
      * @param string $domain Optional. The domain identifier the text should be retrieved in
      * @return string Either $single or $plural translated text
      */
-    function yourls_n( $single, $plural, $number, $domain = 'default' ) {
-        $translations = yourls_get_translations_for_domain( $domain );
+    function n( $single, $plural, $number, $domain = 'default' ) {
+        $translations = get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number );
-        return yourls_apply_filters( 'translate_n', $translation, $single, $plural, $number, $domain );
+        return apply_filters( 'translate_n', $translation, $single, $plural, $number, $domain );
     }
 
     /**
-     * A hybrid of yourls_n() and yourls_x(). It supports contexts and plurals.
+     * A hybrid of n() and x(). It supports contexts and plurals.
      *
      * @since 1.6
-     * @see yourls_n()
-     * @see yourls_x()
+     * @see n()
+     * @see x()
      *
      */
-    function yourls_nx($single, $plural, $number, $context, $domain = 'default') {
-        $translations = yourls_get_translations_for_domain( $domain );
+    function nx($single, $plural, $number, $context, $domain = 'default') {
+        $translations = get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number, $context );
-        return yourls_apply_filters( 'translate_nx', $translation, $single, $plural, $number, $context, $domain );
+        return apply_filters( 'translate_nx', $translation, $single, $plural, $number, $context, $domain );
     }
 
     /**
@@ -368,12 +368,12 @@ class Localization {
      *
      * Example:
      *  $messages = array(
-     *  	'post' => yourls_n_noop('%s post', '%s posts'),
-     *  	'page' => yourls_n_noop('%s pages', '%s pages')
+     *  	'post' => n_noop('%s post', '%s posts'),
+     *  	'page' => n_noop('%s pages', '%s pages')
      *  );
      *  ...
      *  $message = $messages[$type];
-     *  $usable_text = sprintf( yourls_translate_nooped_plural( $message, $count ), $count );
+     *  $usable_text = sprintf( translate_nooped_plural( $message, $count ), $count );
      *
      * @since 1.6
      * @param string $singular Single form to be i18ned
@@ -381,7 +381,7 @@ class Localization {
      * @param string $domain Optional. The domain identifier the text will be retrieved in
      * @return array array($singular, $plural)
      */
-    function yourls_n_noop( $singular, $plural, $domain = null ) {
+    function n_noop( $singular, $plural, $domain = null ) {
         return array(
             0 => $singular,
             1 => $plural, 
@@ -396,9 +396,9 @@ class Localization {
      * Register plural strings with context in POT file, but don't translate them.
      *
      * @since 1.6
-     * @see yourls_n_noop()
+     * @see n_noop()
      */
-    function yourls_nx_noop( $singular, $plural, $context, $domain = null ) {
+    function nx_noop( $singular, $plural, $context, $domain = null ) {
         return array(
             0 => $singular,
             1 => $plural,
@@ -411,23 +411,23 @@ class Localization {
     }
 
     /**
-     * Translate the result of yourls_n_noop() or yourls_nx_noop()
+     * Translate the result of n_noop() or nx_noop()
      *
      * @since 1.6
-     * @param array $nooped_plural Array with singular, plural and context keys, usually the result of yourls_n_noop() or yourls_nx_noop()
+     * @param array $nooped_plural Array with singular, plural and context keys, usually the result of n_noop() or nx_noop()
      * @param int $count Number of objects
      * @param string $domain Optional. The domain identifier the text should be retrieved in. If $nooped_plural contains
-     * 	a domain passed to yourls_n_noop() or yourls_nx_noop(), it will override this value.
+     * 	a domain passed to n_noop() or nx_noop(), it will override this value.
      * @return string
      */
-    function yourls_translate_nooped_plural( $nooped_plural, $count, $domain = 'default' ) {
+    function translate_nooped_plural( $nooped_plural, $count, $domain = 'default' ) {
         if ( $nooped_plural['domain'] )
             $domain = $nooped_plural['domain'];
 
         if ( $nooped_plural['context'] )
-            return yourls_nx( $nooped_plural['singular'], $nooped_plural['plural'], $count, $nooped_plural['context'], $domain );
+            return nx( $nooped_plural['singular'], $nooped_plural['plural'], $count, $nooped_plural['context'], $domain );
         else
-            return yourls_n( $nooped_plural['singular'], $nooped_plural['plural'], $count, $domain );
+            return n( $nooped_plural['singular'], $nooped_plural['plural'], $count, $domain );
     }
 
     /**
@@ -436,31 +436,31 @@ class Localization {
      * If the domain already exists, the translations will be merged. If both
      * sets have the same string, the translation from the original value will be taken.
      *
-     * On success, the .mo file will be placed in the $yourls_l10n global by $domain
+     * On success, the .mo file will be placed in the $l10n global by $domain
      * and will be a MO object.
      *
      * @since 1.6
-     * @uses $yourls_l10n Gets list of domain translated string objects
+     * @uses $l10n Gets list of domain translated string objects
      *
      * @param string $domain Unique identifier for retrieving translated strings
      * @param string $mofile Path to the .mo file
      * @return bool True on success, false on failure
      */
-    function yourls_load_textdomain( $domain, $mofile ) {
-        global $yourls_l10n;
+    function load_textdomain( $domain, $mofile ) {
+        global $l10n;
 
-        $plugin_override = yourls_apply_filters( 'override_load_textdomain', false, $domain, $mofile );
+        $plugin_override = apply_filters( 'override_load_textdomain', false, $domain, $mofile );
 
         if ( true == $plugin_override ) {
             return true;
         }
 
-        yourls_do_action( 'load_textdomain', $domain, $mofile );
+        do_action( 'load_textdomain', $domain, $mofile );
 
-        $mofile = yourls_apply_filters( 'load_textdomain_mofile', $mofile, $domain );
+        $mofile = apply_filters( 'load_textdomain_mofile', $mofile, $domain );
 
         if ( !is_readable( $mofile ) ) {
-            trigger_error( 'Cannot read file ' . str_replace( YOURLS_ABSPATH.'/', '', $mofile ) . '.'
+            trigger_error( 'Cannot read file ' . str_replace( ABSPATH.'/', '', $mofile ) . '.'
                         . ' Make sure there is a language file installed. More info: http://yourls.org/translations' );
             return false;
         }
@@ -469,10 +469,10 @@ class Localization {
         if ( !$mo->import_from_file( $mofile ) )
             return false;
 
-        if ( isset( $yourls_l10n[$domain] ) )
-            $mo->merge_with( $yourls_l10n[$domain] );
+        if ( isset( $l10n[$domain] ) )
+            $mo->merge_with( $l10n[$domain] );
 
-        $yourls_l10n[$domain] = &$mo;
+        $l10n[$domain] = &$mo;
 
         return true;
     }
@@ -484,18 +484,18 @@ class Localization {
      * @param string $domain Textdomain to be unloaded
      * @return bool Whether textdomain was unloaded
      */
-    function yourls_unload_textdomain( $domain ) {
-        global $yourls_l10n;
+    function unload_textdomain( $domain ) {
+        global $l10n;
 
-        $plugin_override = yourls_apply_filters( 'override_unload_textdomain', false, $domain );
+        $plugin_override = apply_filters( 'override_unload_textdomain', false, $domain );
 
         if ( $plugin_override )
             return true;
 
-        yourls_do_action( 'unload_textdomain', $domain );
+        do_action( 'unload_textdomain', $domain );
 
-        if ( isset( $yourls_l10n[$domain] ) ) {
-            unset( $yourls_l10n[$domain] );
+        if ( isset( $l10n[$domain] ) ) {
+            unset( $l10n[$domain] );
             return true;
         }
 
@@ -505,17 +505,17 @@ class Localization {
     /**
      * Loads default translated strings based on locale.
      *
-     * Loads the .mo file in YOURLS_LANG_DIR constant path from YOURLS root. The
+     * Loads the .mo file in LANG_DIR constant path from YOURLS root. The
      * translated (.mo) file is named based on the locale.
      *
      * @since 1.6
      * @return bool True on success, false on failure
      */
-    function yourls_load_default_textdomain() {
-        $yourls_locale = yourls_get_locale();
+    function load_default_textdomain() {
+        $locale = get_locale();
         
-        if( !empty( $yourls_locale ) )
-            return yourls_load_textdomain( 'default', YOURLS_LANG_DIR . "/$yourls_locale.mo" );
+        if( !empty( $locale ) )
+            return load_textdomain( 'default', LANG_DIR . "/$locale.mo" );
     }
 
     /**
@@ -525,12 +525,12 @@ class Localization {
      * @param string $domain
      * @return object A Translation instance
      */
-    function yourls_get_translations_for_domain( $domain ) {
-        global $yourls_l10n;
-        if ( !isset( $yourls_l10n[$domain] ) ) {
-            $yourls_l10n[$domain] = new NOOPTranslations;
+    function get_translations_for_domain( $domain ) {
+        global $l10n;
+        if ( !isset( $l10n[$domain] ) ) {
+            $l10n[$domain] = new NOOPTranslations;
         }
-        return $yourls_l10n[$domain];
+        return $l10n[$domain];
     }
 
     /**
@@ -540,9 +540,9 @@ class Localization {
      * @param string $domain
      * @return bool Whether there are translations
      */
-    function yourls_is_textdomain_loaded( $domain ) {
-        global $yourls_l10n;
-        return isset( $yourls_l10n[$domain] );
+    function is_textdomain_loaded( $domain ) {
+        global $l10n;
+        return isset( $l10n[$domain] );
     }
 
     /**
@@ -555,28 +555,28 @@ class Localization {
      *
      * @since 1.6
      */
-    function yourls_translate_user_role( $name ) {
-        return yourls_translate_with_context( $name, 'User role' );
+    function translate_user_role( $name ) {
+        return translate_with_context( $name, 'User role' );
     }
 
     /**
-     * Get all available languages (*.mo files) in a given directory. The default directory is YOURLS_LANG_DIR.
+     * Get all available languages (*.mo files) in a given directory. The default directory is LANG_DIR.
      *
      * @since 1.6
      *
-     * @param string $dir A directory in which to search for language files. The default directory is YOURLS_LANG_DIR.
+     * @param string $dir A directory in which to search for language files. The default directory is LANG_DIR.
      * @return array Array of language codes or an empty array if no languages are present. Language codes are formed by stripping the .mo extension from the language file names.
      */
-    function yourls_get_available_languages( $dir = null ) {
+    function get_available_languages( $dir = null ) {
         $languages = array();
         
-        $dir = is_null( $dir) ? YOURLS_LANG_DIR : $dir;
+        $dir = is_null( $dir) ? LANG_DIR : $dir;
         
         foreach( (array) glob( $dir . '/*.mo' ) as $lang_file ) {
             $languages[] = basename( $lang_file, '.mo' );
         }
         
-        return yourls_apply_filters( 'get_available_languages', $languages );
+        return apply_filters( 'get_available_languages', $languages );
     }
 
     /**
@@ -588,13 +588,13 @@ class Localization {
      * @param int $decimals Precision of the number of decimal places.
      * @return string Converted number in string format.
      */
-    function yourls_number_format_i18n( $number, $decimals = 0 ) {
-        global $yourls_locale_formats;
-        if( !isset( $yourls_locale_formats ) )
-            $yourls_locale_formats = new YOURLS_Locale_Formats();
+    function number_format_i18n( $number, $decimals = 0 ) {
+        global $locale_formats;
+        if( !isset( $locale_formats ) )
+            $locale_formats = new Locale_Formats();
         
-        $formatted = number_format( $number, abs( intval( $decimals ) ), $yourls_locale_formats->number_format['decimal_point'], $yourls_locale_formats->number_format['thousands_sep'] );
-        return yourls_apply_filters( 'number_format_i18n', $formatted );
+        $formatted = number_format( $number, abs( intval( $decimals ) ), $locale_formats->number_format['decimal_point'], $locale_formats->number_format['thousands_sep'] );
+        return apply_filters( 'number_format_i18n', $formatted );
     }
 
     /**
@@ -611,16 +611,16 @@ class Localization {
      * @param bool     $gmt              Optional, default is false. Whether to convert to GMT for time.
      * @return string The date, translated if locale specifies it.
      */
-    function yourls_date_i18n( $dateformatstring, $unixtimestamp = false, $gmt = false ) {
-        global $yourls_locale_formats;
-        if( !isset( $yourls_locale_formats ) )
-            $yourls_locale_formats = new YOURLS_Locale_Formats();
+    function date_i18n( $dateformatstring, $unixtimestamp = false, $gmt = false ) {
+        global $locale_formats;
+        if( !isset( $locale_formats ) )
+            $locale_formats = new Locale_Formats();
 
         $i = $unixtimestamp;
 
         if ( false === $i ) {
             if ( ! $gmt )
-                $i = yourls_current_time( 'timestamp' );
+                $i = current_time( 'timestamp' );
             else
                 $i = time();
             // we should not let date() interfere with our
@@ -634,21 +634,21 @@ class Localization {
 
         $datefunc = $gmt? 'gmdate' : 'date';
 
-        if ( ( !empty( $yourls_locale_formats->month ) ) && ( !empty( $yourls_locale_formats->weekday ) ) ) {
-            $datemonth            = $yourls_locale_formats->get_month( $datefunc( 'm', $i ) );
-            $datemonth_abbrev     = $yourls_locale_formats->get_month_abbrev( $datemonth );
-            $dateweekday          = $yourls_locale_formats->get_weekday( $datefunc( 'w', $i ) );
-            $dateweekday_abbrev   = $yourls_locale_formats->get_weekday_abbrev( $dateweekday );
-            $datemeridiem         = $yourls_locale_formats->get_meridiem( $datefunc( 'a', $i ) );
-            $datemeridiem_capital = $yourls_locale_formats->get_meridiem( $datefunc( 'A', $i ) );
+        if ( ( !empty( $locale_formats->month ) ) && ( !empty( $locale_formats->weekday ) ) ) {
+            $datemonth            = $locale_formats->get_month( $datefunc( 'm', $i ) );
+            $datemonth_abbrev     = $locale_formats->get_month_abbrev( $datemonth );
+            $dateweekday          = $locale_formats->get_weekday( $datefunc( 'w', $i ) );
+            $dateweekday_abbrev   = $locale_formats->get_weekday_abbrev( $dateweekday );
+            $datemeridiem         = $locale_formats->get_meridiem( $datefunc( 'a', $i ) );
+            $datemeridiem_capital = $locale_formats->get_meridiem( $datefunc( 'A', $i ) );
             
             $dateformatstring = ' '.$dateformatstring;
-            $dateformatstring = preg_replace( "/([^\\\])D/", "\\1" . yourls_backslashit( $dateweekday_abbrev ), $dateformatstring );
-            $dateformatstring = preg_replace( "/([^\\\])F/", "\\1" . yourls_backslashit( $datemonth ), $dateformatstring );
-            $dateformatstring = preg_replace( "/([^\\\])l/", "\\1" . yourls_backslashit( $dateweekday ), $dateformatstring );
-            $dateformatstring = preg_replace( "/([^\\\])M/", "\\1" . yourls_backslashit( $datemonth_abbrev ), $dateformatstring );
-            $dateformatstring = preg_replace( "/([^\\\])a/", "\\1" . yourls_backslashit( $datemeridiem ), $dateformatstring );
-            $dateformatstring = preg_replace( "/([^\\\])A/", "\\1" . yourls_backslashit( $datemeridiem_capital ), $dateformatstring );
+            $dateformatstring = preg_replace( "/([^\\\])D/", "\\1" . backslashit( $dateweekday_abbrev ), $dateformatstring );
+            $dateformatstring = preg_replace( "/([^\\\])F/", "\\1" . backslashit( $datemonth ), $dateformatstring );
+            $dateformatstring = preg_replace( "/([^\\\])l/", "\\1" . backslashit( $dateweekday ), $dateformatstring );
+            $dateformatstring = preg_replace( "/([^\\\])M/", "\\1" . backslashit( $datemonth_abbrev ), $dateformatstring );
+            $dateformatstring = preg_replace( "/([^\\\])a/", "\\1" . backslashit( $datemeridiem ), $dateformatstring );
+            $dateformatstring = preg_replace( "/([^\\\])A/", "\\1" . backslashit( $datemeridiem_capital ), $dateformatstring );
 
             $dateformatstring = substr( $dateformatstring, 1, strlen( $dateformatstring ) -1 );
         }
@@ -657,7 +657,7 @@ class Localization {
         if ( preg_match( "/$timezone_formats_re/", $dateformatstring ) ) {
             
             // TODO: implement a timezone option
-            $timezone_string = yourls_get_option( 'timezone_string' );
+            $timezone_string = get_option( 'timezone_string' );
             if ( $timezone_string ) {
                 $timezone_object = timezone_open( $timezone_string );
                 $date_object = date_create( null, $timezone_object );
@@ -665,7 +665,7 @@ class Localization {
                     if ( false !== strpos( $dateformatstring, $timezone_format ) ) {
                         $formatted = date_format( $date_object, $timezone_format );
                         $dateformatstring = ' '.$dateformatstring;
-                        $dateformatstring = preg_replace( "/([^\\\])$timezone_format/", "\\1" . yourls_backslashit( $formatted ), $dateformatstring );
+                        $dateformatstring = preg_replace( "/([^\\\])$timezone_format/", "\\1" . backslashit( $formatted ), $dateformatstring );
                         $dateformatstring = substr( $dateformatstring, 1, strlen( $dateformatstring ) -1 );
                     }
                 }
@@ -673,7 +673,7 @@ class Localization {
         }
         $j = @$datefunc( $dateformatstring, $i );
         // allow plugins to redo this entirely for languages with untypical grammars
-        $j = yourls_apply_filters('date_i18n', $j, $req_format, $i, $gmt);
+        $j = apply_filters('date_i18n', $j, $req_format, $i, $gmt);
         return $j;
     }
 
@@ -692,13 +692,13 @@ class Localization {
      * @param int|bool $gmt Optional. Whether to use GMT timezone. Default is false.
      * @return int|string String if $type is 'gmt', int if $type is 'timestamp'.
      */
-    function yourls_current_time( $type, $gmt = 0 ) {
+    function current_time( $type, $gmt = 0 ) {
         switch ( $type ) {
             case 'mysql':
-                return ( $gmt ) ? gmdate( 'Y-m-d H:i:s' ) : gmdate( 'Y-m-d H:i:s', time() + YOURLS_HOURS_OFFSET * 3600 );
+                return ( $gmt ) ? gmdate( 'Y-m-d H:i:s' ) : gmdate( 'Y-m-d H:i:s', time() + HOURS_OFFSET * 3600 );
                 break;
             case 'timestamp':
-                return ( $gmt ) ? time() : time() + YOURLS_HOURS_OFFSET * 3600;
+                return ( $gmt ) ? time() : time() + HOURS_OFFSET * 3600;
                 break;
         }
     }
@@ -716,11 +716,11 @@ class Localization {
      * @param string $path Full path to directory containing MO files.
      * @return bool True on success, false on failure
      */
-    function yourls_load_custom_textdomain( $domain, $path ) {
-        $locale = yourls_apply_filters( 'load_custom_textdomain', yourls_get_locale(), $domain );
+    function load_custom_textdomain( $domain, $path ) {
+        $locale = apply_filters( 'load_custom_textdomain', get_locale(), $domain );
         $mofile = trim( $path, '/' ) . '/'. $domain . '-' . $locale . '.mo';
 
-        return yourls_load_textdomain( $domain, $mofile );
+        return load_textdomain( $domain, $mofile );
     }
 
     /**
@@ -729,12 +729,12 @@ class Localization {
      * @since 1.6
      * @return bool Whether locale is RTL.
      */
-    function yourls_is_rtl() {
-        global $yourls_locale_formats;
-        if( !isset( $yourls_locale_formats ) )
-            $yourls_locale_formats = new YOURLS_Locale_Formats();
+    function is_rtl() {
+        global $locale_formats;
+        if( !isset( $locale_formats ) )
+            $locale_formats = new Locale_Formats();
         
-        return $yourls_locale_formats->is_rtl();
+        return $locale_formats->is_rtl();
     }
 
     /**
@@ -747,19 +747,19 @@ class Localization {
      * @param mixed $weekday A full textual weekday, eg "Friday", or an integer (0 = Sunday, 1 = Monday, .. 6 = Saturday)
      * @return mixed Translated weekday abbreviation, eg "Ven" (abbrev of "Vendredi") for "Friday" or 5, or array of all weekday abbrev
      */
-    function yourls_l10n_weekday_abbrev( $weekday = '' ){
-        global $yourls_locale_formats;
-        if( !isset( $yourls_locale_formats ) )
-            $yourls_locale_formats = new YOURLS_Locale_Formats();
+    function l10n_weekday_abbrev( $weekday = '' ){
+        global $locale_formats;
+        if( !isset( $locale_formats ) )
+            $locale_formats = new Locale_Formats();
         
         if( $weekday === '' )
-            return $yourls_locale_formats->weekday_abbrev;
+            return $locale_formats->weekday_abbrev;
         
         if( is_int( $weekday ) ) {
-            $day = $yourls_locale_formats->weekday[ $weekday ];
-            return $yourls_locale_formats->weekday_abbrev[ $day ];
+            $day = $locale_formats->weekday[ $weekday ];
+            return $locale_formats->weekday_abbrev[ $day ];
         } else {
-            return $yourls_locale_formats->weekday_abbrev[ yourls__( $weekday ) ];
+            return $locale_formats->weekday_abbrev[ _( $weekday ) ];
         }
     }
 
@@ -773,19 +773,19 @@ class Localization {
      * @param mixed $weekday A full textual weekday, eg "Friday", an integer (0 = Sunday, 1 = Monday, .. 6 = Saturday) or empty string
      * @return mixed Translated weekday initial, eg "V" (initial of "Vendredi") for "Friday" or 5, or array of all weekday initials
      */
-    function yourls_l10n_weekday_initial( $weekday = '' ){
-        global $yourls_locale_formats;
-        if( !isset( $yourls_locale_formats ) )
-            $yourls_locale_formats = new YOURLS_Locale_Formats();
+    function l10n_weekday_initial( $weekday = '' ){
+        global $locale_formats;
+        if( !isset( $locale_formats ) )
+            $locale_formats = new Locale_Formats();
         
         if( $weekday === '' )
-            return $yourls_locale_formats->weekday_initial;
+            return $locale_formats->weekday_initial;
         
         if( is_int( $weekday ) ) {
-            $weekday = $yourls_locale_formats->weekday[ $weekday ];
-            return $yourls_locale_formats->weekday_initial[ $weekday ];
+            $weekday = $locale_formats->weekday[ $weekday ];
+            return $locale_formats->weekday_initial[ $weekday ];
         } else {
-            return $yourls_locale_formats->weekday_initial[ yourls__( $weekday ) ];
+            return $locale_formats->weekday_initial[ _( $weekday ) ];
         }
     }
 
@@ -799,19 +799,19 @@ class Localization {
      * @param mixed $month Empty string, a full textual weekday, eg "November", or an integer (1 = January, .., 12 = December)
      * @return mixed Translated month abbrev (eg "Nov"), or array of all translated abbrev months
      */
-    function yourls_l10n_month_abbrev( $month = '' ){
-        global $yourls_locale_formats;
-        if( !isset( $yourls_locale_formats ) )
-            $yourls_locale_formats = new YOURLS_Locale_Formats();
+    function l10n_month_abbrev( $month = '' ){
+        global $locale_formats;
+        if( !isset( $locale_formats ) )
+            $locale_formats = new Locale_Formats();
         
         if( $month === '' )
-            return $yourls_locale_formats->month_abbrev;
+            return $locale_formats->month_abbrev;
         
         if( intval( $month ) > 0 ) {
-            $month = $yourls_locale_formats->month[ $month ];
-            return $yourls_locale_formats->month_abbrev[ $month ];
+            $month = $locale_formats->month[ $month ];
+            return $locale_formats->month_abbrev[ $month ];
         } else {
-            return $yourls_locale_formats->month_abbrev[ yourls__( $month ) ];
+            return $locale_formats->month_abbrev[ _( $month ) ];
         }
     }
 
@@ -821,11 +821,11 @@ class Localization {
      * @since 1.6
      * @return array Array of all translated months
      */
-    function yourls_l10n_months(){
-        global $yourls_locale_formats;
-        if( !isset( $yourls_locale_formats ) )
-            $yourls_locale_formats = new YOURLS_Locale_Formats();
+    function l10n_months(){
+        global $locale_formats;
+        if( !isset( $locale_formats ) )
+            $locale_formats = new Locale_Formats();
         
-        return $yourls_locale_formats->month;
+        return $locale_formats->month;
     }
 }

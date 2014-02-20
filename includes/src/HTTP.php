@@ -15,10 +15,10 @@ namespace YOURLS;
  * On functions using the 3rd party library Requests: 
  * Thir goal here is to provide convenient wrapper functions to the Requests library. There are
  * 2 types of functions for each METHOD, where METHOD is 'get' or 'post' (implement more as needed)
- *     - yourls_http_METHOD() :
+ *     - http_METHOD() :
  *         Return a complete Response object (with ->body, ->headers, ->status_code, etc...) or
  *         a simple string (error message)
- *     - yourls_http_METHOD_body() :
+ *     - http_METHOD_body() :
  *         Return a string (response body) or null if there was an error
  *
  * @since 1.7
@@ -31,22 +31,22 @@ class HTTP {
      * Notable object properties: body, headers, status_code
      *
      * @since 1.7
-     * @see yourls_http_request
+     * @see http_request
      * @return mixed Response object, or error string
      */
-    function yourls_http_get( $url, $headers = array(), $data = array(), $options = array() ) {
-        return yourls_http_request( 'GET', $url, $headers, $data, $options );
+    function http_get( $url, $headers = array(), $data = array(), $options = array() ) {
+        return http_request( 'GET', $url, $headers, $data, $options );
     }
 
     /**
      * Perform a GET request, return body or null if there was an error
      *
      * @since 1.7
-     * @see yourls_http_request
+     * @see http_request
      * @return mixed String (page body) or null if error
      */
-    function yourls_http_get_body( $url, $headers = array(), $data = array(), $options = array() ) {
-        $return = yourls_http_get( $url, $headers, $data, $options );
+    function http_get_body( $url, $headers = array(), $data = array(), $options = array() ) {
+        $return = http_get( $url, $headers, $data, $options );
         return isset( $return->body ) ? $return->body : null;
     }
 
@@ -56,36 +56,36 @@ class HTTP {
      * Notable object properties: body, headers, status_code
      *
      * @since 1.7
-     * @see yourls_http_request
+     * @see http_request
      * @return mixed Response object, or error string
      */
-    function yourls_http_post( $url, $headers = array(), $data = array(), $options = array() ) {
-        return yourls_http_request( 'POST', $url, $headers, $data, $options );
+    function http_post( $url, $headers = array(), $data = array(), $options = array() ) {
+        return http_request( 'POST', $url, $headers, $data, $options );
     }
 
     /**
      * Perform a POST request, return body
      *
-     * Wrapper for yourls_http_request()
+     * Wrapper for http_request()
      *
      * @since 1.7
-     * @see yourls_http_request
+     * @see http_request
      * @return mixed String (page body) or null if error
      */
-    function yourls_http_post_body( $url, $headers = array(), $data = array(), $options = array() ) {
-        $return = yourls_http_post( $url, $headers, $data, $options );
+    function http_post_body( $url, $headers = array(), $data = array(), $options = array() ) {
+        $return = http_post( $url, $headers, $data, $options );
         return isset( $return->body ) ? $return->body : null;
     }
 
     /**
      * Check if a proxy is defined for HTTP requests
      *
-     * @uses YOURLS_PROXY
+     * @uses PROXY
      * @since 1.7
      * @return bool true if a proxy is defined, false otherwise
      */
-    function yourls_http_proxy_is_defined() {
-        return yourls_apply_filter( 'http_proxy_is_defined', defined( 'YOURLS_PROXY' ) );
+    function http_proxy_is_defined() {
+        return apply_filter( 'http_proxy_is_defined', defined( 'PROXY' ) );
     }
 
     /**
@@ -93,29 +93,29 @@ class HTTP {
      *
      * For a list of all available options, see function request() in /includes/Requests/Requests.php
      *
-     * @uses YOURLS_PROXY
-     * @uses YOURLS_PROXY_USERNAME
-     * @uses YOURLS_PROXY_PASSWORD
+     * @uses PROXY
+     * @uses PROXY_USERNAME
+     * @uses PROXY_PASSWORD
      * @since 1.7
      * @return array Options
      */
-    function yourls_http_default_options() {
+    function http_default_options() {
         $options = array(
-            'timeout'          => yourls_apply_filter( 'http_default_options_timeout', 3 ),
-            'useragent'        => yourls_http_user_agent(),
+            'timeout'          => apply_filter( 'http_default_options_timeout', 3 ),
+            'useragent'        => http_user_agent(),
             'follow_redirects' => true,
             'redirects'        => 3,
         );
         
-        if( yourls_http_proxy_is_defined() ) {
-            if( defined( 'YOURLS_PROXY_USERNAME' ) && defined( 'YOURLS_PROXY_PASSWORD' ) ) {
-                $options['proxy'] = array( YOURLS_PROXY, YOURLS_PROXY_USERNAME, YOURLS_PROXY_PASSWORD );
+        if( http_proxy_is_defined() ) {
+            if( defined( 'PROXY_USERNAME' ) && defined( 'PROXY_PASSWORD' ) ) {
+                $options['proxy'] = array( PROXY, PROXY_USERNAME, PROXY_PASSWORD );
             } else {
-                $options['proxy'] = YOURLS_PROXY;
+                $options['proxy'] = PROXY;
             }
         }
 
-        return yourls_apply_filter( 'http_default_options', $options );	
+        return apply_filter( 'http_default_options', $options );	
     }
 
     /**
@@ -124,16 +124,16 @@ class HTTP {
      * Concept stolen from WordPress. The idea is to allow some URLs, including localhost and the YOURLS install itself,
      * to be requested directly and bypassing any defined proxy.
      *
-     * @uses YOURLS_PROXY
-     * @uses YOURLS_PROXY_BYPASS_HOSTS
+     * @uses PROXY
+     * @uses PROXY_BYPASS_HOSTS
      * @since 1.7
      * @param string $url URL to check
      * @return bool true to request through proxy, false to request directly
      */
-    function yourls_send_through_proxy( $url ) {
+    function send_through_proxy( $url ) {
 
         // Allow plugins to short-circuit the whole function
-        $pre = yourls_apply_filter( 'shunt_send_through_proxy', null, $url );
+        $pre = apply_filter( 'shunt_send_through_proxy', null, $url );
         if ( null !== $pre )
             return $pre;
 
@@ -144,22 +144,22 @@ class HTTP {
             return true;
         
         // Self and loopback URLs are considered local (':' is parse_url() host on '::1')
-        $home = parse_url( YOURLS_SITE );
+        $home = parse_url( SITE );
         $local = array( 'localhost', '127.0.0.1', '127.1', '[::1]', ':', $home['host'] );
         
         if( in_array( $check['host'], $local ) )
             return false;
         
-        if ( !defined( 'YOURLS_PROXY_BYPASS_HOSTS' ) )
+        if ( !defined( 'PROXY_BYPASS_HOSTS' ) )
             return true;
         
-        // Check YOURLS_PROXY_BYPASS_HOSTS
+        // Check PROXY_BYPASS_HOSTS
         static $bypass_hosts;
         static $wildcard_regex = false;
         if ( null == $bypass_hosts ) {
-            $bypass_hosts = preg_split( '|,\s*|', YOURLS_PROXY_BYPASS_HOSTS );
+            $bypass_hosts = preg_split( '|,\s*|', PROXY_BYPASS_HOSTS );
 
-            if ( false !== strpos( YOURLS_PROXY_BYPASS_HOSTS, '*' ) ) {
+            if ( false !== strpos( PROXY_BYPASS_HOSTS, '*' ) ) {
                 $wildcard_regex = array();
                 foreach ( $bypass_hosts as $host )
                     $wildcard_regex[] = str_replace( '\*', '.+', preg_quote( $host, '/' ) );
@@ -184,17 +184,17 @@ class HTTP {
      * @param array $options Options for the request (see /includes/Requests/Requests.php:request())
      * @return object Requests_Response object
      */
-    function yourls_http_request( $type, $url, $headers, $data, $options ) {
-        $options = array_merge( yourls_http_default_options(), $options );
+    function http_request( $type, $url, $headers, $data, $options ) {
+        $options = array_merge( http_default_options(), $options );
         
-        if( yourls_http_proxy_is_defined() && !yourls_send_through_proxy( $url ) )
+        if( http_proxy_is_defined() && !send_through_proxy( $url ) )
             unset( $options['proxy'] );
         
         try {
             $result = Requests::request( $url, $headers, $data, $type, $options );
         }
         catch( Requests_Exception $e ) {
-            $result = yourls_debug_log( $e->getMessage() . ' (' . $type . ' on ' . $url . ')' );
+            $result = debug_log( $e->getMessage() . ' (' . $type . ' on ' . $url . ')' );
         }
         
         return $result;
@@ -206,8 +206,8 @@ class HTTP {
      * @since 1.5
      * @return string UA string
      */
-    function yourls_http_user_agent() {
-        return yourls_apply_filter( 'http_user_agent', 'YOURLS v'.YOURLS_VERSION.' +http://yourls.org/ (running on '.YOURLS_SITE.')' );
+    function http_user_agent() {
+        return apply_filter( 'http_user_agent', 'YOURLS v'.VERSION.' +http://yourls.org/ (running on '.SITE.')' );
     }
 
     /**
@@ -225,14 +225,14 @@ class HTTP {
      * @since 1.7
      * @return mixed JSON data if api.yourls.org successfully requested, false otherwise
      */
-    function yourls_check_core_version() {
+    function check_core_version() {
 
-        global $ydb, $yourls_user_passwords;
+        global $ydb, $user_passwords;
         
-        $checks = yourls_get_option( 'core_version_checks' );
+        $checks = get_option( 'core_version_checks' );
         
         // Invalidate check data when YOURLS version changes
-        if ( is_object( $checks ) && YOURLS_VERSION != $checks->version_checked ) {
+        if ( is_object( $checks ) && VERSION != $checks->version_checked ) {
             $checks = false;
         }
         
@@ -241,59 +241,59 @@ class HTTP {
             $checks->failed_attempts = 0;
             $checks->last_attempt    = 0;
             $checks->last_result     = '';
-            $checks->version_checked = YOURLS_VERSION;
+            $checks->version_checked = VERSION;
         }
 
         // Config file location ('u' for '/user' or 'i' for '/includes')
-        $conf_loc = str_replace( YOURLS_ABSPATH, '', YOURLS_CONFIGFILE );
+        $conf_loc = str_replace( ABSPATH, '', CONFIGFILE );
         $conf_loc = str_replace( '/config.php', '', $conf_loc );
         $conf_loc = ( $conf_loc == '/user' ? 'u' : 'i' );
         
         // The collection of stuff to report
         $stuff = array(
             // Globally uniquish site identifier
-            'md5'                => md5( YOURLS_SITE . YOURLS_ABSPATH ),
+            'md5'                => md5( SITE . ABSPATH ),
 
             // Install information
             'failed_attempts'    => $checks->failed_attempts,
-            'yourls_site'        => defined( 'YOURLS_SITE' ) ? YOURLS_SITE : 'unknown',
-            'yourls_version'     => defined( 'YOURLS_VERSION' ) ? YOURLS_VERSION : 'unknown',
+            'site'        => defined( 'SITE' ) ? SITE : 'unknown',
+            'version'     => defined( 'VERSION' ) ? VERSION : 'unknown',
             'php_version'        => phpversion(),
             'mysql_version'      => $ydb->mysql_version(),
-            'locale'             => yourls_get_locale(),
+            'locale'             => get_locale(),
 
             // custom DB driver if any, and useful common PHP extensions
-            'db_driver'          => defined( 'YOURLS_DB_DRIVER' ) ? YOURLS_DB_DRIVER : 'unset',
+            'db_driver'          => defined( 'DB_DRIVER' ) ? DB_DRIVER : 'unset',
             'db_ext_pdo'         => extension_loaded( 'pdo_mysql' ) ? 1 : 0,
             'db_ext_mysql'       => extension_loaded( 'mysql' )     ? 1 : 0,
             'db_ext_mysqli'      => extension_loaded( 'mysqli' )    ? 1 : 0,
             'ext_curl'           => extension_loaded( 'curl' )      ? 1 : 0,
 
             // Config information
-            'num_users'          => count( $yourls_user_passwords ),
+            'num_users'          => count( $user_passwords ),
             'config_location'    => $conf_loc,
-            'yourls_private'     => defined( 'YOURLS_PRIVATE' ) && YOURLS_PRIVATE ? 1 : 0,
-            'yourls_unique'      => defined( 'YOURLS_UNIQUE_URLS' ) && YOURLS_UNIQUE_URLS ? 1 : 0,
-            'yourls_url_convert' => defined( 'YOURLS_URL_CONVERT' ) ? YOURLS_URL_CONVERT : 'unknown',
-            'num_active_plugins' => yourls_has_active_plugins(),
-            'num_pages'          => defined( 'YOURLS_PAGEDIR' ) ? count( (array) glob( YOURLS_PAGEDIR .'/*.php') ) : 0,
+            'private'     => defined( 'PRIVATE' ) && PRIVATE ? 1 : 0,
+            'unique'      => defined( 'UNIQUE_URLS' ) && UNIQUE_URLS ? 1 : 0,
+            'url_convert' => defined( 'URL_CONVERT' ) ? URL_CONVERT : 'unknown',
+            'num_active_plugins' => has_active_plugins(),
+            'num_pages'          => defined( 'PAGEDIR' ) ? count( (array) glob( PAGEDIR .'/*.php') ) : 0,
         );
         
-        $stuff = yourls_apply_filter( 'version_check_stuff', $stuff );
+        $stuff = apply_filter( 'version_check_stuff', $stuff );
         
         // Send it in
         $url = 'http://api.yourls.org/core/version/1.0/';
-        if( yourls_can_http_over_ssl() )
-            $url = yourls_set_url_scheme( $url, 'https' );
-        $req = yourls_http_post( $url, array(), $stuff );
+        if( can_http_over_ssl() )
+            $url = set_url_scheme( $url, 'https' );
+        $req = http_post( $url, array(), $stuff );
         
         $checks->last_attempt = time();
-        $checks->version_checked = YOURLS_VERSION;
+        $checks->version_checked = VERSION;
 
         // Unexpected results ?
         if( is_string( $req ) or !$req->success ) {
             $checks->failed_attempts = $checks->failed_attempts + 1;
-            yourls_update_option( 'core_version_checks', $checks );
+            update_option( 'core_version_checks', $checks );
             return false;
         }
         
@@ -304,7 +304,7 @@ class HTTP {
             // All went OK - mark this down
             $checks->failed_attempts = 0;
             $checks->last_result     = $json;
-            yourls_update_option( 'core_version_checks', $checks );
+            update_option( 'core_version_checks', $checks );
             
             return $json;
         }
@@ -322,20 +322,20 @@ class HTTP {
      * @since 1.7
      * @return bool true if a check was needed and successfully performed, false otherwise
      */
-    function yourls_maybe_check_core_version() {
+    function maybe_check_core_version() {
 
         // Allow plugins to short-circuit the whole function
-        $pre = yourls_apply_filter( 'shunt_maybe_check_core_version', null );
+        $pre = apply_filter( 'shunt_maybe_check_core_version', null );
         if ( null !== $pre )
             return $pre;
 
-        if( defined( 'YOURLS_NO_VERSION_CHECK' ) && YOURLS_NO_VERSION_CHECK )
+        if( defined( 'NO_VERSION_CHECK' ) && NO_VERSION_CHECK )
             return false;
 
-        if( !yourls_is_admin() )
+        if( !is_admin() )
             return false;
 
-        $checks = yourls_get_option( 'core_version_checks' );
+        $checks = get_option( 'core_version_checks' );
         
         /* We don't want to check if :
         - last_result is set (a previous check was performed)
@@ -350,12 +350,12 @@ class HTTP {
                 OR
                 ( $checks->failed_attempts > 0  && ( ( time() - $checks->last_attempt ) <  2 * 3600 ) )
             )
-            AND ( $checks->version_checked == YOURLS_VERSION )
+            AND ( $checks->version_checked == VERSION )
         )
             return false;
 
         // We want to check if there's a new version
-        $new_check = yourls_check_core_version();
+        $new_check = check_core_version();
         
         // Could not check for a new version, and we don't have ancient data
         if( false == $new_check && !isset( $checks->last_result->latest ) )
@@ -370,7 +370,7 @@ class HTTP {
      * @since 1.7.1
      * @return bool whether the server can perform HTTP requests over SSL
      */
-    function yourls_can_http_over_ssl() {
+    function can_http_over_ssl() {
         $ssl_curl = $ssl_socket = false;
         
         if( function_exists( 'curl_exec' ) ) {

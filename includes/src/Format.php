@@ -18,9 +18,9 @@ class Format {
      * Convert an integer (1337) to a string (3jk).
      *
      */
-    function yourls_int2string( $num, $chars = null ) {
+    function int2string( $num, $chars = null ) {
         if( $chars == null )
-            $chars = yourls_get_shorturl_charset();
+            $chars = get_shorturl_charset();
         $string = '';
         $len = strlen( $chars );
         while( $num >= $len ) {
@@ -30,16 +30,16 @@ class Format {
         }
         $string = $chars[ intval( $num ) ] . $string;
         
-        return yourls_apply_filter( 'int2string', $string, $num, $chars );
+        return apply_filter( 'int2string', $string, $num, $chars );
     }
 
     /**
      * Convert a string (3jk) to an integer (1337)
      *
      */
-    function yourls_string2int( $string, $chars = null ) {
+    function string2int( $string, $chars = null ) {
         if( $chars == null )
-            $chars = yourls_get_shorturl_charset();
+            $chars = get_shorturl_charset();
         $integer = 0;
         $string = strrev( $string  );
         $baselen = strlen( $chars );
@@ -49,58 +49,58 @@ class Format {
             $integer = bcadd( $integer, bcmul( $index, bcpow( $baselen, $i ) ) );
         }
 
-        return yourls_apply_filter( 'string2int', $integer, $string, $chars );
+        return apply_filter( 'string2int', $integer, $string, $chars );
     }
 
     /**
      * Return a unique(ish) hash for a string to be used as a valid HTML id
      *
      */
-    function yourls_string2htmlid( $string ) {
-        return yourls_apply_filter( 'string2htmlid', 'y'.abs( crc32( $string ) ) );
+    function string2htmlid( $string ) {
+        return apply_filter( 'string2htmlid', 'y'.abs( crc32( $string ) ) );
     }
 
     /**
      * Make sure a link keyword (ie "1fv" as in "site.com/1fv") is valid.
      *
      */
-    function yourls_sanitize_string( $string ) {
+    function sanitize_string( $string ) {
         // make a regexp pattern with the shorturl charset, and remove everything but this
-        $pattern = yourls_make_regexp_pattern( yourls_get_shorturl_charset() );
+        $pattern = make_regexp_pattern( get_shorturl_charset() );
         $valid = substr( preg_replace( '![^'.$pattern.']!', '', $string ), 0, 199 );
         
-        return yourls_apply_filter( 'sanitize_string', $valid, $string );
+        return apply_filter( 'sanitize_string', $valid, $string );
     }
 
     /**
      * Alias function. I was always getting it wrong.
      *
      */
-    function yourls_sanitize_keyword( $keyword ) {
-        return yourls_sanitize_string( $keyword );
+    function sanitize_keyword( $keyword ) {
+        return sanitize_string( $keyword );
     }
 
     /**
      * Sanitize a page title. No HTML per W3C http://www.w3.org/TR/html401/struct/global.html#h-7.4.2
      *
      */
-    function yourls_sanitize_title( $unsafe_title ) {
+    function sanitize_title( $unsafe_title ) {
         $title = $unsafe_title;
         $title = strip_tags( $title );
         $title = preg_replace( "/\s+/", ' ', trim( $title ) );
-        return yourls_apply_filter( 'sanitize_title', $title, $unsafe_title );
+        return apply_filter( 'sanitize_title', $title, $unsafe_title );
     }
 
     /**
-     * A few sanity checks on the URL. Used for redirection or DB. For display purpose, see yourls_esc_url()
+     * A few sanity checks on the URL. Used for redirection or DB. For display purpose, see esc_url()
      *
      * @param string $unsafe_url unsafe URL
-     * @param array $protocols Optional allowed protocols, default to global $yourls_allowedprotocols
+     * @param array $protocols Optional allowed protocols, default to global $allowedprotocols
      * @return string Safe URL
      */
-    function yourls_sanitize_url( $unsafe_url, $protocols = array() ) {
-        $url = yourls_esc_url( $unsafe_url, 'redirection', $protocols );
-        return yourls_apply_filter( 'sanitize_url', $url, $unsafe_url );
+    function sanitize_url( $unsafe_url, $protocols = array() ) {
+        $url = esc_url( $unsafe_url, 'redirection', $protocols );
+        return apply_filter( 'sanitize_url', $url, $unsafe_url );
     }
 
     /**
@@ -109,7 +109,7 @@ class Format {
      * Stolen from WP's _deep_replace
      *
      */
-    function yourls_deep_replace( $search, $subject ){
+    function deep_replace( $search, $subject ){
         $found = true;
         while($found) {
             $found = false;
@@ -128,7 +128,7 @@ class Format {
      * Make sure an integer is a valid integer (PHP's intval() limits to too small numbers)
      *
      */
-    function yourls_sanitize_int( $in ) {
+    function sanitize_int( $in ) {
         return ( substr( preg_replace( '/[^0-9]/', '', strval( $in ) ), 0, 20 ) );
     }
 
@@ -138,24 +138,24 @@ class Format {
      * @param string|array $data string or array of strings to be escaped
      * @return string|array escaped data
      */
-    function yourls_escape( $data ) {
+    function escape( $data ) {
         if( is_array( $data ) ) {
             foreach( $data as $k => $v ) {
                 if( is_array( $v ) ) {
-                    $data[ $k ] = yourls_escape( $v );
+                    $data[ $k ] = escape( $v );
                 } else {
-                    $data[ $k ] = yourls_escape_real( $v );
+                    $data[ $k ] = escape_real( $v );
                 }
             }
         } else {
-            $data = yourls_escape_real( $data );
+            $data = escape_real( $data );
         }
         
         return $data;
     }
 
     /**
-     * "Real" escape. This function should NOT be called directly. Use yourls_escape() instead. 
+     * "Real" escape. This function should NOT be called directly. Use escape() instead. 
      *
      * This function uses a "real" escape if possible, using PDO, MySQL or MySQLi functions,
      * with a fallback to a "simple" addslashes
@@ -166,20 +166,20 @@ class Format {
      * @param string $a string to be escaped
      * @return string escaped string
      */
-    function yourls_escape_real( $string ) {
+    function escape_real( $string ) {
         global $ydb;
         if( isset( $ydb ) && ( $ydb instanceof ezSQLcore ) )
             return $ydb->escape( $string );
         
         // YOURLS DB classes have been bypassed by a custom DB engine or a custom cache layer
-        return yourls_apply_filters( 'custom_escape_real', addslashes( $string ), $string );	
+        return apply_filters( 'custom_escape_real', addslashes( $string ), $string );	
     }
 
     /**
      * Sanitize an IP address
      *
      */
-    function yourls_sanitize_ip( $ip ) {
+    function sanitize_ip( $ip ) {
         return preg_replace( '/[^0-9a-fA-F:., ]/', '', $ip );
     }
 
@@ -187,7 +187,7 @@ class Format {
      * Make sure a date is m(m)/d(d)/yyyy, return false otherwise
      *
      */
-    function yourls_sanitize_date( $date ) {
+    function sanitize_date( $date ) {
         if( !preg_match( '!^\d{1,2}/\d{1,2}/\d{4}$!' , $date ) ) {
             return false;
         }
@@ -198,8 +198,8 @@ class Format {
      * Sanitize a date for SQL search. Return false if malformed input.
      *
      */
-    function yourls_sanitize_date_for_sql( $date ) {
-        if( !yourls_sanitize_date( $date ) )
+    function sanitize_date_for_sql( $date ) {
+        if( !sanitize_date( $date ) )
             return false;
         return date( 'Y-m-d', strtotime( $date ) );
     }
@@ -208,7 +208,7 @@ class Format {
      * Return trimmed string
      *
      */
-    function yourls_trim_long_string( $string, $length = 60, $append = '[...]' ) {
+    function trim_long_string( $string, $length = 60, $append = '[...]' ) {
         $newstring = $string;
         if( function_exists( 'mb_substr' ) ) {
             if ( mb_strlen( $newstring ) > $length ) {
@@ -219,14 +219,14 @@ class Format {
                 $newstring = substr( $newstring, 0, $length - strlen( $append ) ) . $append;	
             }
         }
-        return yourls_apply_filter( 'trim_long_string', $newstring, $string, $length, $append );
+        return apply_filter( 'trim_long_string', $newstring, $string, $length, $append );
     }
 
     /**
      * Sanitize a version number (1.4.1-whatever -> 1.4.1)
      *
      */
-    function yourls_sanitize_version( $ver ) {
+    function sanitize_version( $ver ) {
         return preg_replace( '/[^0-9.]/', '', $ver );
     }
 
@@ -234,7 +234,7 @@ class Format {
      * Sanitize a filename (no Win32 stuff)
      *
      */
-    function yourls_sanitize_filename( $file ) {
+    function sanitize_filename( $file ) {
         $file = str_replace( '\\', '/', $file ); // sanitize for Win32 installs
         $file = preg_replace( '|/+|' ,'/', $file ); // remove any duplicate slash
         return $file;
@@ -244,7 +244,7 @@ class Format {
      * Check if a string seems to be UTF-8. Stolen from WP.
      *
      */
-    function yourls_seems_utf8( $str ) {
+    function seems_utf8( $str ) {
         $length = strlen( $str );
         for ( $i=0; $i < $length; $i++ ) {
             $c = ord( $str[ $i ] );
@@ -272,7 +272,7 @@ class Format {
      * @param boolean $strip Optional. Whether to attempt to strip out invalid UTF8. Default is false.
      * @return string The checked text.
      */
-    function yourls_check_invalid_utf8( $string, $strip = false ) {
+    function check_invalid_utf8( $string, $strip = false ) {
         $string = (string) $string;
 
         if ( 0 === strlen( $string ) ) {
@@ -317,7 +317,7 @@ class Format {
      * @param boolean $double_encode Optional. Whether to encode existing html entities. Default is false.
      * @return string The encoded text with HTML entities.
      */
-    function yourls_specialchars( $string, $quote_style = ENT_NOQUOTES, $double_encode = false ) {
+    function specialchars( $string, $quote_style = ENT_NOQUOTES, $double_encode = false ) {
         $string = (string) $string;
 
         if ( 0 === strlen( $string ) )
@@ -349,10 +349,10 @@ class Format {
             $string = @htmlspecialchars( $string, $quote_style, $charset );
         } else {
             // Decode &amp; into &
-            $string = yourls_specialchars_decode( $string, $_quote_style );
+            $string = specialchars_decode( $string, $_quote_style );
 
             // Guarantee every &entity; is valid or re-encode the &
-            $string = yourls_kses_normalize_entities( $string );
+            $string = kses_normalize_entities( $string );
 
             // Now re-encode everything except &entity;
             $string = preg_split( '/(&#?x?[0-9a-z]+;)/i', $string, -1, PREG_SPLIT_DELIM_CAPTURE );
@@ -384,7 +384,7 @@ class Format {
      * @param mixed $quote_style Optional. Converts double quotes if set to ENT_COMPAT, both single and double if set to ENT_QUOTES or none if set to ENT_NOQUOTES. Also compatible with old _wp_specialchars() values; converting single quotes if set to 'single', double if set to 'double' or both if otherwise set. Default is ENT_NOQUOTES.
      * @return string The decoded text without HTML entities.
      */
-    function yourls_specialchars_decode( $string, $quote_style = ENT_NOQUOTES ) {
+    function specialchars_decode( $string, $quote_style = ENT_NOQUOTES ) {
         $string = (string) $string;
 
         if ( 0 === strlen( $string ) ) {
@@ -441,10 +441,10 @@ class Format {
      * @param string $text
      * @return string
      */
-    function yourls_esc_html( $text ) {
-        $safe_text = yourls_check_invalid_utf8( $text );
-        $safe_text = yourls_specialchars( $safe_text, ENT_QUOTES );
-        return yourls_apply_filters( 'esc_html', $safe_text, $text );
+    function esc_html( $text ) {
+        $safe_text = check_invalid_utf8( $text );
+        $safe_text = specialchars( $safe_text, ENT_QUOTES );
+        return apply_filters( 'esc_html', $safe_text, $text );
     }
 
     /**
@@ -455,10 +455,10 @@ class Format {
      * @param string $text
      * @return string
      */
-    function yourls_esc_attr( $text ) {
-        $safe_text = yourls_check_invalid_utf8( $text );
-        $safe_text = yourls_specialchars( $safe_text, ENT_QUOTES );
-        return yourls_apply_filters( 'esc_attr', $safe_text, $text );
+    function esc_attr( $text ) {
+        $safe_text = check_invalid_utf8( $text );
+        $safe_text = specialchars( $safe_text, ENT_QUOTES );
+        return apply_filters( 'esc_attr', $safe_text, $text );
     }
 
     /**
@@ -470,11 +470,11 @@ class Format {
      * @since 1.6
      *
      * @param string $url The URL to be cleaned.
-     * @param string $context 'display' or something else. Use yourls_sanitize_url() for database or redirection usage.
-     * @param array $protocols Optional. Array of allowed protocols, defaults to global $yourls_allowedprotocols
+     * @param string $context 'display' or something else. Use sanitize_url() for database or redirection usage.
+     * @param array $protocols Optional. Array of allowed protocols, defaults to global $allowedprotocols
      * @return string The cleaned $url
      */
-    function yourls_esc_url( $url, $context = 'display', $protocols = array() ) {
+    function esc_url( $url, $context = 'display', $protocols = array() ) {
         // make sure there's only one 'http://' at the beginning (prevents pasting a URL right after the default 'http://')
         $url = str_replace( 
             array( 'http://http://', 'http://https://' ),
@@ -486,7 +486,7 @@ class Format {
             return $url;
 
         // make sure there's a protocol, add http:// if not
-        if ( ! yourls_get_protocol( $url ) )
+        if ( ! get_protocol( $url ) )
             $url = 'http://'.$url;
 
         $original_url = $url;
@@ -506,30 +506,30 @@ class Format {
         // Previous regexp in YOURLS was '|[^a-z0-9-~+_.?\[\]\^#=!&;,/:%@$\|*`\'<>"()\\x80-\\xff\{\}]|i'
         // TODO: check if that was it too destructive
         $strip = array( '%0d', '%0a', '%0D', '%0A' );
-        $url = yourls_deep_replace( $strip, $url );
+        $url = deep_replace( $strip, $url );
         $url = str_replace( ';//', '://', $url );
 
         // Replace ampersands and single quotes only when displaying.
         if ( 'display' == $context ) {
-            $url = yourls_kses_normalize_entities( $url );
+            $url = kses_normalize_entities( $url );
             $url = str_replace( '&amp;', '&#038;', $url );
             $url = str_replace( "'", '&#039;', $url );
         }
         
         if ( ! is_array( $protocols ) or ! $protocols ) {
-            global $yourls_allowedprotocols;
-            $protocols = yourls_apply_filter( 'esc_url_protocols', $yourls_allowedprotocols );
-            // Note: $yourls_allowedprotocols is also globally filterable in functions-kses.php/yourls_kses_init()
+            global $allowedprotocols;
+            $protocols = apply_filter( 'esc_url_protocols', $allowedprotocols );
+            // Note: $allowedprotocols is also globally filterable in functions-kses.php/kses_init()
         }
 
-        if ( !yourls_is_allowed_protocol( $url, $protocols ) )
+        if ( !is_allowed_protocol( $url, $protocols ) )
             return '';
         
         // I didn't use KSES function kses_bad_protocol() because it doesn't work the way I liked (returns //blah from illegal://blah)
 
         $url = substr( $url, 0, 1999 );
         
-        return yourls_apply_filter( 'esc_url', $url, $original_url, $context );
+        return apply_filter( 'esc_url', $url, $original_url, $context );
     }
 
     /**
@@ -544,13 +544,13 @@ class Format {
      * @param string $text The text to be escaped.
      * @return string Escaped text.
      */
-    function yourls_esc_js( $text ) {
-        $safe_text = yourls_check_invalid_utf8( $text );
-        $safe_text = yourls_specialchars( $safe_text, ENT_COMPAT );
+    function esc_js( $text ) {
+        $safe_text = check_invalid_utf8( $text );
+        $safe_text = specialchars( $safe_text, ENT_COMPAT );
         $safe_text = preg_replace( '/&#(x)?0*(?(1)27|39);?/i', "'", stripslashes( $safe_text ) );
         $safe_text = str_replace( "\r", '', $safe_text );
         $safe_text = str_replace( "\n", '\\n', addslashes( $safe_text ) );
-        return yourls_apply_filters( 'esc_js', $safe_text, $text );
+        return apply_filters( 'esc_js', $safe_text, $text );
     }
 
     /**
@@ -561,9 +561,9 @@ class Format {
      * @param string $text
      * @return string
      */
-    function yourls_esc_textarea( $text ) {
+    function esc_textarea( $text ) {
         $safe_text = htmlspecialchars( $text, ENT_QUOTES );
-        return yourls_apply_filters( 'esc_textarea', $safe_text, $text );
+        return apply_filters( 'esc_textarea', $safe_text, $text );
     }
 
 
@@ -574,9 +574,9 @@ class Format {
      * @param $url
      * @return string
      */
-    function yourls_encodeURI( $url ) {
+    function encodeURI( $url ) {
         // Decode URL all the way
-        $result = yourls_rawurldecode_while_encoded( $url );
+        $result = rawurldecode_while_encoded( $url );
         // Encode once
         $result = strtr( rawurlencode( $result ), array (
             '%3B' => ';', '%2C' => ',', '%2F' => '/', '%3F' => '?', '%3A' => ':', '%40' => '@',
@@ -586,7 +586,7 @@ class Format {
         // @TODO:
         // Known limit: this will most likely break IDN URLs such as http://www.académie-française.fr/
         // To fully support IDN URLs, advocate use of a plugin.
-        return yourls_apply_filter( 'encodeURI', $result, $url );
+        return apply_filter( 'encodeURI', $result, $url );
     }
 
     /**
@@ -597,7 +597,7 @@ class Format {
      * @param string $string Value to which backslashes will be added.
      * @return string String with backslashes inserted.
      */
-    function yourls_backslashit($string) {
+    function backslashit($string) {
         $string = preg_replace('/^([0-9])/', '\\\\\\\\\1', $string);
         $string = preg_replace('/([a-z])/i', '\\\\\1', $string);
         return $string;
@@ -612,7 +612,7 @@ class Format {
      * @param string $string
      * @return bool
      */
-    function yourls_is_rawurlencoded( $string ) {
+    function is_rawurlencoded( $string ) {
         return rawurldecode( $string ) != $string;
     }
 
@@ -626,10 +626,10 @@ class Format {
      * @param string $string
      * @return string
      */
-    function yourls_rawurldecode_while_encoded( $string ) {
+    function rawurldecode_while_encoded( $string ) {
         $string = rawurldecode( $string );
-        if( yourls_is_rawurlencoded( $string ) ) {
-            $string = yourls_rawurldecode_while_encoded( $string );
+        if( is_rawurlencoded( $string ) ) {
+            $string = rawurldecode_while_encoded( $string );
         }
         return $string;
     }
@@ -654,7 +654,7 @@ class Format {
      * @param array $default   optional, defaults to '', string to replace unfound tokens
      * @return string          the formatted string
      */
-    function yourls_replace_string_tokens( $format, array $tokens, $default = '' ) {
+    function replace_string_tokens( $format, array $tokens, $default = '' ) {
         preg_match_all( '/%([a-zA-Z0-9-_]+)%/', $format, $matches );
         
         foreach( (array)$matches[1] as $token ) {
