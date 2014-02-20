@@ -21,12 +21,12 @@ class Loader {
     public function __construct( $config = null ) {
         if ( file_exists( str_replace( '\\', '/', $config ) ) ) {
             define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', $config ) );
-        } elseif ( file_exists( dirname( __DIR__ ) . '/user/config.php' ) ) {
+        } elseif ( file_exists( dirname( dirname( __DIR__ ) ) . '/user/config.php' ) ) {
             // config.php in /user/
-            define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( __DIR__ ) ) . '/user/config.php' );
-        } elseif ( file_exists( __DIR__ . '/config.php' ) ) {
+            define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( dirname( __DIR__ ) ) ) . '/user/config.php' );
+        } elseif ( file_exists( dirname( __DIR__ ) . '/config.php' ) ) {
             // config.php in /includes/
-            define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', __DIR__ ) . '/config.php' );
+            define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( __DIR__ ) ) . '/config.php' );
         } else {
             // config.php not found :(
             die( '<p class="error">Cannot find <code>config.php</code>.</p><p>Please read the <a href="../docs/#install">documentation</a> to learn how to install YOURLS</p>' );
@@ -41,7 +41,7 @@ class Loader {
         // Define core constants that have not been user defined in config.php
         $yourls_definitions = array(
             // physical path of YOURLS root
-            'YOURLS_ABSPATH'             => str_replace( '\\', '/', dirname( __DIR__ ) ),
+            'YOURLS_ABSPATH'             => str_replace( '\\', '/', dirname( dirname( __DIR__ ) ) ),
             // physical path of includes directory
             'YOURLS_INC'                 => array( 'YOURLS_ABSPATH', '/includes' ),
 
@@ -185,6 +185,9 @@ class Loader {
         }
     }
 
+    /**
+     * Summary of run
+     */
     public function run() {
         // Get request in YOURLS base (eg in 'http://site.com/yourls/abcd' get 'abdc')
         $request = yourls_get_request();
