@@ -1390,7 +1390,7 @@ REDIR;
             if( ( $now - $then ) <= YOURLS_FLOOD_DELAY_SECONDS ) {
                 // Flood!
                 do_action( 'ip_flood', $ip, $now - $then );
-                die( _( 'Too many URLs added too fast. Slow down please.' ), _( 'Forbidden' ), 403 );
+                die( _( 'Too many URLs added too fast. Slow down please.' )/*, _( 'Forbidden' ), 403 */);
             }
         }
 
@@ -1675,7 +1675,7 @@ REDIR;
         } else {
             if( $return )
                 die( $return );
-            die( _( 'Unauthorized action or expired link' ), _( 'Error' ), 403 );
+            die( _( 'Unauthorized action or expired link' )/*, _( 'Error' ), 403 */);
         }
     }
 
@@ -2092,7 +2092,7 @@ REDIR;
         $title   = _( 'Service temporarily unavailable' );
         $message = _( 'Our service is currently undergoing scheduled maintenance.' ) . "</p><p>" .
         _( 'Things should not last very long, thank you for your patience and please excuse the inconvenience' );
-        die( $message, $title , 503 );
+        die( $message/*, $title , 503 */);
 
     }
 

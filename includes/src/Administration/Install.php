@@ -27,7 +27,7 @@ class Install {
         $num_errors2 = count( $ydb->captured_errors );
 
         if( $version == NULL || ( $num_errors2 > $num_errors1 ) ) {
-            die( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );
+            die( _( 'Incorrect DB config, or could not connect to DB' )/*, _( 'Fatal error' ), 503 */);
         }
 
         return ( version_compare( '5.0', $version ) <= 0 );

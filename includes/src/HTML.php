@@ -294,7 +294,7 @@ class HTML {
     public function page( $page ) {
         $include = YOURLS_PAGEDIR . "/$page.php";
         if( !file_exists( $include ) ) {
-            die( "Page '$page' not found", 'Not found', 404 );
+            die( "Page '$page' not found"/*, 'Not found', 404 */);
         }
         do_action( 'pre_page', $page );
         include_once( $include );
@@ -648,7 +648,7 @@ class HTML {
      * Die die die
      *
      */
-    public function die( $message = '', $title = '', $header_code = 200 ) {
+    public function y_die( $message = '', $title = '', $header_code = 200 ) {
         status_header( $header_code );
 
         if( !$head = did_action( 'html_head' ) ) {

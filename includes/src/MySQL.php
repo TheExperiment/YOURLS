@@ -48,9 +48,9 @@ class MySQL {
         if ( !class_exists( $class, false ) ) {
             $ydb = new stdClass();
             die(
-                _( 'YOURLS requires the mysql, mysqli or pdo_mysql PHP extension. No extension found. Check your server config, or contact your host.' ),
+                _( 'YOURLS requires the mysql, mysqli or pdo_mysql PHP extension. No extension found. Check your server config, or contact your host.' )/*,
                 _( 'Fatal error' ),
-                503
+                503*/
             );
         }
 
@@ -92,7 +92,7 @@ class MySQL {
             or !defined( 'YOURLS_DB_PASS' )
             or !defined( 'YOURLS_DB_NAME' )
             or !defined( 'YOURLS_DB_HOST' )
-        ) die ( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );
+        ) die ( _( 'Incorrect DB config, or could not connect to DB' )/*, _( 'Fatal error' ), 503 */);
 
         // Are we standalone or in the WordPress environment?
         if ( class_exists( 'wpdb', false ) ) {
@@ -152,7 +152,7 @@ class MySQL {
             die();
         }
 
-        die( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );
+        die( _( 'Incorrect DB config, or could not connect to DB' )/*, _( 'Fatal error' ), 503 */);
     }
 
 }
