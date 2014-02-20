@@ -9,7 +9,7 @@
  * @link http://www.phpclasses.org/browse/package/2286/
  * @deprecated We have to move to http://www.php.net/manual/fr/simplexml.examples.php
  */
-class yourls_array2xml {
+class XML {
     
 	var $text;
 	var $arrays, $keys, $node_flag, $depth, $xml_parser;
