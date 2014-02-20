@@ -1,8 +1,18 @@
 <?php
 
+/**
+ * Authentication Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
 use Hautelook\Phpass\PasswordHash;
 
-class Authentification {
+/**
+ * Summary of Authentication
+ */
+class Authentication {
     
     /**
      * Check for valid user via login form or stored cookie. Returns true or an error message
