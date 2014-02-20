@@ -1,20 +1,21 @@
 <?php
+
+/**
+ * Localization Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+use POMO\MO;
+use POMO\Translations\NOOPTranslations;
+
 /**
  * YOURLS Translation API
  *
  * YOURLS modification of a small subset from WordPress' Translation API implementation.
  * GPL License
- *
- * @package POMO
- * @subpackage i18n
  */
-
-/**
- * Load POMO files required to run library
- */
-use POMO\MO;
-use POMO\Translations\NOOPTranslations;
-
 class Localization {
     
     /**
