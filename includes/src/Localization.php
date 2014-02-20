@@ -69,6 +69,7 @@ class Localization {
      */
     function translate( $text, $domain = 'default' ) {
         $translations = get_translations_for_domain( $domain );
+
         return apply_filters( 'translate', $translations->translate( $text ), $text, $domain );
     }
 
@@ -90,6 +91,7 @@ class Localization {
      */
     function translate_with_context( $text, $context, $domain = 'default' ) {
         $translations = get_translations_for_domain( $domain );
+
         return apply_filters( 'translate_with_context', $translations->translate( $text, $context ), $text, $context, $domain );
     }
 
@@ -343,6 +345,7 @@ class Localization {
     function n( $single, $plural, $number, $domain = 'default' ) {
         $translations = get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number );
+
         return apply_filters( 'translate_n', $translation, $single, $plural, $number, $domain );
     }
 
@@ -357,6 +360,7 @@ class Localization {
     function nx($single, $plural, $number, $context, $domain = 'default') {
         $translations = get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number, $context );
+
         return apply_filters( 'translate_nx', $translation, $single, $plural, $number, $context, $domain );
     }
 
@@ -462,6 +466,7 @@ class Localization {
         if ( !is_readable( $mofile ) ) {
             trigger_error( 'Cannot read file ' . str_replace( ABSPATH.'/', '', $mofile ) . '.'
                         . ' Make sure there is a language file installed. More info: http://yourls.org/translations' );
+
             return false;
         }
 
@@ -496,6 +501,7 @@ class Localization {
 
         if ( isset( $l10n[$domain] ) ) {
             unset( $l10n[$domain] );
+
             return true;
         }
 
@@ -515,6 +521,7 @@ class Localization {
         $locale = get_locale();
 
         if( !empty( $locale ) )
+
             return load_textdomain( 'default', LANG_DIR . "/$locale.mo" );
     }
 
@@ -530,6 +537,7 @@ class Localization {
         if ( !isset( $l10n[$domain] ) ) {
             $l10n[$domain] = new NOOPTranslations;
         }
+
         return $l10n[$domain];
     }
 
@@ -542,6 +550,7 @@ class Localization {
      */
     function is_textdomain_loaded( $domain ) {
         global $l10n;
+
         return isset( $l10n[$domain] );
     }
 
@@ -594,6 +603,7 @@ class Localization {
             $locale_formats = new Locale_Formats();
 
         $formatted = number_format( $number, abs( intval( $decimals ) ), $locale_formats->number_format['decimal_point'], $locale_formats->number_format['thousands_sep'] );
+
         return apply_filters( 'number_format_i18n', $formatted );
     }
 
@@ -674,6 +684,7 @@ class Localization {
         $j = @$datefunc( $dateformatstring, $i );
         // allow plugins to redo this entirely for languages with untypical grammars
         $j = apply_filters('date_i18n', $j, $req_format, $i, $gmt);
+
         return $j;
     }
 
@@ -753,10 +764,12 @@ class Localization {
             $locale_formats = new Locale_Formats();
 
         if( $weekday === '' )
+
             return $locale_formats->weekday_abbrev;
 
         if( is_int( $weekday ) ) {
             $day = $locale_formats->weekday[ $weekday ];
+
             return $locale_formats->weekday_abbrev[ $day ];
         } else {
             return $locale_formats->weekday_abbrev[ _( $weekday ) ];
@@ -779,10 +792,12 @@ class Localization {
             $locale_formats = new Locale_Formats();
 
         if( $weekday === '' )
+
             return $locale_formats->weekday_initial;
 
         if( is_int( $weekday ) ) {
             $weekday = $locale_formats->weekday[ $weekday ];
+
             return $locale_formats->weekday_initial[ $weekday ];
         } else {
             return $locale_formats->weekday_initial[ _( $weekday ) ];
@@ -805,10 +820,12 @@ class Localization {
             $locale_formats = new Locale_Formats();
 
         if( $month === '' )
+
             return $locale_formats->month_abbrev;
 
         if( intval( $month ) > 0 ) {
             $month = $locale_formats->month[ $month ];
+
             return $locale_formats->month_abbrev[ $month ];
         } else {
             return $locale_formats->month_abbrev[ _( $month ) ];

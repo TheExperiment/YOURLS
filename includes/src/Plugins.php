@@ -104,6 +104,7 @@ class Plugins {
                 unset( $count );
             } else
                 $obj_idx .= $function[0]->_filters_id;
+
             return $obj_idx;
         }
         // Static Calling
@@ -162,6 +163,7 @@ class Plugins {
         } while ( next( $filters[ $hook ] ) !== false );
 
         if( $the_['type'] == 'filter' )
+
             return $value;
     }
 
@@ -252,6 +254,7 @@ class Plugins {
             if ( empty( $filters[$hook][$priority] ) )
                 unset( $filters[$hook] );
         }
+
         return $remove;
     }
 
@@ -279,6 +282,7 @@ class Plugins {
             if ( isset( $filters[ $hook ][ $priority ][ $idx ] ) )
                 return $priority;
         }
+
         return false;
     }
 
@@ -321,6 +325,7 @@ class Plugins {
         $plugins = (array) glob( PLUGINDIR .'/*/plugin.php');
 
         if( !$plugins )
+
             return array();
 
         foreach( $plugins as $key => $plugin ) {
@@ -340,6 +345,7 @@ class Plugins {
      */
     function is_active_plugin( $plugin ) {
         if( !has_active_plugins( ) )
+
             return false;
 
         global $ydb;
@@ -362,6 +368,7 @@ class Plugins {
 
         // Capture all the header within first comment block
         if( !preg_match( '!.*?/\*(.*?)\*/!ms', $data, $matches ) )
+
             return array();
 
         // Capture each line with "Something: some text"
@@ -387,10 +394,12 @@ class Plugins {
     function load_plugins() {
         // Don't load plugins when installing or updating
         if( is_installing() OR is_upgrading() )
+
             return;
 
         $active_plugins = get_option( 'active_plugins' );
         if( false === $active_plugins )
+
             return;
 
         global $ydb;
@@ -432,6 +441,7 @@ class Plugins {
             OR
             !is_readable( $file )
         )
+
             return false;
 
         return true;
@@ -448,11 +458,13 @@ class Plugins {
         $plugin = plugin_basename( $plugin );
         $plugindir = sanitize_filename( PLUGINDIR );
         if( !validate_plugin_file( $plugindir.'/'.$plugin ) )
+
             return _( 'Not a valid plugin file' );
 
         // check not activated already
         global $ydb;
         if( has_active_plugins() && in_array( $plugin, $ydb->plugins ) )
+
             return _( 'Plugin already activated' );
 
         // attempt activation. TODO: uber cool fail proof sandbox like in WP.
@@ -461,6 +473,7 @@ class Plugins {
         if ( ob_get_length() > 0 ) {
             // there was some output: error
             $output = ob_get_clean();
+
             return s( 'Plugin generated unexpected output. Error was: <br/><pre>%s</pre>', $output );
         }
 
@@ -484,6 +497,7 @@ class Plugins {
 
         // Check plugin is active
         if( !is_active_plugin( $plugin ) )
+
             return _( 'Plugin not active' );
 
         // Deactivate the plugin
@@ -510,6 +524,7 @@ class Plugins {
         else
         $plugindir = sanitize_filename( PLUGINDIR );
         $file = str_replace( $plugindir, '', $file );
+
         return trim( $file, '/' );
     }
 
@@ -520,6 +535,7 @@ class Plugins {
         $url = PLUGINURL . '/' . plugin_basename( $file );
         if( is_ssl() or needs_ssl() )
             $url = str_replace( 'http://', 'https://', $url );
+
         return apply_filter( 'plugin_url', $url, $file );
     }
 
@@ -530,6 +546,7 @@ class Plugins {
         global $ydb;
 
         if( !property_exists( $ydb, 'plugin_pages' ) || !$ydb->plugin_pages )
+
             return;
 
         $plugin_links = array();
@@ -539,6 +556,7 @@ class Plugins {
                 'anchor' => $page['title'],
             );
         }
+
         return $plugin_links;
     }
 

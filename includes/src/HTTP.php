@@ -47,6 +47,7 @@ class HTTP {
      */
     function http_get_body( $url, $headers = array(), $data = array(), $options = array() ) {
         $return = http_get( $url, $headers, $data, $options );
+
         return isset( $return->body ) ? $return->body : null;
     }
 
@@ -74,6 +75,7 @@ class HTTP {
      */
     function http_post_body( $url, $headers = array(), $data = array(), $options = array() ) {
         $return = http_post( $url, $headers, $data, $options );
+
         return isset( $return->body ) ? $return->body : null;
     }
 
@@ -148,6 +150,7 @@ class HTTP {
         $local = array( 'localhost', '127.0.0.1', '127.1', '[::1]', ':', $home['host'] );
 
         if( in_array( $check['host'], $local ) )
+
             return false;
 
         if ( !defined( 'PROXY_BYPASS_HOSTS' ) )
@@ -294,6 +297,7 @@ class HTTP {
         if( is_string( $req ) or !$req->success ) {
             $checks->failed_attempts = $checks->failed_attempts + 1;
             update_option( 'core_version_checks', $checks );
+
             return false;
         }
 
@@ -330,9 +334,11 @@ class HTTP {
             return $pre;
 
         if( defined( 'NO_VERSION_CHECK' ) && NO_VERSION_CHECK )
+
             return false;
 
         if( !is_admin() )
+
             return false;
 
         $checks = get_option( 'core_version_checks' );
@@ -352,6 +358,7 @@ class HTTP {
             )
             AND ( $checks->version_checked == VERSION )
         )
+
             return false;
 
         // We want to check if there's a new version
@@ -359,6 +366,7 @@ class HTTP {
 
         // Could not check for a new version, and we don't have ancient data
         if( false == $new_check && !isset( $checks->last_result->latest ) )
+
             return false;
 
         return true;

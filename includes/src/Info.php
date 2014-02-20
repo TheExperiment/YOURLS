@@ -117,6 +117,7 @@ class Info {
          */
 
         if( !$dates )
+
             return array();
 
         // Get first & last years from our range. In our example: 2009 & 2009
@@ -269,6 +270,7 @@ class Info {
                 $data[$k] = intval( $v / $max * 100 );
             }
         }
+
         return $data;
     }
 
@@ -294,6 +296,7 @@ class Info {
                 }
             }
         }
+
         return $array;
     }
 
@@ -318,6 +321,7 @@ class Info {
         }
         $str = substr( $str, 0, -1 ); // remove the trailing comma/return, reappend the return
         $str .= "]);"; // wrap it up
+
         return $str;
     }
 

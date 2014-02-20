@@ -88,6 +88,7 @@ class Format {
         $title = $unsafe_title;
         $title = strip_tags( $title );
         $title = preg_replace( "/\s+/", ' ', trim( $title ) );
+
         return apply_filter( 'sanitize_title', $title, $unsafe_title );
     }
 
@@ -100,6 +101,7 @@ class Format {
      */
     function sanitize_url( $unsafe_url, $protocols = array() ) {
         $url = esc_url( $unsafe_url, 'redirection', $protocols );
+
         return apply_filter( 'sanitize_url', $url, $unsafe_url );
     }
 
@@ -169,6 +171,7 @@ class Format {
     function escape_real( $string ) {
         global $ydb;
         if( isset( $ydb ) && ( $ydb instanceof ezSQLcore ) )
+
             return $ydb->escape( $string );
 
         // YOURLS DB classes have been bypassed by a custom DB engine or a custom cache layer
@@ -191,6 +194,7 @@ class Format {
         if( !preg_match( '!^\d{1,2}/\d{1,2}/\d{4}$!' , $date ) ) {
             return false;
         }
+
         return $date;
     }
 
@@ -200,6 +204,7 @@ class Format {
      */
     function sanitize_date_for_sql( $date ) {
         if( !sanitize_date( $date ) )
+
             return false;
         return date( 'Y-m-d', strtotime( $date ) );
     }
@@ -219,6 +224,7 @@ class Format {
                 $newstring = substr( $newstring, 0, $length - strlen( $append ) ) . $append;
             }
         }
+
         return apply_filter( 'trim_long_string', $newstring, $string, $length, $append );
     }
 
@@ -237,6 +243,7 @@ class Format {
     function sanitize_filename( $file ) {
         $file = str_replace( '\\', '/', $file ); // sanitize for Win32 installs
         $file = preg_replace( '|/+|' ,'/', $file ); // remove any duplicate slash
+
         return $file;
     }
 
@@ -260,6 +267,7 @@ class Format {
                     return false;
             }
         }
+
         return true;
     }
 
@@ -444,6 +452,7 @@ class Format {
     function esc_html( $text ) {
         $safe_text = check_invalid_utf8( $text );
         $safe_text = specialchars( $safe_text, ENT_QUOTES );
+
         return apply_filters( 'esc_html', $safe_text, $text );
     }
 
@@ -458,6 +467,7 @@ class Format {
     function esc_attr( $text ) {
         $safe_text = check_invalid_utf8( $text );
         $safe_text = specialchars( $safe_text, ENT_QUOTES );
+
         return apply_filters( 'esc_attr', $safe_text, $text );
     }
 
@@ -550,6 +560,7 @@ class Format {
         $safe_text = preg_replace( '/&#(x)?0*(?(1)27|39);?/i', "'", stripslashes( $safe_text ) );
         $safe_text = str_replace( "\r", '', $safe_text );
         $safe_text = str_replace( "\n", '\\n', addslashes( $safe_text ) );
+
         return apply_filters( 'esc_js', $safe_text, $text );
     }
 
@@ -563,6 +574,7 @@ class Format {
      */
     function esc_textarea( $text ) {
         $safe_text = htmlspecialchars( $text, ENT_QUOTES );
+
         return apply_filters( 'esc_textarea', $safe_text, $text );
     }
 
@@ -600,6 +612,7 @@ class Format {
     function backslashit($string) {
         $string = preg_replace('/^([0-9])/', '\\\\\\\\\1', $string);
         $string = preg_replace('/([a-z])/i', '\\\\\1', $string);
+
         return $string;
     }
 
@@ -631,6 +644,7 @@ class Format {
         if( is_rawurlencoded( $string ) ) {
             $string = rawurldecode_while_encoded( $string );
         }
+
         return $string;
     }
     /**

@@ -24,6 +24,7 @@ class Functions {
     function get_shorturl_charset() {
         static $charset = null;
         if( $charset !== null )
+
             return $charset;
 
         if( defined('URL_CONVERT') && in_array( URL_CONVERT, array( 62, 64 ) ) ) {
@@ -34,6 +35,7 @@ class Functions {
         }
 
         $charset = apply_filter( 'get_shorturl_charset', $charset );
+
         return $charset;
     }
 
@@ -129,6 +131,7 @@ class Functions {
         $int = ( $int == '' ) ? get_next_decimal() + 1 : (int)$int ;
         $update = update_option( 'next_id', $int );
         do_action( 'update_next_decimal', $int, $update );
+
         return $update;
     }
 
@@ -148,6 +151,7 @@ class Functions {
         $keyword = escape( sanitize_string( $keyword ) );
         $delete = $ydb->query("DELETE FROM `$table` WHERE `keyword` = '$keyword';");
         do_action( 'delete_link', $keyword, $delete );
+
         return $delete;
     }
 
@@ -207,6 +211,7 @@ class Functions {
             $return['code']      = 'error:nourl';
             $return['message']   = _( 'Missing or malformed URL' );
             $return['errorCode'] = '400';
+
             return apply_filter( 'add_new_link_fail_nourl', $return, $url, $keyword, $title );
         }
 
@@ -221,6 +226,7 @@ class Functions {
                 $return['code']      = 'error:noloop';
                 $return['message']   = _( 'URL is a short URL' );
                 $return['errorCode'] = '400';
+
                 return apply_filter( 'add_new_link_fail_noloop', $return, $url, $keyword, $title );
             }
         }
@@ -312,6 +318,7 @@ class Functions {
         do_action( 'post_add_new_link', $url, $keyword, $title );
 
         $return['statusCode'] = 200; // regardless of result, this is still a valid request
+
         return apply_filter( 'add_new_link', $return, $url, $keyword, $title );
     }
 
@@ -437,6 +444,7 @@ class Functions {
     function xml_encode( $array ) {
         require_once INC . '/functions-xml.php';
         $converter= new array2xml;
+
         return $converter->array2xml( $array );
     }
 
@@ -549,6 +557,7 @@ class Functions {
             $update = $ydb->query( "UPDATE `$table` SET `clicks` = clicks + 1 WHERE `keyword` = '$keyword'" );
 
         do_action( 'update_clicks', $keyword, $update, $clicks );
+
         return $update;
     }
 
@@ -712,6 +721,7 @@ class Functions {
      */
     function status_header( $code = 200 ) {
         if( headers_sent() )
+
             return;
 
         $protocol = $_SERVER['SERVER_PROTOCOL'];
@@ -919,6 +929,7 @@ REDIR;
             $geo  = new GeoIP;
             $id   = $geo->GEOIP_COUNTRY_CODE_TO_NUMBER[ $code ];
             $long = $geo->GEOIP_COUNTRY_NAMES[ $id ];
+
             return $long;
         } else {
             return false;
@@ -942,6 +953,7 @@ REDIR;
         // check DB_VERSION exist && match values stored in DB_TABLE_OPTIONS
         list( $currentver, $currentsql ) = get_current_version_from_sql();
         if( $currentsql < DB_VERSION )
+
             return true;
 
         return false;
@@ -1068,6 +1080,7 @@ REDIR;
 
         if ( false === $oldvalue ) {
             add_option( $option_name, $newvalue );
+
             return true;
         }
 
@@ -1079,8 +1092,10 @@ REDIR;
 
         if ( $ydb->rows_affected == 1 ) {
             $ydb->option[ $option_name ] = $newvalue;
+
             return true;
         }
+
         return false;
     }
 
@@ -1118,6 +1133,7 @@ REDIR;
 
         $ydb->query( "INSERT INTO `$table` (`option_name`, `option_value`) VALUES ('$name', '$_value')" );
         $ydb->option[ $name ] = $value;
+
         return true;
     }
 
@@ -1145,6 +1161,7 @@ REDIR;
 
         $ydb->query( "DELETE FROM `$table` WHERE `option_name` = '$name'" );
         unset( $ydb->option[ $name ] );
+
         return true;
     }
 
@@ -1219,8 +1236,10 @@ REDIR;
             case 'i' :
             case 'd' :
                 $end = $strict ? '$' : '';
+
                 return (bool) preg_match( "/^{$token}:[0-9.E-]+;$end/", $data );
         }
+
         return false;
     }
 
@@ -1291,6 +1310,7 @@ REDIR;
             if ( isset($_REQUEST['source']) && $_REQUEST['source'] == 'plugin' )
                 return false;
         }
+
         return ( defined( 'UNIQUE_URLS' ) && UNIQUE_URLS == false );
     }
 
@@ -1316,6 +1336,7 @@ REDIR;
                 $query .= " ".$order;
             }
         }
+
         return apply_filter( 'get_longurl_keywords', $ydb->get_col( $query ), $longurl );
     }
 
@@ -1338,11 +1359,13 @@ REDIR;
             !defined('FLOOD_DELAY_SECONDS') ||
             is_installing()
         )
+
             return true;
 
         // Don't throttle logged in users
         if( is_private() ) {
             if( is_valid_user() === true )
+
                 return true;
         }
 
@@ -1386,6 +1409,7 @@ REDIR;
      */
     function is_installing() {
         $installing = defined( 'INSTALLING' ) && INSTALLING == true;
+
         return apply_filter( 'is_installing', $installing );
     }
 
@@ -1397,6 +1421,7 @@ REDIR;
      */
     function is_upgrading() {
         $upgrading = defined( 'UPGRADING' ) && UPGRADING == true;
+
         return apply_filter( 'is_upgrading', $upgrading );
     }
 
@@ -1412,6 +1437,7 @@ REDIR;
     function is_installed() {
         global $ydb;
         $is_installed = ( property_exists( $ydb, 'installed' ) && $ydb->installed == true );
+
         return apply_filter( 'is_installed', $is_installed );
 
         /* Note: this test won't work on YOURLS 1.3 or older (Aug 2009...)
@@ -1479,6 +1505,7 @@ REDIR;
      */
     function salt( $string ) {
         $salt = defined('COOKIEKEY') ? COOKIEKEY : md5(__FILE__) ;
+
         return apply_filter( 'salt', md5 ($string . $salt), $string );
     }
 
@@ -1558,6 +1585,7 @@ REDIR;
         $ret = preg_replace( '#=(&|$)#', '$1', $ret );
         $ret = $protocol . $base . $ret . $frag;
         $ret = rtrim( $ret, '?' );
+
         return $ret;
     }
 
@@ -1567,6 +1595,7 @@ REDIR;
      */
     function urlencode_deep( $value ) {
         $value = is_array( $value ) ? array_map( 'urlencode_deep', $value ) : urlencode( $value );
+
         return $value;
     }
 
@@ -1578,8 +1607,10 @@ REDIR;
         if ( is_array( $key ) ) { // removing multiple keys
             foreach ( $key as $k )
                 $query = add_query_arg( $k, false, $query );
+
             return $query;
         }
+
         return add_query_arg( $key, false, $query );
     }
 
@@ -1599,6 +1630,7 @@ REDIR;
         if( false == $user )
             $user = defined( 'USER' ) ? USER : '-1';
         $tick = tick();
+
         return substr( salt($tick . $action . $user), 0, 10 );
     }
 
@@ -1610,6 +1642,7 @@ REDIR;
         $field = '<input type="hidden" id="'.$name.'" name="'.$name.'" value="'.create_nonce( $action, $user ).'" />';
         if( $echo )
             echo $field;
+
         return $field;
     }
 
@@ -1619,6 +1652,7 @@ REDIR;
      */
     function nonce_url( $action, $url = false, $name = 'nonce', $user = false ) {
         $nonce = create_nonce( $action, $user );
+
         return add_query_arg( $name, $nonce, $url );
     }
 
@@ -1656,6 +1690,7 @@ REDIR;
      */
     function link( $keyword = '' ) {
         $link = SITE . '/' . sanitize_keyword( $keyword );
+
         return apply_filter( 'link', $link, $keyword );
     }
 
@@ -1667,6 +1702,7 @@ REDIR;
         $link = SITE . '/' . sanitize_keyword( $keyword ) . '+';
         if( is_ssl() )
             $link = set_url_scheme( $link, 'https' );
+
         return apply_filter( 'statlink', $link, $keyword );
     }
 
@@ -1716,6 +1752,7 @@ REDIR;
      */
     function has_interface() {
         if( is_API() or is_GO() )
+
             return false;
         return true;
     }
@@ -1767,6 +1804,7 @@ REDIR;
         $admin = SITE . '/' . ADMIN_LOCATION . '/' . $page;
         if( is_ssl() or needs_ssl() )
             $admin = set_url_scheme( $admin, 'https' );
+
         return apply_filter( 'admin_url', $admin, $page );
     }
 
@@ -1784,6 +1822,7 @@ REDIR;
         $url = apply_filter( 'site_url', $url );
         if( $echo )
             echo $url;
+
         return $url;
     }
 
@@ -1801,6 +1840,7 @@ REDIR;
         } elseif ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) ) {
             $is_ssl = true;
         }
+
         return apply_filter( 'is_ssl', $is_ssl );
     }
 
@@ -1826,6 +1866,7 @@ REDIR;
 
         // Only deal with http(s)://
         if( !in_array( get_protocol( $url ), array( 'http://', 'https://' ) ) )
+
             return $url;
 
         $title = $charset = false;
@@ -1838,6 +1879,7 @@ REDIR;
         // Page content. No content? Return the URL
         $content = $response->body;
         if( !$content )
+
             return $url;
 
         // look for <title>. No title found? Return the URL
@@ -1846,6 +1888,7 @@ REDIR;
             unset( $found );
         }
         if( !$title )
+
             return $url;
 
         // Now we have a title. We'll try to get proper utf8 from it.
@@ -1904,6 +1947,7 @@ REDIR;
 
         // Check and return
         $is_mobile = ( str_replace( $mobiles, '', $current ) != $current );
+
         return apply_filter( 'is_mobile_device', $is_mobile );
     }
 
@@ -1922,6 +1966,7 @@ REDIR;
         do_action( 'pre_get_request', $request );
 
         if( $request !== null )
+
             return $request;
 
         // Ignore protocol & www. prefix
@@ -1944,6 +1989,7 @@ REDIR;
     function match_current_protocol( $url, $normal = 'http://', $ssl = 'https://' ) {
         if( is_ssl() )
             $url = str_replace( $normal, $ssl, $url );
+
         return apply_filter( 'match_current_protocol', $url );
     }
 
@@ -2005,6 +2051,7 @@ REDIR;
     function favicon( $echo = true ) {
         static $favicon = null;
         if( $favicon !== null )
+
             return $favicon;
 
         // search for favicon.(ico|png|gif)
@@ -2068,6 +2115,7 @@ REDIR;
 
             return $current;
         }
+
         return null;
     }
 
@@ -2091,6 +2139,7 @@ REDIR;
         }
 
         $protocol = get_protocol( $url );
+
         return apply_filter( 'is_allowed_protocol', in_array( $protocol, $protocols ), $url, $protocols );
     }
 
@@ -2112,6 +2161,7 @@ REDIR;
         with lowercase letters. It is followed by a colon (":").
          */
         $protocol = ( isset( $matches[0] ) ? $matches[0] : '' );
+
         return apply_filter( 'get_protocol', $protocol, $url );
     }
 
@@ -2201,6 +2251,7 @@ REDIR;
     function debug_log( $msg ) {
         global $ydb;
         $ydb->debug_log[] = $msg;
+
         return $msg;
     }
 
@@ -2231,6 +2282,7 @@ REDIR;
         $proto = get_protocol( $url );
 
         if( !$proto or count( $array ) != 3 )
+
             return false;
 
         list( $null, $rest ) = explode( $proto, $url, 2 );
@@ -2252,6 +2304,7 @@ REDIR;
         if( $scheme != 'http' && $scheme != 'https' ) {
             return $url;
         }
+
         return preg_replace( '!^[a-zA-Z0-9\+\.-]+://!', $scheme . '://', $url );
     }
 

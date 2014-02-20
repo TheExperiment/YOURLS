@@ -210,8 +210,10 @@ class Themes {
         global $ydb;
         if( is_asset_queued( $name, $type ) ) {
             unset( $ydb->assets[ $type ][ $name ] );
+
             return true;
         }
+
         return false;
     }
 
@@ -229,11 +231,13 @@ class Themes {
         // Check file type
         if( !in_array( $type, array( 'css', 'js' ) ) ) {
             add_notice( _( 'You can only enqueue "css" or "js" files' ) );
+
             return false;
         }
 
         // Already in queue?
         if( is_asset_queued( $name, $type ) )
+
             return false;
 
         // Are there any (core) dependencies needed first?
@@ -245,6 +249,7 @@ class Themes {
 
         global $ydb;
         $ydb->assets[ $type ][ $name ] = $src;
+
         return true;
     }
 
@@ -318,6 +323,7 @@ class Themes {
      */
     function is_asset_queued( $name, $type ) {
         global $ydb;
+
         return( property_exists( $ydb, 'assets' ) && isset( $ydb->assets[ $type ][ $name ] ) );
     }
 
@@ -380,6 +386,7 @@ class Themes {
 
         // Don't load theme when installing or updating.
         if( is_installing() OR is_upgrading() )
+
             return;
 
         // Load theme if applicable
@@ -404,6 +411,7 @@ class Themes {
         }
         if( !$active_theme ) {
             do_action( 'load_active_theme_empty' );
+
             return false;
         }
 
@@ -411,6 +419,7 @@ class Themes {
         $load = load_theme( $active_theme );
         if( $load === true ) {
             do_action( 'load_active_theme' );
+
             return true;
         }
 
@@ -418,6 +427,7 @@ class Themes {
         activate_theme( 'default' );
         add_notice( $load );
         /*add_notice( s( 'Deactivated theme: %s' ), $active_theme );*/
+
         return $load;
     }
 
@@ -434,6 +444,7 @@ class Themes {
         $theme_css_url = get_theme_url( $theme ) . '/theme.css';
 
         if( !is_readable( $theme_css ) )
+
             return s( 'Cannot find <code>theme.css</code> in <code>%s</code>', $theme );
 
         // attempt activation of the theme's function file if there is one
@@ -443,6 +454,7 @@ class Themes {
             if ( ob_get_length() > 0 ) {
                 // there was some output: error
                 $output = ob_get_clean();
+
                 return s( 'Theme generated unexpected output. Error was: <br/><pre>%s</pre>', $output );
             }
             ob_end_clean();
@@ -453,6 +465,7 @@ class Themes {
 
         // Success !
         do_action( 'theme_loaded' );
+
         return true;
     }
 
@@ -468,6 +481,7 @@ class Themes {
             update_option( 'active_theme', '' );
             do_action( 'activated_theme', $theme );
             do_action( 'activated_' . $theme );
+
             return true;
         }
 
@@ -476,14 +490,17 @@ class Themes {
 
         // Check if the theme has a theme.css
         if( !is_readable( $theme_css ) )
+
             return s( 'Cannot find <code>theme.css</code> in <code>%s</code>', $theme );
 
         // Validate theme.php file if exists
         if( is_readable( $theme_php ) && !validate_plugin_file( $theme_php ) )
+
             return s( 'Not a valid <code>theme.php</code> file in <code>%s</code>', $theme );
 
         // Check that it's not activated already
         if( $theme == get_active_theme() )
+
             return _( 'Theme already activated' );
 
         // Attempt to load the theme
@@ -494,10 +511,12 @@ class Themes {
             update_option( 'active_theme', $theme );
             do_action( 'activated_theme', $theme );
             do_action( 'activated_' . $theme );
+
             return true;
         } else {
             // oops.
             add_notice( $load );
+
             return $load;
         }
     }
@@ -515,6 +534,7 @@ class Themes {
             // Update option to save one query on next page load
             update_option( 'active_theme', $ydb->theme );
         }
+
         return apply_filter( 'get_active_theme', $ydb->theme );
     }
 

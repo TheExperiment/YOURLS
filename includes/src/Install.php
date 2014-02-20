@@ -67,6 +67,7 @@ class Install {
      */
     function is_apache() {
         if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) )
+
             return false;
         return (
            strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== false
@@ -188,6 +189,7 @@ class Install {
                     fwrite( $f, "# END {$marker}\n\n" );
             }
             fclose( $f );
+
             return true;
         } else {
             return false;
@@ -304,6 +306,7 @@ class Install {
         $link1 = add_new_link( 'http://blog.yourls.org/', 'yourlsblog', 'YOURLS\' Blog' );
         $link2 = add_new_link( 'http://yourls.org/',      'yourls',     'YOURLS: Your Own URL Shortener' );
         $link3 = add_new_link( 'http://ozh.org/',         'ozh',        'ozh.org' );
+
         return ( bool ) (
               $link1['status'] == 'success'
             & $link2['status'] == 'success'

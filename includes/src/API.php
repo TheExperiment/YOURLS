@@ -30,6 +30,7 @@ class API {
         $return = add_new_link( $url, $keyword, $title );
         $return['simple'] = ( isset( $return['shorturl'] ) ? $return['shorturl'] : '' ); // This one will be used in case output mode is 'simple'
         unset( $return['html'] ); // in API mode, no need for our internal HTML output
+
         return apply_filter( 'api_result_shorturl', $return );
     }
 
@@ -43,6 +44,7 @@ class API {
         $filter = ( isset( $_REQUEST['filter'] ) ? $_REQUEST['filter'] : '' );
         $limit = ( isset( $_REQUEST['limit'] ) ? $_REQUEST['limit'] : '' );
         $start = ( isset( $_REQUEST['start'] ) ? $_REQUEST['start'] : '' );
+
         return apply_filter( 'api_result_stats', api_stats( $filter, $limit, $start ) );
     }
 
@@ -64,6 +66,7 @@ class API {
      */
     function api_action_url_stats() {
         $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
+
         return apply_filter( 'api_result_url_stats', api_url_stats( $shorturl ) );
     }
 
@@ -75,6 +78,7 @@ class API {
      */
     function api_action_expand() {
         $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
+
         return apply_filter( 'api_result_expand', api_expand( $shorturl ) );
     }
 
@@ -88,6 +92,7 @@ class API {
         $return['version'] = $return['simple'] = VERSION;
         if( isset( $_REQUEST['db'] ) && $_REQUEST['db'] == 1 )
             $return['db_version'] = DB_VERSION;
+
         return apply_filter( 'api_result_version', $return );
     }
 
@@ -149,6 +154,7 @@ class API {
         $return = get_stats( $filter, $limit, $start );
         $return['simple']  = 'Need either XML or JSON format for stats';
         $return['message'] = 'success';
+
         return apply_filter( 'api_stats', $return, $filter, $limit, $start );
     }
 
@@ -177,6 +183,7 @@ class API {
 
         $return = get_link_stats( $keyword );
         $return['simple']  = 'Need either XML or JSON format for stats';
+
         return apply_filter( 'api_url_stats', $return, $shorturl );
     }
 

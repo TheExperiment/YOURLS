@@ -31,6 +31,7 @@ class XML {
         $this->text="<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><result>";
         $this->text.= $this->array_transform($array);
         $this->text .="</result>";
+
         return $this->text;
     }
 
@@ -68,6 +69,7 @@ class XML {
         xml_set_character_data_handler($this->xml_parser,"characterData");
         xml_parse($this->xml_parser,$xml,true);
         xml_parser_free($this->xml_parser);
+
         return $this->arrays[0];
 
     }

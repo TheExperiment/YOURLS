@@ -24,12 +24,14 @@ class Authentication {
         static $valid = false;
 
         if( $valid )
+
             return true;
 
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_is_valid_user', null );
         if ( null !== $pre ) {
             $valid = ( $pre === true ) ;
+
             return $pre;
         }
 
@@ -40,6 +42,7 @@ class Authentication {
         if( isset( $_GET['action'] ) && $_GET['action'] == 'logout' ) {
             do_action( 'logout' );
             store_cookie( null );
+
             return array( _( 'Logged out successfully' ), 'success' );
         }
 
@@ -130,8 +133,10 @@ class Authentication {
         global $user_passwords;
         if( isset( $user_passwords[ $_REQUEST['username'] ] ) && check_password_hash( $_REQUEST['username'], $_REQUEST['password'] ) ) {
             set_user( $_REQUEST['username'] );
+
             return true;
         }
+
         return false;
     }
 
@@ -143,16 +148,19 @@ class Authentication {
         global $user_passwords;
 
         if( !isset( $user_passwords[ $user ] ) )
+
             return false;
 
         if ( has_phpass_password( $user ) ) {
             // Stored password is hashed with phpass
             list( , $hash ) = explode( ':', $user_passwords[ $user ] );
             $hash = str_replace( '!', '$', $hash );
+
             return ( phpass_check( $submitted_password, $hash ) );
         } else if( has_md5_password( $user ) ) {
             // Stored password is a salted md5 hash: "md5:<$r = rand(10000,99999)>:<md5($r.'thepassword')>"
             list( , $salt, ) = explode( ':', $user_passwords[ $user ] );
+
             return( $user_passwords[ $user ] == 'md5:'.$salt.':'.md5( $salt . $submitted_password ) );
         } else {
             // Password stored in clear text
@@ -169,9 +177,11 @@ class Authentication {
      */
     function hash_passwords_now( $config_file ) {
         if( !is_readable( $config_file ) )
+
             return 'cannot read file'; // not sure that can actually happen...
 
         if( !is_writable( $config_file ) )
+
             return 'cannot write file';
 
         // Include file to read value of $user_passwords
@@ -183,6 +193,7 @@ class Authentication {
 
         $configdata = file_get_contents( $config_file );
         if( $configdata == false )
+
             return 'could not read file';
 
         $to_hash = 0; // keep track of number of passwords that need hashing
@@ -200,19 +211,23 @@ class Authentication {
                 // There should be exactly one replacement. Otherwise, fast fail.
                 if ( $count != 1 ) {
                     debug_log( "Problem with preg_replace for password hash of user $user" );
+
                     return 'preg_replace problem';
                 }
             }
         }
 
         if( $to_hash == 0 )
+
             return 0; // There was no password to encrypt
 
         $success = file_put_contents( $config_file, $configdata );
         if ( $success === FALSE ) {
             debug_log( 'Failed writing to ' . $config_file );
+
             return 'could not write file';
         }
+
         return true;
     }
 
@@ -225,6 +240,7 @@ class Authentication {
      */
     function phpass_hash( $password ) {
         $hasher = phpass_instance();
+
         return $hasher->HashPassword( $password );
     }
 
@@ -238,6 +254,7 @@ class Authentication {
      */
     function phpass_check( $password, $hash ) {
         $hasher = phpass_instance();
+
         return $hasher->CheckPassword( $password, $hash );
     }
 
@@ -275,6 +292,7 @@ class Authentication {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -290,6 +308,7 @@ class Authentication {
      */
     function has_md5_password( $user ) {
         global $user_passwords;
+
         return(    isset( $user_passwords[ $user ] )
                 && substr( $user_passwords[ $user ], 0, 4 ) == 'md5:'
                 && strlen( $user_passwords[ $user ] ) == 42 // http://www.google.com/search?q=the+answer+to+life+the+universe+and+everything
@@ -308,6 +327,7 @@ class Authentication {
      */
     function has_phpass_password( $user ) {
         global $user_passwords;
+
         return( isset( $user_passwords[ $user ] )
                 && substr( $user_passwords[ $user ], 0, 7 ) == 'phpass:'
         );
@@ -322,9 +342,11 @@ class Authentication {
         foreach( $user_passwords as $valid_user => $valid_password ) {
             if ( salt( $valid_user ) == $_COOKIE['username'] ) {
                 set_user( $valid_user );
+
                 return true;
             }
         }
+
         return false;
     }
 
@@ -347,9 +369,11 @@ class Authentication {
                 check_timestamp( $_REQUEST['timestamp'] )
                 ) {
                 set_user( $valid_user );
+
                 return true;
             }
         }
+
         return false;
     }
 
@@ -362,9 +386,11 @@ class Authentication {
         foreach( $user_passwords as $valid_user => $valid_password ) {
             if ( auth_signature( $valid_user ) == $_REQUEST['signature'] ) {
                 set_user( $valid_user );
+
                 return true;
             }
         }
+
         return false;
     }
 
@@ -376,6 +402,7 @@ class Authentication {
         if( !$username && defined('USER') ) {
             $username = USER;
         }
+
         return ( $username ? substr( salt( $username ), 0, 10 ) : 'Cannot generate auth signature: no username' );
     }
 

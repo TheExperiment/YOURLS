@@ -76,6 +76,7 @@ class MySQL {
         require_once( INC . '/ezSQL/ez_sql_core_yourls.php' );
         require_once( INC . '/ezSQL/ez_sql_' . $driver . '.php' );
         require_once( INC . '/ezSQL/ez_sql_' . $driver . '_yourls.php' );
+
         return 'ezSQL_' . $driver . '_yourls';
     }
 

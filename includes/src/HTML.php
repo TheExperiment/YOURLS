@@ -557,6 +557,7 @@ class HTML {
         $html  = apply_filters( 'html_select', $html, $name, $options, $selected, $display );
         if( $display )
             echo $html;
+
         return $html;
     }
 
@@ -639,6 +640,7 @@ class HTML {
         $clipboard_target );
         if( $echo )
             echo $html;
+
         return $html;
     }
 
@@ -720,7 +722,6 @@ class HTML {
 
         $return = apply_filter( 'table_edit_row', $return, $format, $data );
         // Compat note : up to YOURLS 1.6 the values passed to this filter where: $return, $keyword, $url, $title
-
         return $return;
     }
 
@@ -847,7 +848,6 @@ class HTML {
         $row = replace_string_tokens( $format, $data );
         $row = apply_filter( 'table_add_row', $row, $format, $data );
         // Compat note : up to YOURLS 1.6 the values passed to this filter where: $keyword, $url, $title, $ip, $clicks, $timestamp
-
         return $row;
     }
 
@@ -1068,8 +1068,10 @@ class HTML {
         if( !headers_sent() ) {
             $charset = apply_filters( 'content_type_header_charset', 'utf-8' );
             header( "Content-Type: $type; charset=$charset" );
+
             return true;
         }
+
         return false;
     }
 
@@ -1103,6 +1105,7 @@ class HTML {
      */
     function display_login_message() {
         if( !isset( $_GET['login_msg'] ) )
+
             return;
 
         switch( $_GET['login_msg'] ) {
