@@ -15,10 +15,10 @@ namespace YOURLS;
  * On functions using the 3rd party library Requests:
  * Thir goal here is to provide convenient wrapper functions to the Requests library. There are
  * 2 types of functions for each METHOD, where METHOD is 'get' or 'post' (implement more as needed)
- *     - http_METHOD() :
+ *     - METHOD() :
  *         Return a complete Response object (with ->body, ->headers, ->status_code, etc...) or
  *         a simple string (error message)
- *     - http_METHOD_body() :
+ *     - METHOD_body() :
  *         Return a string (response body) or null if there was an error
  *
  * @since 1.7
@@ -31,22 +31,22 @@ class HTTP {
      * Notable object properties: body, headers, status_code
      *
      * @since 1.7
-     * @see http_request
+     * @see request
      * @return mixed Response object, or error string
      */
-    public function http_get( $url, $headers = array(), $data = array(), $options = array() ) {
-        return http_request( 'GET', $url, $headers, $data, $options );
+    public function get( $url, $headers = array(), $data = array(), $options = array() ) {
+        return $this->request( 'GET', $url, $headers, $data, $options );
     }
 
     /**
      * Perform a GET request, return body or null if there was an error
      *
      * @since 1.7
-     * @see http_request
+     * @see request
      * @return mixed String (page body) or null if error
      */
-    public function http_get_body( $url, $headers = array(), $data = array(), $options = array() ) {
-        $return = http_get( $url, $headers, $data, $options );
+    public function get_body( $url, $headers = array(), $data = array(), $options = array() ) {
+        $return = $this->get( $url, $headers, $data, $options );
 
         return isset( $return->body ) ? $return->body : null;
     }
@@ -57,24 +57,24 @@ class HTTP {
      * Notable object properties: body, headers, status_code
      *
      * @since 1.7
-     * @see http_request
+     * @see request
      * @return mixed Response object, or error string
      */
-    public function http_post( $url, $headers = array(), $data = array(), $options = array() ) {
-        return http_request( 'POST', $url, $headers, $data, $options );
+    public function post( $url, $headers = array(), $data = array(), $options = array() ) {
+        return $this->request( 'POST', $url, $headers, $data, $options );
     }
 
     /**
      * Perform a POST request, return body
      *
-     * Wrapper for http_request()
+     * Wrapper for request()
      *
      * @since 1.7
-     * @see http_request
+     * @see request
      * @return mixed String (page body) or null if error
      */
-    public function http_post_body( $url, $headers = array(), $data = array(), $options = array() ) {
-        $return = http_post( $url, $headers, $data, $options );
+    public function post_body( $url, $headers = array(), $data = array(), $options = array() ) {
+        $return = $this->post( $url, $headers, $data, $options );
 
         return isset( $return->body ) ? $return->body : null;
     }
@@ -86,7 +86,7 @@ class HTTP {
      * @since 1.7
      * @return bool true if a proxy is defined, false otherwise
      */
-    public function http_proxy_is_defined() {
+    public function proxy_is_defined() {
         return apply_filter( 'http_proxy_is_defined', defined( 'PROXY' ) );
     }
 
@@ -101,15 +101,15 @@ class HTTP {
      * @since 1.7
      * @return array Options
      */
-    public function http_default_options() {
+    public function default_options() {
         $options = array(
             'timeout'          => apply_filter( 'http_default_options_timeout', 3 ),
-            'useragent'        => http_user_agent(),
+            'useragent'        => $this->user_agent(),
             'follow_redirects' => true,
             'redirects'        => 3,
         );
 
-        if( http_proxy_is_defined() ) {
+        if( $this->proxy_is_defined() ) {
             if( defined( 'PROXY_YOURLS_USERNAME' ) && defined( 'PROXY_PASSWORD' ) ) {
                 $options['proxy'] = array( PROXY, PROXY_YOURLS_USERNAME, PROXY_PASSWORD );
             } else {
@@ -187,10 +187,10 @@ class HTTP {
      * @param array $options Options for the request (see /includes/Requests/Requests.php:request())
      * @return object Requests_Response object
      */
-    public function http_request( $type, $url, $headers, $data, $options ) {
-        $options = array_merge( http_default_options(), $options );
+    public function request( $type, $url, $headers, $data, $options ) {
+        $options = array_merge( $this->default_options(), $options );
 
-        if( http_proxy_is_defined() && !send_through_proxy( $url ) )
+        if( $this->proxy_is_defined() && !send_through_proxy( $url ) )
             unset( $options['proxy'] );
 
         try {
@@ -209,7 +209,7 @@ class HTTP {
      * @since 1.5
      * @return string UA string
      */
-    public function http_user_agent() {
+    public function user_agent() {
         return apply_filter( 'http_user_agent', 'YOURLS v'.VERSION.' +http://yourls.org/ (running on '.SITE.')' );
     }
 
@@ -286,9 +286,9 @@ class HTTP {
 
         // Send it in
         $url = 'http://api.yourls.org/core/version/1.0/';
-        if( can_http_over_ssl() )
+        if( $this->can_over_ssl() )
             $url = set_url_scheme( $url, 'https' );
-        $req = http_post( $url, array(), $stuff );
+        $req = $this->post( $url, array(), $stuff );
 
         $checks->last_attempt = time();
         $checks->version_checked = VERSION;
@@ -378,7 +378,7 @@ class HTTP {
      * @since 1.7.1
      * @return bool whether the server can perform HTTP requests over SSL
      */
-    public function can_http_over_ssl() {
+    public function can_over_ssl() {
         $ssl_curl = $ssl_socket = false;
 
         if( function_exists( 'curl_exec' ) ) {
