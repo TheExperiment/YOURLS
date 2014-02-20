@@ -18,7 +18,7 @@ class Info {
      * Echoes an image tag of Google Charts map from sorted array of 'country_code' => 'number of visits' (sort by DESC)
      *
      */
-    public function stats_countries_map( $countries, $id = null ) {
+    public function countries_map( $countries, $id = null ) {
 
         do_action( 'pre_stats_countries_map' );
 
@@ -47,7 +47,7 @@ class Info {
      * Echoes an image tag of Google Charts pie from sorted array of 'data' => 'value' (sort by DESC). Optional $limit = (integer) limit list of X first countries, sorted by most visits
      *
      */
-    public function stats_pie( $data, $limit = 10, $size = '340x220', $id = null ) {
+    public function pie( $data, $limit = 10, $size = '340x220', $id = null ) {
 
         do_action( 'pre_stats_pie' );
 
@@ -174,7 +174,7 @@ class Info {
      * $legend1_list & legend2_list are values used for the 2 x-axis labels. $id is an HTML/JS id
      *
      */
-    public function stats_line( $values, $id = null ) {
+    public function line( $values, $id = null ) {
 
         do_action( 'pre_stats_line' );
 
@@ -223,7 +223,7 @@ class Info {
      * Get max value from date array of 'Aug 12, 2012' = '1337'
      *
      */
-    public function stats_get_best_day( $list_of_days ) {
+    public function get_best_day( $list_of_days ) {
         $max = max( $list_of_days );
         foreach( $list_of_days as $k=>$v ) {
             if ( $v == $max )
