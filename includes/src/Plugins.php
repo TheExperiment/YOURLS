@@ -580,7 +580,7 @@ class Plugins {
 
         // Check the plugin page is actually registered
         if( !isset( $ydb->plugin_pages[$plugin_page] ) ) {
-            die( _( 'This page does not exist. Maybe a plugin you thought was activated is inactive?' ), _( 'Invalid link' ) );
+            die( _( 'This page does not exist. Maybe a plugin you thought was activated is inactive?' )/*, _( 'Invalid link' ) */);
         }
 
         // Draw the page itself
