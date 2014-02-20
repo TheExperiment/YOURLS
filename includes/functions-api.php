@@ -1,13 +1,18 @@
 <?php
-/*
- * YOURLS
- * Functions for the API
+
+/**
+ * API Wrapper
  *
- * Note about translation : this file should NOT be translation ready
- * API messages and returns are supposed to be programmatically tested, so default English is expected
- *
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
  */
 
+/**
+ * API's Voice
+ * 
+ * Note about translation : this file should NOT be translation ready
+ * API messages and returns are supposed to be programmatically tested, so default English is expected
+ */
 class API {
     
     /**
