@@ -26,7 +26,7 @@ class Localization {
      * If the locale is set, then it will filter the locale in the 'get_locale' filter
      * hook and return the value.
      *
-     * If the locale is not set already, then the LANG constant is used if it is
+     * If the locale is not set already, then the YOURLS_LANG constant is used if it is
      * defined. Then it is filtered through the 'get_locale' filter hook and the value
      * for the locale global set and the locale is returned.
      *
@@ -43,9 +43,9 @@ class Localization {
         global $locale;
 
         if ( !isset( $locale ) ) {
-            // LANG is defined in config.
-            if ( defined( 'LANG' ) )
-                $locale = LANG;
+            // YOURLS_LANG is defined in config.
+            if ( defined( 'YOURLS_LANG' ) )
+                $locale = YOURLS_LANG;
         }
 
         if ( !$locale )
@@ -464,7 +464,7 @@ class Localization {
         $mofile = apply_filters( 'load_textdomain_mofile', $mofile, $domain );
 
         if ( !is_readable( $mofile ) ) {
-            trigger_error( 'Cannot read file ' . str_replace( ABSPATH.'/', '', $mofile ) . '.'
+            trigger_error( 'Cannot read file ' . str_replace( YOURLS_ABSPATH.'/', '', $mofile ) . '.'
                         . ' Make sure there is a language file installed. More info: http://yourls.org/translations' );
 
             return false;
@@ -511,7 +511,7 @@ class Localization {
     /**
      * Loads default translated strings based on locale.
      *
-     * Loads the .mo file in LANG_DIR constant path from YOURLS root. The
+     * Loads the .mo file in YOURLS_LANG_DIR constant path from YOURLS root. The
      * translated (.mo) file is named based on the locale.
      *
      * @since 1.6
@@ -522,7 +522,7 @@ class Localization {
 
         if( !empty( $locale ) )
 
-            return load_textdomain( 'default', LANG_DIR . "/$locale.mo" );
+            return load_textdomain( 'default', YOURLS_LANG_DIR . "/$locale.mo" );
     }
 
     /**
@@ -569,17 +569,17 @@ class Localization {
     }
 
     /**
-     * Get all available languages (*.mo files) in a given directory. The default directory is LANG_DIR.
+     * Get all available languages (*.mo files) in a given directory. The default directory is YOURLS_LANG_DIR.
      *
      * @since 1.6
      *
-     * @param string $dir A directory in which to search for language files. The default directory is LANG_DIR.
+     * @param string $dir A directory in which to search for language files. The default directory is YOURLS_LANG_DIR.
      * @return array Array of language codes or an empty array if no languages are present. Language codes are formed by stripping the .mo extension from the language file names.
      */
     public function get_available_languages( $dir = null ) {
         $languages = array();
 
-        $dir = is_null( $dir) ? LANG_DIR : $dir;
+        $dir = is_null( $dir) ? YOURLS_LANG_DIR : $dir;
 
         foreach( (array) glob( $dir . '/*.mo' ) as $lang_file ) {
             $languages[] = basename( $lang_file, '.mo' );

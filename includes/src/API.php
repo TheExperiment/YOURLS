@@ -91,7 +91,7 @@ class API {
     public function api_action_version() {
         $return['version'] = $return['simple'] = VERSION;
         if( isset( $_REQUEST['db'] ) && $_REQUEST['db'] == 1 )
-            $return['db_version'] = DB_VERSION;
+            $return['db_version'] = YOURLS_DB_VERSION;
 
         return apply_filter( 'api_result_version', $return );
     }

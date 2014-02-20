@@ -23,11 +23,11 @@ class MySQL {
      * @param string $extension Optional: user defined choice
      * @return class $ydb DB class instance
      */
-    public function set_DB_driver( ) {
+    public function set_YOURLS_DB_driver( ) {
 
         // Auto-pick the driver. Priority: user defined, then PDO, then mysqli, then mysql
-        if ( defined( 'DB_DRIVER' ) ) {
-            $driver = strtolower( DB_DRIVER ); // accept 'MySQL', 'mySQL', etc
+        if ( defined( 'YOURLS_DB_DRIVER' ) ) {
+            $driver = strtolower( YOURLS_DB_DRIVER ); // accept 'MySQL', 'mySQL', etc
         } elseif ( extension_loaded( 'pdo_mysql' ) ) {
             $driver = 'pdo';
         } elseif ( extension_loaded( 'mysqli' ) ) {
@@ -54,10 +54,10 @@ class MySQL {
             );
         }
 
-        do_action( 'set_DB_driver', $driver );
+        do_action( 'set_YOURLS_DB_driver', $driver );
 
-        $ydb = new $class( DB_USER, DB_PASS, DB_NAME, DB_HOST );
-        $ydb->DB_driver = $driver;
+        $ydb = new $class( YOURLS_DB_YOURLS_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
+        $ydb->YOURLS_DB_driver = $driver;
 
         debug_log( "Database driver: $driver" );
     }
@@ -72,10 +72,10 @@ class MySQL {
      * @return string name of the DB class to instantiate
      */
     public function require_db_files( $driver ) {
-        require_once( INC . '/ezSQL/ez_sql_core.php' );
-        require_once( INC . '/ezSQL/ez_sql_core_yourls.php' );
-        require_once( INC . '/ezSQL/ez_sql_' . $driver . '.php' );
-        require_once( INC . '/ezSQL/ez_sql_' . $driver . '_yourls.php' );
+        require_once( YOURLS_INC . '/ezSQL/ez_sql_core.php' );
+        require_once( YOURLS_INC . '/ezSQL/ez_sql_core_yourls.php' );
+        require_once( YOURLS_INC . '/ezSQL/ez_sql_' . $driver . '.php' );
+        require_once( YOURLS_INC . '/ezSQL/ez_sql_' . $driver . '_yourls.php' );
 
         return 'ezSQL_' . $driver . '_yourls';
     }
@@ -88,18 +88,18 @@ class MySQL {
     public function db_connect() {
         global $ydb;
 
-        if (   !defined( 'DB_USER' )
-            or !defined( 'DB_PASS' )
-            or !defined( 'DB_NAME' )
-            or !defined( 'DB_HOST' )
+        if (   !defined( 'YOURLS_DB_YOURLS_USER' )
+            or !defined( 'YOURLS_DB_PASS' )
+            or !defined( 'YOURLS_DB_NAME' )
+            or !defined( 'YOURLS_DB_HOST' )
         ) die ( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );
 
         // Are we standalone or in the WordPress environment?
         if ( class_exists( 'wpdb', false ) ) {
             /* TODO: should we deprecate this? Follow WP dev in that area */
-            $ydb =  new wpdb( DB_USER, DB_PASS, DB_NAME, DB_HOST );
+            $ydb =  new wpdb( YOURLS_DB_YOURLS_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
         } else {
-            set_DB_driver();
+            set_YOURLS_DB_driver();
         }
 
         return $ydb;
@@ -117,7 +117,7 @@ class MySQL {
         global $ydb;
 
         $alive = false;
-        switch( $ydb->DB_driver ) {
+        switch( $ydb->YOURLS_DB_driver ) {
             case 'pdo' :
                 $alive = isset( $ydb->dbh );
                 break;
@@ -147,8 +147,8 @@ class MySQL {
      */
     public function db_dead() {
         // Use any /user/db_error.php file
-        if( file_exists( USERDIR . '/db_error.php' ) ) {
-            include_once( USERDIR . '/db_error.php' );
+        if( file_exists( YOURLS_USERDIR . '/db_error.php' ) ) {
+            include_once( YOURLS_USERDIR . '/db_error.php' );
             die();
         }
 

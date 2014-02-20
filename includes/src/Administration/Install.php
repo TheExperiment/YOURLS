@@ -116,7 +116,7 @@ class Install {
                 '</configuration>',
             );
 
-            $filename = ABSPATH.'/web.config';
+            $filename = YOURLS_ABSPATH.'/web.config';
             $marker = 'none';
 
         } else {
@@ -131,7 +131,7 @@ class Install {
                 '</IfModule>',
             );
 
-            $filename = ABSPATH.'/.htaccess';
+            $filename = YOURLS_ABSPATH.'/.htaccess';
             $marker = 'YOURLS';
 
         }
@@ -207,8 +207,8 @@ class Install {
 
         // Create Table Query
         $create_tables = array();
-        $create_tables[DB_TABLE_URL] =
-            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_URL.'` ('.
+        $create_tables[YOURLS_DB_TABLE_URL] =
+            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_URL.'` ('.
             '`keyword` varchar(200) BINARY NOT NULL,'.
             '`url` text BINARY NOT NULL,'.
             '`title` text CHARACTER SET utf8,'.
@@ -220,17 +220,17 @@ class Install {
             ' KEY `ip` (`ip`)'.
             ');';
 
-        $create_tables[DB_TABLE_OPTIONS] =
-            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_OPTIONS.'` ('.
+        $create_tables[YOURLS_DB_TABLE_OPTIONS] =
+            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_OPTIONS.'` ('.
             '`option_id` bigint(20) unsigned NOT NULL auto_increment,'.
             '`option_name` varchar(64) NOT NULL default "",'.
             '`option_value` longtext NOT NULL,'.
             'PRIMARY KEY  (`option_id`,`option_name`),'.
             'KEY `option_name` (`option_name`)'.
-            ') AUTO_INCREMENT=1 ;';
+            ') AUTO_YOURLS_INCREMENT=1 ;';
 
-        $create_tables[DB_TABLE_LOG] =
-            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_LOG.'` ('.
+        $create_tables[YOURLS_DB_TABLE_LOG] =
+            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_LOG.'` ('.
             '`click_id` int(11) NOT NULL auto_increment,'.
             '`click_time` datetime NOT NULL,'.
             '`shorturl` varchar(200) BINARY NOT NULL,'.
@@ -240,7 +240,7 @@ class Install {
             '`country_code` char(2) NOT NULL,'.
             'PRIMARY KEY  (`click_id`),'.
             'KEY `shorturl` (`shorturl`)'.
-            ') AUTO_INCREMENT=1 ;';
+            ') AUTO_YOURLS_INCREMENT=1 ;';
 
         $create_table_count = 0;
 
@@ -289,7 +289,7 @@ class Install {
     public function initialize_options() {
         return ( bool ) (
               update_option( 'version', VERSION )
-            & update_option( 'db_version', DB_VERSION )
+            & update_option( 'db_version', YOURLS_DB_VERSION )
             & update_option( 'next_id', 1 )
         );
     }
@@ -318,7 +318,7 @@ class Install {
      */
     public function maintenance_mode( $maintenance = true ) {
 
-        $file = ABSPATH . '/.maintenance' ;
+        $file = YOURLS_ABSPATH . '/.maintenance' ;
 
         // Turn maintenance mode on : create .maintenance file
         if ( (bool)$maintenance ) {

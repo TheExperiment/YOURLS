@@ -87,7 +87,7 @@ class Authentication {
         elseif
             // Normal only: cookies
             ( !is_API() &&
-              isset( $_COOKIE['username'] ) )
+              isset( $_YOURLS_COOKIE['username'] ) )
         {
             do_action( 'pre_login_cookie' );
             $unfiltered_valid = check_auth_cookie();
@@ -102,7 +102,7 @@ class Authentication {
 
             // (Re)store encrypted cookie if needed
             if ( !is_API() ) {
-                store_cookie( USER );
+                store_cookie( YOURLS_USER );
 
                 // Login form : redirect to requested URL to avoid re-submitting the login form on page reload
                 if( isset( $_REQUEST['username'] ) && isset( $_REQUEST['password'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
@@ -334,13 +334,13 @@ class Authentication {
     }
 
     /**
-     * Check auth against encrypted COOKIE data. Sets user if applicable, returns bool
+     * Check auth against encrypted YOURLS_COOKIE data. Sets user if applicable, returns bool
      *
      */
     public function check_auth_cookie() {
         global $user_passwords;
         foreach( $user_passwords as $valid_user => $valid_password ) {
-            if ( salt( $valid_user ) == $_COOKIE['username'] ) {
+            if ( salt( $valid_user ) == $_YOURLS_COOKIE['username'] ) {
                 set_user( $valid_user );
 
                 return true;
@@ -399,8 +399,8 @@ class Authentication {
      *
      */
     public function auth_signature( $username = false ) {
-        if( !$username && defined('USER') ) {
-            $username = USER;
+        if( !$username && defined('YOURLS_USER') ) {
+            $username = YOURLS_USER;
         }
 
         return ( $username ? substr( salt( $username ), 0, 10 ) : 'Cannot generate auth signature: no username' );
@@ -413,7 +413,7 @@ class Authentication {
     public function check_timestamp( $time ) {
         $now = time();
         // Allow timestamp to be a little in the future or the past -- see Issue 766
-        return apply_filter( 'check_timestamp', abs( $now - $time ) < NONCE_LIFE, $time );
+        return apply_filter( 'check_timestamp', abs( $now - $time ) < YOURLS_NONCE_LIFE, $time );
     }
 
     /**
@@ -431,7 +431,7 @@ class Authentication {
             } else {
                 die( 'Stealing cookies?' ); // This should never happen
             }
-            $time = time() + COOKIE_LIFE;
+            $time = time() + YOURLS_COOKIE_LIFE;
         }
 
         $domain   = apply_filter( 'setcookie_domain',   parse_url( SITE, 1 ) );
@@ -460,8 +460,8 @@ class Authentication {
      *
      */
     public function set_user( $user ) {
-        if( !defined( 'USER' ) )
-            define( 'USER', $user );
+        if( !defined( 'YOURLS_USER' ) )
+            define( 'YOURLS_USER', $user );
     }
 
 }

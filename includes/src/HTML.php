@@ -69,7 +69,7 @@ class HTML {
     <script type="text/javascript">
         //<![CDATA[
         var ajaxurl = '<?php echo admin_url( 'admin-ajax.php' ); ?>';
-        var moviepath = '<?php site_url( true, ASSETURL . '/js/ZeroClipboard.swf' ); ?>';
+        var moviepath = '<?php site_url( true, YOURLS_ASSETURL . '/js/ZeroClipboard.swf' ); ?>';
 
         //]]>
     </script>
@@ -88,7 +88,7 @@ class HTML {
      */
     public function html_logo( $linked = true ) {
         do_action( 'pre_html_logo' );
-        $logo = '<img class="yourls-logo-img" src="' . site_url( false, ASSETURL . '/img/yourls-logo.png' ) . '" alt="YOURLS" title="YOURLS"/>';
+        $logo = '<img class="yourls-logo-img" src="' . site_url( false, YOURLS_ASSETURL . '/img/yourls-logo.png' ) . '" alt="YOURLS" title="YOURLS"/>';
         if ( $linked )
             $logo = html_link( admin_url( 'index' ), $logo, 'YOURLS', false, false );
         ?>
@@ -150,7 +150,7 @@ class HTML {
             'icon'   => 'home'
         );
 
-        if( ( is_admin() && is_public_or_logged() ) || defined( 'USER' ) ) {
+        if( ( is_admin() && is_public_or_logged() ) || defined( 'YOURLS_USER' ) ) {
             $admin_links['tools'] = array(
                 'url'    => admin_url( 'tools' ),
                 'anchor' => _( 'Tools' ),
@@ -174,8 +174,8 @@ class HTML {
 
         // Build menu HTML
         $menu = apply_filter( 'admin_menu_start', '<nav class="sidebar-responsive-collapse"><ul class="admin-menu">' );
-        if( defined( 'USER' ) && is_private() ) {
-            $menu .= apply_filter( 'logout_link', '<div class="nav-header">' . sprintf( _( 'Hello <strong>%s</strong>' ), USER ) . '<a href="?action=logout" title="' . esc_attr__( 'Logout' ) . '" class="pull-right"><i class="fa fa-sign-out fa-fw"></i></a></div>' );
+        if( defined( 'YOURLS_USER' ) && is_private() ) {
+            $menu .= apply_filter( 'logout_link', '<div class="nav-header">' . sprintf( _( 'Hello <strong>%s</strong>' ), YOURLS_USER ) . '<a href="?action=logout" title="' . esc_attr__( 'Logout' ) . '" class="pull-right"><i class="fa fa-sign-out fa-fw"></i></a></div>' );
         } else {
             $menu .= apply_filter( 'logout_link', '' );
         }
@@ -292,7 +292,7 @@ class HTML {
      *
      */
     public function page( $page ) {
-        $include = PAGEDIR . "/$page.php";
+        $include = YOURLS_PAGEDIR . "/$page.php";
         if( !file_exists( $include ) ) {
             die( "Page '$page' not found", 'Not found', 404 );
         }
@@ -923,7 +923,7 @@ class HTML {
      */
     public function wrapper_end() {
         echo apply_filter( 'wrapper_end', '</div></div>' );
-        if( defined( 'DEBUG' ) && DEBUG == true ) {
+        if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
             html_debug();
         }
     }

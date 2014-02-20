@@ -315,9 +315,9 @@ class Plugins {
      */
     public function get_plugins( $category = 'plugins' ) {
         if( $category == 'themes' )
-            $plugins = (array) glob( THEMEDIR .'/*/theme.css');
+            $plugins = (array) glob( YOURLS_THEMEDIR .'/*/theme.css');
         else
-        $plugins = (array) glob( PLUGINDIR .'/*/plugin.php');
+        $plugins = (array) glob( YOURLS_PLUGINDIR .'/*/plugin.php');
 
         if( !$plugins )
 
@@ -400,12 +400,12 @@ class Plugins {
         global $ydb;
         $ydb->plugins = array();
 
-        if( defined( 'DEBUG' ) && DEBUG == true )
+        if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true )
             $ydb->debug_log[] = 'Plugins: ' . count( $active_plugins );
 
         foreach( (array)$active_plugins as $key=>$plugin ) {
-            if( validate_plugin_file( PLUGINDIR.'/'.$plugin ) ) {
-                include_once( PLUGINDIR.'/'.$plugin );
+            if( validate_plugin_file( YOURLS_PLUGINDIR.'/'.$plugin ) ) {
+                include_once( YOURLS_PLUGINDIR.'/'.$plugin );
                 $ydb->plugins[] = $plugin;
                 unset( $active_plugins[$key] );
             }
@@ -451,7 +451,7 @@ class Plugins {
     public function activate_plugin( $plugin ) {
         // validate file
         $plugin = plugin_basename( $plugin );
-        $plugindir = sanitize_filename( PLUGINDIR );
+        $plugindir = sanitize_filename( YOURLS_PLUGINDIR );
         if( !validate_plugin_file( $plugindir.'/'.$plugin ) )
 
             return _( 'Not a valid plugin file' );
@@ -464,7 +464,7 @@ class Plugins {
 
         // attempt activation. TODO: uber cool fail proof sandbox like in WP.
         ob_start();
-        include_once( PLUGINDIR.'/'.$plugin );
+        include_once( YOURLS_PLUGINDIR.'/'.$plugin );
         if ( ob_get_length() > 0 ) {
             // there was some output: error
             $output = ob_get_clean();
@@ -515,9 +515,9 @@ class Plugins {
     public function plugin_basename( $file, $category = 'plugins' ) {
         $file = sanitize_filename( $file );
         if( $category == 'themes' )
-            $plugindir = sanitize_filename( THEMEDIR );
+            $plugindir = sanitize_filename( YOURLS_THEMEDIR );
         else
-        $plugindir = sanitize_filename( PLUGINDIR );
+        $plugindir = sanitize_filename( YOURLS_PLUGINDIR );
         $file = str_replace( $plugindir, '', $file );
 
         return trim( $file, '/' );
@@ -527,7 +527,7 @@ class Plugins {
      * Return the URL of the directory a plugin
      */
     public function plugin_url( $file ) {
-        $url = PLUGINURL . '/' . plugin_basename( $file );
+        $url = YOURLS_PLUGINURL . '/' . plugin_basename( $file );
         if( is_ssl() or needs_ssl() )
             $url = str_replace( 'http://', 'https://', $url );
 

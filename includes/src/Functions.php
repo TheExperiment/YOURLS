@@ -83,9 +83,9 @@ class Functions {
         $reserved = false;
 
         if ( in_array( $keyword, $reserved_URL)
-            or file_exists( PAGEDIR ."/$keyword.php" )
-            or is_dir( ABSPATH ."/$keyword" )
-            or ( substr( $keyword, 0, strlen( ADMIN_LOCATION ) + 1 ) === ADMIN_LOCATION."/" )
+            or file_exists( YOURLS_PAGEDIR ."/$keyword.php" )
+            or is_dir( YOURLS_ABSPATH ."/$keyword" )
+            or ( substr( $keyword, 0, strlen( YOURLS_ADMIN_LOCATION ) + 1 ) === YOURLS_ADMIN_LOCATION."/" )
         )
             $reserved = true;
 
@@ -147,7 +147,7 @@ class Functions {
 
         global $ydb;
 
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         $keyword = escape( sanitize_string( $keyword ) );
         $delete = $ydb->query("DELETE FROM `$table` WHERE `keyword` = '$keyword';");
         do_action( 'delete_link', $keyword, $delete );
@@ -166,7 +166,7 @@ class Functions {
         $keyword = escape( sanitize_keyword( $keyword ) );
         $title   = escape( sanitize_title( $title ) );
 
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         $timestamp = date('Y-m-d H:i:s');
         $ip = get_IP();
         $insert = $ydb->query("INSERT INTO `$table` (`keyword`, `url`, `title`, `timestamp`, `ip`, `clicks`) VALUES('$keyword', '$url', '$title', '$timestamp', '$ip', 0);");
@@ -187,7 +187,7 @@ class Functions {
             return $pre;
 
         global $ydb;
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         $url   = escape( sanitize_url( $url) );
         $url_exists = $ydb->get_row( "SELECT * FROM `$table` WHERE `url` = '".$url."';" );
 
@@ -334,7 +334,7 @@ class Functions {
 
         global $ydb;
 
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         $url = escape (sanitize_url( $url ) );
         $keyword = escape( sanitize_string( $keyword ) );
         $title = escape( sanitize_title( $title ) );
@@ -395,7 +395,7 @@ class Functions {
         $keyword = escape( sanitize_keyword( $keyword ) );
         $title = escape( sanitize_title( $title ) );
 
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         $update = $ydb->query("UPDATE `$table` SET `title` = '$title' WHERE `keyword` = '$keyword';");
 
         return $update;
@@ -427,7 +427,7 @@ class Functions {
         global $ydb;
         $keyword = escape( sanitize_keyword( $keyword ) );
         $taken = false;
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         $already_exists = $ydb->get_var( "SELECT COUNT(`keyword`) FROM `$table` WHERE `keyword` = '$keyword';" );
         if ( $already_exists )
             $taken = true;
@@ -440,7 +440,7 @@ class Functions {
      *
      */
     public function xml_encode( $array ) {
-        require_once INC . '/functions-xml.php';
+        require_once YOURLS_INC . '/functions-xml.php';
         $converter= new array2xml;
 
         return $converter->array2xml( $array );
@@ -462,7 +462,7 @@ class Functions {
 
         do_action( 'get_keyword_not_cached', $keyword );
 
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         $infos = $ydb->get_row( "SELECT * FROM `$table` WHERE `keyword` = '$keyword'" );
 
         if( $infos ) {
@@ -548,7 +548,7 @@ class Functions {
 
         global $ydb;
         $keyword = escape( sanitize_string( $keyword ) );
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
         if ( $clicks !== false && is_int( $clicks ) && $clicks >= 0 )
             $update = $ydb->query( "UPDATE `$table` SET `clicks` = $clicks WHERE `keyword` = '$keyword'" );
         else
@@ -592,7 +592,7 @@ class Functions {
         $start = intval( $start );
         if ( $limit > 0 ) {
 
-            $table_url = DB_TABLE_URL;
+            $table_url = YOURLS_DB_TABLE_URL;
             $results = $ydb->get_results( "SELECT * FROM `$table_url` WHERE 1=1 ORDER BY `$sort_by` $sort_order LIMIT $start, $limit;" );
 
             $return = array();
@@ -624,7 +624,7 @@ class Functions {
     public function get_link_stats( $shorturl ) {
         global $ydb;
 
-        $table_url = DB_TABLE_URL;
+        $table_url = YOURLS_DB_TABLE_URL;
         $shorturl  = escape( sanitize_keyword( $shorturl ) );
 
         $res = $ydb->get_row( "SELECT * FROM `$table_url` WHERE keyword = '$shorturl';" );
@@ -663,7 +663,7 @@ class Functions {
      */
     public function get_db_stats( $where = '' ) {
         global $ydb;
-        $table_url = DB_TABLE_URL;
+        $table_url = YOURLS_DB_TABLE_URL;
 
         $totals = $ydb->get_row( "SELECT COUNT(keyword) as count, SUM(clicks) as sum FROM `$table_url` WHERE 1=1 $where" );
         $return = array( 'total_links' => $totals->count, 'total_clicks' => $totals->sum );
@@ -686,10 +686,10 @@ class Functions {
      *
      */
     public function get_user_agent() {
-        if ( !isset( $_SERVER['HTTP_USER_AGENT'] ) )
+        if ( !isset( $_SERVER['HTTP_YOURLS_USER_AGENT'] ) )
             return '-';
 
-        $ua = strip_tags( html_entity_decode( $_SERVER['HTTP_USER_AGENT'] ));
+        $ua = strip_tags( html_entity_decode( $_SERVER['HTTP_YOURLS_USER_AGENT'] ));
         $ua = preg_replace('![^0-9a-zA-Z\':., /{}\(\)\[\]\+@&\!\?;_\-=~\*\#]!', '', $ua );
 
         return apply_filter( 'get_user_agent', substr( $ua, 0, 254 ) );
@@ -844,7 +844,7 @@ REDIR;
             return true;
 
         global $ydb;
-        $table = DB_TABLE_LOG;
+        $table = YOURLS_DB_TABLE_LOG;
 
         $keyword  = escape( sanitize_string( $keyword ) );
         $referrer = ( isset( $_SERVER['HTTP_REFERER'] ) ? escape( sanitize_url( $_SERVER['HTTP_REFERER'] ) ) : 'direct' );
@@ -860,7 +860,7 @@ REDIR;
      *
      */
     public function do_log_redirect() {
-        return ( !defined( 'NOSTATS' ) || NOSTATS != true );
+        return ( !defined( 'YOURLS_NOSTATS' ) || YOURLS_NOSTATS != true );
     }
 
     /**
@@ -889,11 +889,11 @@ REDIR;
             $func = 'geoip_country_code_by_addr_v6';
         }
 
-        if ( !file_exists( INC . '/geo/' . $db ) || !file_exists( INC .'/geo/geoip.inc' ) )
+        if ( !file_exists( YOURLS_INC . '/geo/' . $db ) || !file_exists( YOURLS_INC .'/geo/geoip.inc' ) )
             return $default;
 
-        require_once( INC . '/geo/geoip.inc' );
-        $gi = geoip_open( INC . '/geo/' . $db, GEOIP_STANDARD );
+        require_once( YOURLS_INC . '/geo/geoip.inc' );
+        $gi = geoip_open( YOURLS_INC . '/geo/' . $db, GEOIP_STANDARD );
         try {
             $location = call_user_func( $func, $gi, $ip );
         }
@@ -948,9 +948,9 @@ REDIR;
      *
      */
     public function upgrade_is_needed() {
-        // check DB_VERSION exist && match values stored in DB_TABLE_OPTIONS
+        // check YOURLS_DB_VERSION exist && match values stored in YOURLS_DB_TABLE_OPTIONS
         list( $currentver, $currentsql ) = get_current_version_from_sql();
-        if( $currentsql < DB_VERSION )
+        if( $currentsql < YOURLS_DB_VERSION )
 
             return true;
 
@@ -994,7 +994,7 @@ REDIR;
 
         // If option not cached already, get its value from the DB
         if ( !isset( $ydb->option[$option_name] ) ) {
-            $table = DB_TABLE_OPTIONS;
+            $table = YOURLS_DB_TABLE_OPTIONS;
             $option_name = escape( $option_name );
             $row = $ydb->get_row( "SELECT `option_value` FROM `$table` WHERE `option_name` = '$option_name' LIMIT 1" );
             if ( is_object( $row ) ) { // Has to be get_row instead of get_var because of funkiness with 0, false, null values
@@ -1026,7 +1026,7 @@ REDIR;
         if ( false !== $pre )
             return $pre;
 
-        $table = DB_TABLE_OPTIONS;
+        $table = YOURLS_DB_TABLE_OPTIONS;
 
         $allopt = $ydb->get_results( "SELECT `option_name`, `option_value` FROM `$table` WHERE 1=1" );
 
@@ -1058,7 +1058,7 @@ REDIR;
      */
     public function update_option( $option_name, $newvalue ) {
         global $ydb;
-        $table = DB_TABLE_OPTIONS;
+        $table = YOURLS_DB_TABLE_OPTIONS;
 
         $option_name = trim( $option_name );
         if ( empty( $option_name ) )
@@ -1109,7 +1109,7 @@ REDIR;
      */
     public function add_option( $name, $value = '' ) {
         global $ydb;
-        $table = DB_TABLE_OPTIONS;
+        $table = YOURLS_DB_TABLE_OPTIONS;
 
         $name = trim( $name );
         if ( empty( $name ) )
@@ -1146,7 +1146,7 @@ REDIR;
      */
     public function delete_option( $name ) {
         global $ydb;
-        $table = DB_TABLE_OPTIONS;
+        $table = YOURLS_DB_TABLE_OPTIONS;
         $name = escape( $name );
 
         // Get the ID, if no ID then return
@@ -1259,18 +1259,18 @@ REDIR;
     public function is_private() {
         $private = false;
 
-        if ( defined('PRIVATE') && PRIVATE == true ) {
+        if ( defined('YOURLS_PRIVATE') && YOURLS_PRIVATE == true ) {
 
             // Allow overruling for particular pages:
 
             // API
             if( is_API() ) {
-                if( !defined('PRIVATE_API') || PRIVATE_API != false )
+                if( !defined('YOURLS_PRIVATE_API') || YOURLS_PRIVATE_API != false )
                     $private = true;
 
                 // Infos
             } elseif( is_infos() ) {
-                if( !defined('PRIVATE_INFOS') || PRIVATE_INFOS !== false )
+                if( !defined('YOURLS_PRIVATE_INFOS') || YOURLS_PRIVATE_INFOS !== false )
                     $private = true;
 
                 // Others
@@ -1290,7 +1290,7 @@ REDIR;
     public function maybe_require_auth() {
         if( is_private() ) {
             do_action( 'require_auth' );
-            require_once INC . '/auth.php';
+            require_once YOURLS_INC . '/auth.php';
         } else {
             do_action( 'require_no_auth' );
         }
@@ -1322,7 +1322,7 @@ REDIR;
     public function get_longurl_keywords( $longurl, $sort = 'none', $order = 'ASC' ) {
         global $ydb;
         $longurl = escape( sanitize_url( $longurl ) );
-        $table   = DB_TABLE_URL;
+        $table   = YOURLS_DB_TABLE_URL;
         $query   = "SELECT `keyword` FROM `$table` WHERE `url` = '$longurl'";
 
         // Ensure sort is a column in database (@TODO: update verification array if database changes)
@@ -1351,8 +1351,8 @@ REDIR;
 
         // Raise white flag if installing or if no flood delay defined
         if(
-            ( defined('FLOOD_DELAY_SECONDS') && FLOOD_DELAY_SECONDS === 0 ) ||
-            !defined('FLOOD_DELAY_SECONDS') ||
+            ( defined('YOURLS_FLOOD_DELAY_SECONDS') && YOURLS_FLOOD_DELAY_SECONDS === 0 ) ||
+            !defined('YOURLS_FLOOD_DELAY_SECONDS') ||
             is_installing()
         )
 
@@ -1366,8 +1366,8 @@ REDIR;
         }
 
         // Don't throttle whitelist IPs
-        if( defined( 'FLOOD_IP_WHITELIST' ) && FLOOD_IP_WHITELIST ) {
-            $whitelist_ips = explode( ',', FLOOD_IP_WHITELIST );
+        if( defined( 'YOURLS_FLOOD_IP_WHITELIST' ) && YOURLS_FLOOD_IP_WHITELIST ) {
+            $whitelist_ips = explode( ',', YOURLS_FLOOD_IP_WHITELIST );
             foreach( (array)$whitelist_ips as $whitelist_ip ) {
                 $whitelist_ip = trim( $whitelist_ip );
                 if ( $whitelist_ip == $ip )
@@ -1381,13 +1381,13 @@ REDIR;
         do_action( 'check_ip_flood', $ip );
 
         global $ydb;
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
 
         $lasttime = $ydb->get_var( "SELECT `timestamp` FROM $table WHERE `ip` = '$ip' ORDER BY `timestamp` DESC LIMIT 1" );
         if( $lasttime ) {
             $now = date( 'U' );
             $then = date( 'U', strtotime( $lasttime ) );
-            if( ( $now - $then ) <= FLOOD_DELAY_SECONDS ) {
+            if( ( $now - $then ) <= YOURLS_FLOOD_DELAY_SECONDS ) {
                 // Flood!
                 do_action( 'ip_flood', $ip, $now - $then );
                 die( _( 'Too many URLs added too fast. Slow down please.' ), _( 'Forbidden' ), 403 );
@@ -1499,7 +1499,7 @@ REDIR;
      *
      */
     public function salt( $string ) {
-        $salt = defined('COOKIEKEY') ? COOKIEKEY : md5(__FILE__) ;
+        $salt = defined('YOURLS_COOKIEKEY') ? YOURLS_COOKIEKEY : md5(__FILE__) ;
 
         return apply_filter( 'salt', md5 ($string . $salt), $string );
     }
@@ -1614,7 +1614,7 @@ REDIR;
      *
      */
     public function tick() {
-        return ceil( time() / NONCE_LIFE );
+        return ceil( time() / YOURLS_NONCE_LIFE );
     }
 
     /**
@@ -1623,7 +1623,7 @@ REDIR;
      */
     public function create_nonce( $action, $user = false ) {
         if( false == $user )
-            $user = defined( 'USER' ) ? USER : '-1';
+            $user = defined( 'YOURLS_USER' ) ? YOURLS_USER : '-1';
         $tick = tick();
 
         return substr( salt($tick . $action . $user), 0, 10 );
@@ -1661,7 +1661,7 @@ REDIR;
     public function verify_nonce( $action, $nonce = false, $user = false, $return = '' ) {
         // get user
         if( false == $user )
-            $user = defined( 'USER' ) ? USER : '-1';
+            $user = defined( 'YOURLS_USER' ) ? YOURLS_USER : '-1';
 
         // get current nonce value
         if( false == $nonce && isset( $_REQUEST['nonce'] ) )
@@ -1757,7 +1757,7 @@ REDIR;
      *
      */
     public function is_admin() {
-        if ( defined( 'ADMIN' ) && ADMIN == true )
+        if ( defined( 'YOURLS_ADMIN' ) && YOURLS_ADMIN == true )
             return true;
         return false;
     }
@@ -1770,7 +1770,7 @@ REDIR;
         if ( !is_private() )
             return true;
         else
-            return defined( 'USER' );
+            return defined( 'YOURLS_USER' );
     }
 
     /**
@@ -1786,7 +1786,7 @@ REDIR;
      *
      */
     public function needs_ssl() {
-        if ( defined('ADMIN_SSL') && ADMIN_SSL == true )
+        if ( defined('YOURLS_ADMIN_SSL') && YOURLS_ADMIN_SSL == true )
             return true;
         return false;
     }
@@ -1796,7 +1796,7 @@ REDIR;
      *
      */
     public function admin_url( $page = '' ) {
-        $admin = SITE . '/' . ADMIN_LOCATION . '/' . $page;
+        $admin = SITE . '/' . YOURLS_ADMIN_LOCATION . '/' . $page;
         if( is_ssl() or needs_ssl() )
             $admin = set_url_scheme( $admin, 'https' );
 
@@ -1855,7 +1855,7 @@ REDIR;
         if ( false !== $pre )
             return $pre;
 
-        require_once INC . '/functions-http.php';
+        require_once YOURLS_INC . '/functions-http.php';
 
         $url = sanitize_url( $url );
 
@@ -1938,7 +1938,7 @@ REDIR;
         );
 
         // Current user-agent
-        $current = strtolower( $_SERVER['HTTP_USER_AGENT'] );
+        $current = strtolower( $_SERVER['HTTP_YOURLS_USER_AGENT'] );
 
         // Check and return
         $is_mobile = ( str_replace( $mobiles, '', $current ) != $current );
@@ -2051,13 +2051,13 @@ REDIR;
 
         // search for favicon.(ico|png|gif)
         foreach( array( 'png', 'ico', 'gif' ) as $ext ) {
-            if( file_exists( USERDIR. '/favicon.' . $ext ) ) {
-                $favicon = site_url( false, USERURL . '/favicon.' . $ext );
+            if( file_exists( YOURLS_USERDIR. '/favicon.' . $ext ) ) {
+                $favicon = site_url( false, YOURLS_USERURL . '/favicon.' . $ext );
                 break;
             }
         }
         if ( $favicon === null )
-            $favicon = site_url( false, ASSETURL . '/img/favicon.ico' );
+            $favicon = site_url( false, YOURLS_ASSETURL . '/img/favicon.ico' );
 
         if( $echo )
             echo '<link rel="shortcut icon" href="'. $favicon . '">';
@@ -2071,7 +2071,7 @@ REDIR;
      */
     public function check_maintenance_mode() {
 
-        $file = ABSPATH . '/.maintenance' ;
+        $file = YOURLS_ABSPATH . '/.maintenance' ;
         if ( !file_exists( $file ) || is_upgrading() || is_installing() )
             return;
 
@@ -2083,8 +2083,8 @@ REDIR;
             return;
 
         // Use any /user/maintenance.php file
-        if( file_exists( USERDIR.'/maintenance.php' ) ) {
-            include_once( USERDIR.'/maintenance.php' );
+        if( file_exists( YOURLS_USERDIR.'/maintenance.php' ) ) {
+            include_once( YOURLS_USERDIR.'/maintenance.php' );
             die();
         }
 
@@ -2193,7 +2193,7 @@ REDIR;
      * to get the backtrace up to what file and function called the deprecated
      * function.
      *
-     * The current behavior is to trigger a user error if DEBUG is true.
+     * The current behavior is to trigger a user error if YOURLS_DEBUG is true.
      *
      * This function is to be used in every function that is deprecated.
      *
@@ -2212,7 +2212,7 @@ REDIR;
         do_action( 'deprecated_function', $function, $replacement, $version );
 
         // Allow plugin to filter the output error trigger
-        if ( DEBUG && apply_filters( 'deprecated_function_trigger_error', true ) ) {
+        if ( YOURLS_DEBUG && apply_filters( 'deprecated_function_trigger_error', true ) ) {
             if ( ! is_null( $replacement ) )
                 trigger_error( sprintf( _( '%1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.' ), $function, $version, $replacement ) );
             else
@@ -2236,7 +2236,7 @@ REDIR;
     /**
      * Add a message to the debug log
      *
-     * When in debug mode ( DEBUG == true ) the debug log is echoed in html_footer()
+     * When in debug mode ( YOURLS_DEBUG == true ) the debug log is echoed in html_footer()
      * Log messages are appended to $ydb->debug_log array, which is instanciated within class ezSQLcore_YOURLS
      *
      * @since 1.7

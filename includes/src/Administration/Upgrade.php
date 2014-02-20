@@ -48,7 +48,7 @@ class Upgrade {
             case 3:
                 // Update options to reflect latest version
                 update_option( 'version', VERSION );
-                update_option( 'db_version', DB_VERSION );
+                update_option( 'db_version', YOURLS_DB_VERSION );
                 break;
         }
     }
@@ -60,7 +60,7 @@ class Upgrade {
     public function upgrade_482() {
         // Change URL title charset to UTF8
         global $ydb;
-        $table_url = DB_TABLE_URL;
+        $table_url = YOURLS_DB_TABLE_URL;
         $sql = "ALTER TABLE `$table_url` CHANGE `title` `title` TEXT CHARACTER SET utf8;";
         $ydb->query( $sql );
         echo "<p>Updating table structure. Please wait...</p>";
@@ -80,7 +80,7 @@ class Upgrade {
 
         // Alter URL table to store titles
         global $ydb;
-        $table_url = DB_TABLE_URL;
+        $table_url = YOURLS_DB_TABLE_URL;
         $sql = "ALTER TABLE `$table_url` ADD `title` TEXT AFTER `url`;";
         $ydb->query( $sql );
         echo "<p>Updating table structure. Please wait...</p>";
@@ -99,7 +99,7 @@ class Upgrade {
     public function upgrade_to_143( ) {
         // Check if we have 'keyword' (borked install) or 'shorturl' (ok install)
         global $ydb;
-        $table_log = DB_TABLE_LOG;
+        $table_log = YOURLS_DB_TABLE_LOG;
         $sql = "SHOW COLUMNS FROM `$table_log`";
         $cols = $ydb->get_results( $sql );
         if ( $cols[2]->Field == 'keyword' ) {
@@ -131,7 +131,7 @@ class Upgrade {
      */
     public function alter_url_table_to_141() {
         global $ydb;
-        $table_url = DB_TABLE_URL;
+        $table_url = YOURLS_DB_TABLE_URL;
         $alter = "ALTER TABLE `$table_url` CHANGE `keyword` `keyword` VARCHAR( 200 ) BINARY, CHANGE `url` `url` TEXT BINARY ";
         $ydb->query( $alter );
         echo "<p>Structure of existing tables updated. Please wait...</p>";
@@ -168,7 +168,7 @@ class Upgrade {
                 // update table url structure part 2: recreate indexes
                 alter_url_table_to_14_part_two();
                 // update version & db_version & next_id in the option table
-                // attempt to drop DB_TABLE_NEXTDEC
+                // attempt to drop YOURLS_DB_TABLE_NEXTDEC
                 update_options_to_14();
                 // Now upgrade to 1.4.1
                 redirect_javascript( admin_url( "upgrade?step=1&oldver=1.4&newver=1.4.1&oldsql=200&newsql=210" ) );
@@ -184,9 +184,9 @@ class Upgrade {
         update_option( 'version', '1.4' );
         update_option( 'db_version', '200' );
 
-        if( defined('DB_TABLE_NEXTDEC') ) {
+        if( defined('YOURLS_DB_TABLE_NEXTDEC') ) {
             global $ydb;
-            $table = DB_TABLE_NEXTDEC;
+            $table = YOURLS_DB_TABLE_NEXTDEC;
             $next_id = $ydb->get_var("SELECT `next_id` FROM `$table`");
             update_option( 'next_id', $next_id );
             @$ydb->query( "DROP TABLE `$table`" );
@@ -204,8 +204,8 @@ class Upgrade {
 
         $queries = array();
 
-        $queries[DB_TABLE_OPTIONS] =
-            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_OPTIONS.'` ('.
+        $queries[YOURLS_DB_TABLE_OPTIONS] =
+            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_OPTIONS.'` ('.
             '`option_id` int(11) unsigned NOT NULL auto_increment,'.
             '`option_name` varchar(64) NOT NULL default "",'.
             '`option_value` longtext NOT NULL,'.
@@ -213,8 +213,8 @@ class Upgrade {
             'KEY `option_name` (`option_name`)'.
             ');';
 
-        $queries[DB_TABLE_LOG] =
-            'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_LOG.'` ('.
+        $queries[YOURLS_DB_TABLE_LOG] =
+            'CREATE TABLE IF NOT EXISTS `'.YOURLS_DB_TABLE_LOG.'` ('.
             '`click_id` int(11) NOT NULL auto_increment,'.
             '`click_time` datetime NOT NULL,'.
             '`shorturl` varchar(200) NOT NULL,'.
@@ -240,7 +240,7 @@ class Upgrade {
      */
     public function alter_url_table_to_14() {
         global $ydb;
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
 
         $alters = array();
         $results = array();
@@ -261,7 +261,7 @@ class Upgrade {
      */
     public function alter_url_table_to_14_part_two() {
         global $ydb;
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
 
         $alters = array();
         $alters[] = "ALTER TABLE `$table` ADD PRIMARY KEY ( `keyword` )";
@@ -281,7 +281,7 @@ class Upgrade {
      */
     public function update_table_to_14() {
         global $ydb;
-        $table = DB_TABLE_URL;
+        $table = YOURLS_DB_TABLE_URL;
 
         // Modify each link to reflect new structure
         $chunk = 45;
@@ -335,7 +335,7 @@ class Upgrade {
      *
      */
     public function clean_htaccess_for_14() {
-        $filename = ABSPATH.'/.htaccess';
+        $filename = YOURLS_ABSPATH.'/.htaccess';
 
         $result = false;
         if( is_writeable( $filename ) ) {
@@ -343,7 +343,7 @@ class Upgrade {
             // remove "ShortURL" block
             $contents = preg_replace( '/# BEGIN ShortURL.*# END ShortURL/s', '', $contents );
             // comment out deprecated RewriteRule
-            $find = 'RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization},L]';
+            $find = 'RewriteRule .* - [E=REMOTE_YOURLS_USER:%{HTTP:Authorization},L]';
             $replace = "# You can safely remove this 5 lines block -- it's no longer used in YOURLS\n".
                     "# $find";
             $contents = str_replace( $find, $replace, $contents );

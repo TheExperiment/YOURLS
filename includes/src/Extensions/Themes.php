@@ -168,8 +168,8 @@ class Themes {
                 if( !$src ) {
                     if( isset( $core[ $type ][ $name ] ) ) {
                         // @TODO: allow inclusion of non minified scripts or CSS for debugging
-                        // Something like: $min = ( defined and true ( 'SCRIPT_DEBUG' ) ? '' : 'min' );
-                        $src = site_url( false, ASSETURL . "/$type/" . $core[ $type ][ $name ] . ".$type?v=" . VERSION );
+                        // Something like: $min = ( defined and true ( 'SCRIPT_YOURLS_DEBUG' ) ? '' : 'min' );
+                        $src = site_url( false, YOURLS_ASSETURL . "/$type/" . $core[ $type ][ $name ] . ".$type?v=" . VERSION );
                     }
                 }
 
@@ -404,7 +404,7 @@ class Themes {
 
         // is there an active theme ?
         $active_theme = get_active_theme();
-        if( defined( 'DEBUG' ) && DEBUG == true ) {
+        if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
             global $ydb;
             $ydb->debug_log[] = 'Theme: ' . $active_theme;
         }
@@ -434,7 +434,7 @@ class Themes {
      * Attempt to load a theme
      *
      * @since 1.7
-     * @param string $theme   theme directory inside THEMEDIR
+     * @param string $theme   theme directory inside YOURLS_THEMEDIR
      * @return mixed          true, or an error message
      */
     public function load_theme( $theme ) {
@@ -472,7 +472,7 @@ class Themes {
      * Activate a theme
      *
      * @since 1.7
-     * @param string $theme   theme directory inside THEMEDIR
+     * @param string $theme   theme directory inside YOURLS_THEMEDIR
      * @return mixed          true, or an error message
      */
     public function activate_theme( $theme ) {
@@ -545,7 +545,7 @@ class Themes {
      * @return string        sanitized physical path
      */
     public function get_theme_dir( $theme ) {
-        return sanitize_filename( THEMEDIR . "/$theme" );
+        return sanitize_filename( YOURLS_THEMEDIR . "/$theme" );
     }
 
     /**
@@ -556,7 +556,7 @@ class Themes {
      * @return string        sanitized URL
      */
     public function get_theme_url( $theme ) {
-        return sanitize_url( THEMEURL . "/$theme" );
+        return sanitize_url( YOURLS_THEMEURL . "/$theme" );
     }
 
     /**

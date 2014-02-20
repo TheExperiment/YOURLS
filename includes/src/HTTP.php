@@ -96,7 +96,7 @@ class HTTP {
      * For a list of all available options, see function request() in /includes/Requests/Requests.php
      *
      * @uses PROXY
-     * @uses PROXY_USERNAME
+     * @uses PROXY_YOURLS_USERNAME
      * @uses PROXY_PASSWORD
      * @since 1.7
      * @return array Options
@@ -110,8 +110,8 @@ class HTTP {
         );
 
         if( http_proxy_is_defined() ) {
-            if( defined( 'PROXY_USERNAME' ) && defined( 'PROXY_PASSWORD' ) ) {
-                $options['proxy'] = array( PROXY, PROXY_USERNAME, PROXY_PASSWORD );
+            if( defined( 'PROXY_YOURLS_USERNAME' ) && defined( 'PROXY_PASSWORD' ) ) {
+                $options['proxy'] = array( PROXY, PROXY_YOURLS_USERNAME, PROXY_PASSWORD );
             } else {
                 $options['proxy'] = PROXY;
             }
@@ -248,14 +248,14 @@ class HTTP {
         }
 
         // Config file location ('u' for '/user' or 'i' for '/includes')
-        $conf_loc = str_replace( ABSPATH, '', CONFIGFILE );
+        $conf_loc = str_replace( YOURLS_ABSPATH, '', CONFIGFILE );
         $conf_loc = str_replace( '/config.php', '', $conf_loc );
         $conf_loc = ( $conf_loc == '/user' ? 'u' : 'i' );
 
         // The collection of stuff to report
         $stuff = array(
             // Globally uniquish site identifier
-            'md5'                => md5( SITE . ABSPATH ),
+            'md5'                => md5( SITE . YOURLS_ABSPATH ),
 
             // Install information
             'failed_attempts'    => $checks->failed_attempts,
@@ -266,7 +266,7 @@ class HTTP {
             'locale'             => get_locale(),
 
             // custom DB driver if any, and useful common PHP extensions
-            'db_driver'          => defined( 'DB_DRIVER' ) ? DB_DRIVER : 'unset',
+            'db_driver'          => defined( 'YOURLS_DB_DRIVER' ) ? YOURLS_DB_DRIVER : 'unset',
             'db_ext_pdo'         => extension_loaded( 'pdo_mysql' ) ? 1 : 0,
             'db_ext_mysql'       => extension_loaded( 'mysql' )     ? 1 : 0,
             'db_ext_mysqli'      => extension_loaded( 'mysqli' )    ? 1 : 0,
@@ -275,11 +275,11 @@ class HTTP {
             // Config information
             'num_users'          => count( $user_passwords ),
             'config_location'    => $conf_loc,
-            'private'     => defined( 'PRIVATE' ) && PRIVATE ? 1 : 0,
+            'private'     => defined( 'YOURLS_PRIVATE' ) && YOURLS_PRIVATE ? 1 : 0,
             'unique'      => defined( 'UNIQUE_URLS' ) && UNIQUE_URLS ? 1 : 0,
             'url_convert' => defined( 'URL_CONVERT' ) ? URL_CONVERT : 'unknown',
             'num_active_plugins' => has_active_plugins(),
-            'num_pages'          => defined( 'PAGEDIR' ) ? count( (array) glob( PAGEDIR .'/*.php') ) : 0,
+            'num_pages'          => defined( 'YOURLS_PAGEDIR' ) ? count( (array) glob( YOURLS_PAGEDIR .'/*.php') ) : 0,
         );
 
         $stuff = apply_filter( 'version_check_stuff', $stuff );
