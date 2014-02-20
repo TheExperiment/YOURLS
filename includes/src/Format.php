@@ -1,9 +1,15 @@
 <?php
-/*
- * YOURLS
- * Function library for anything related to formatting / validating / sanitizing
+
+/**
+ * Format Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
  */
 
+/**
+ * Useful methods to convert anything
+ */
 class Format {
     
     /**
