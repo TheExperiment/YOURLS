@@ -1,13 +1,18 @@
 <?php
 
 /**
+ * Themes Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+/**
  * The theme API, which allows designing and customizing the interface.
  *
  * Several functions used by themes are shared with plugins: see functions-plugins.php
  * 
- * @author Ozh
- * @author Leo Colombaro
- * @since 1.7
+ * @since 2.0
  */
 class Themes {
     
