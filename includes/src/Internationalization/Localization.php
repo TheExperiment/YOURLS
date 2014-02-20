@@ -68,7 +68,7 @@ class Localization {
      * @return string Translated text
      */
     public function translate( $text, $domain = 'default' ) {
-        $translations = get_translations_for_domain( $domain );
+        $translations = $this->get_translations_for_domain( $domain );
 
         return apply_filters( 'translate', $translations->translate( $text ), $text, $domain );
     }
@@ -90,7 +90,7 @@ class Localization {
      * @return string Translated text
      */
     public function translate_with_context( $text, $context, $domain = 'default' ) {
-        $translations = get_translations_for_domain( $domain );
+        $translations = $this->get_translations_for_domain( $domain );
 
         return apply_filters( 'translate_with_context', $translations->translate( $text, $context ), $text, $context, $domain );
     }
@@ -107,7 +107,7 @@ class Localization {
      * @return string Translated text
      */
     public function _( $text, $domain = 'default' ) {
-        return translate( $text, $domain );
+        return $this->translate( $text, $domain );
     }
 
     /**
@@ -171,7 +171,7 @@ class Localization {
      * @return string Translated text
      */
     public function se( $pattern ) {
-        echo s( func_get_args() );
+        echo $this->s( func_get_args() );
     }
 
 
@@ -188,7 +188,7 @@ class Localization {
      * @return string Translated text
      */
     public function esc_attr__( $text, $domain = 'default' ) {
-        return esc_attr( translate( $text, $domain ) );
+        return esc_attr( $this->translate( $text, $domain ) );
     }
 
     /**
@@ -204,7 +204,7 @@ class Localization {
      * @return string Translated text
      */
     public function esc_html__( $text, $domain = 'default' ) {
-        return esc_html( translate( $text, $domain ) );
+        return esc_html( $this->translate( $text, $domain ) );
     }
 
     /**
@@ -217,7 +217,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      */
     public function e( $text, $domain = 'default' ) {
-        echo translate( $text, $domain );
+        echo $this->translate( $text, $domain );
     }
 
     /**
@@ -231,7 +231,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      */
     public function esc_attr_e( $text, $domain = 'default' ) {
-        echo esc_attr( translate( $text, $domain ) );
+        echo esc_attr( $this->translate( $text, $domain ) );
     }
 
     /**
@@ -245,7 +245,7 @@ class Localization {
      * @param string $domain Optional. Domain to retrieve the translated text
      */
     public function esc_html_e( $text, $domain = 'default' ) {
-        echo esc_html( translate( $text, $domain ) );
+        echo esc_html( $this->translate( $text, $domain ) );
     }
 
     /**
@@ -265,7 +265,7 @@ class Localization {
      * @return string Translated context string without pipe
      */
     public function x( $text, $context, $domain = 'default' ) {
-        return translate_with_context( $text, $context, $domain );
+        return $this->translate_with_context( $text, $context, $domain );
     }
 
     /**
@@ -280,7 +280,7 @@ class Localization {
      * @return string Translated context string without pipe
      */
     public function ex( $text, $context, $domain = 'default' ) {
-        echo x( $text, $context, $domain );
+        echo $this->x( $text, $context, $domain );
     }
 
 
@@ -299,7 +299,7 @@ class Localization {
      * @return string
      */
     public function esc_attr_x( $single, $context, $domain = 'default' ) {
-        return esc_attr( translate_with_context( $single, $context, $domain ) );
+        return esc_attr( $this->translate_with_context( $single, $context, $domain ) );
     }
 
     /**
@@ -317,7 +317,7 @@ class Localization {
      * @return string
      */
     public function esc_html_x( $single, $context, $domain = 'default' ) {
-        return esc_html( translate_with_context( $single, $context, $domain ) );
+        return esc_html( $this->translate_with_context( $single, $context, $domain ) );
     }
 
     /**
@@ -343,7 +343,7 @@ class Localization {
      * @return string Either $single or $plural translated text
      */
     public function n( $single, $plural, $number, $domain = 'default' ) {
-        $translations = get_translations_for_domain( $domain );
+        $translations = $this->get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number );
 
         return apply_filters( 'translate_n', $translation, $single, $plural, $number, $domain );
@@ -358,7 +358,7 @@ class Localization {
      *
      */
     public function nx($single, $plural, $number, $context, $domain = 'default') {
-        $translations = get_translations_for_domain( $domain );
+        $translations = $this->get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number, $context );
 
         return apply_filters( 'translate_nx', $translation, $single, $plural, $number, $context, $domain );
@@ -429,9 +429,9 @@ class Localization {
             $domain = $nooped_plural['domain'];
 
         if ( $nooped_plural['context'] )
-            return nx( $nooped_plural['singular'], $nooped_plural['plural'], $count, $nooped_plural['context'], $domain );
+            return $this->nx( $nooped_plural['singular'], $nooped_plural['plural'], $count, $nooped_plural['context'], $domain );
         else
-            return n( $nooped_plural['singular'], $nooped_plural['plural'], $count, $domain );
+            return $this->n( $nooped_plural['singular'], $nooped_plural['plural'], $count, $domain );
     }
 
     /**
@@ -518,11 +518,11 @@ class Localization {
      * @return bool True on success, false on failure
      */
     public function load_default_textdomain() {
-        $locale = get_locale();
+        $locale = $this->get_locale();
 
         if( !empty( $locale ) )
 
-            return load_textdomain( 'default', YOURLS_LANG_DIR . "/$locale.mo" );
+            return $this->load_textdomain( 'default', YOURLS_LANG_DIR . "/$locale.mo" );
     }
 
     /**
@@ -565,7 +565,7 @@ class Localization {
      * @since 1.6
      */
     public function translate_user_role( $name ) {
-        return translate_with_context( $name, 'User role' );
+        return $this->translate_with_context( $name, 'User role' );
     }
 
     /**
@@ -630,7 +630,7 @@ class Localization {
 
         if ( false === $i ) {
             if ( ! $gmt )
-                $i = current_time( 'timestamp' );
+                $i = $this->current_time( 'timestamp' );
             else
                 $i = time();
             // we should not let date() interfere with our
@@ -728,10 +728,10 @@ class Localization {
      * @return bool True on success, false on failure
      */
     public function load_custom_textdomain( $domain, $path ) {
-        $locale = apply_filters( 'load_custom_textdomain', get_locale(), $domain );
+        $locale = apply_filters( 'load_custom_textdomain', $this->get_locale(), $domain );
         $mofile = trim( $path, '/' ) . '/'. $domain . '-' . $locale . '.mo';
 
-        return load_textdomain( $domain, $mofile );
+        return $this->load_textdomain( $domain, $mofile );
     }
 
     /**
