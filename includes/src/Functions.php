@@ -322,7 +322,6 @@ class Functions {
         return apply_filter( 'add_new_link', $return, $url, $keyword, $title );
     }
 
-
     /**
      * Edit a link
      *
@@ -401,7 +400,6 @@ class Functions {
 
         return $update;
     }
-
 
     /**
      * Check if keyword id is free (ie not already taken, and not reserved). Return bool.
@@ -1137,7 +1135,6 @@ REDIR;
         return true;
     }
 
-
     /**
      * Delete an option from the DB
      *
@@ -1164,7 +1161,6 @@ REDIR;
 
         return true;
     }
-
 
     /**
      * Serialize data if needed. Stolen from WordPress
@@ -1424,7 +1420,6 @@ REDIR;
 
         return apply_filter( 'is_upgrading', $upgrading );
     }
-
 
     /**
      * Check if YOURLS is installed

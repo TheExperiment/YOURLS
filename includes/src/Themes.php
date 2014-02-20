@@ -94,7 +94,6 @@ class Themes {
         }
     }
 
-
     /**
      * Draw page with HTML functions in requested order
      *

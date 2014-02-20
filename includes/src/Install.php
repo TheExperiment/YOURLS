@@ -83,7 +83,6 @@ class Install {
         return ( array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ? ( strpos( $_SERVER['SERVER_SOFTWARE'], 'IIS' ) !== false ) : false );
     }
 
-
     /**
      * Create .htaccess or web.config. Returns boolean
      *
@@ -243,7 +242,6 @@ class Install {
             'KEY `shorturl` (`shorturl`)'.
             ') AUTO_INCREMENT=1 ;';
 
-
         $create_table_count = 0;
 
         $ydb->show_errors = true;
@@ -313,7 +311,6 @@ class Install {
             & $link3['status'] == 'success'
         );
     }
-
 
     /**
      * Toggle maintenance mode. Inspired from WP. Returns true for success, false otherwise

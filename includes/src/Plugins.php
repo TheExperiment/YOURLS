@@ -73,8 +73,6 @@ class Plugins {
         return add_filter( $hook, $function_name, $priority, $accepted_args, 'action' );
     }
 
-
-
     /**
      * Build Unique ID for storage and retrieval.
      *
@@ -183,10 +181,9 @@ class Plugins {
         return apply_filter( $hook, $value );
     }
 
-
     /**
      * Performs an action triggered by a YOURLS event.
-    *
+     *
      * @param string $hook the name of the YOURLS action
      * @param mixed $arg action arguments
      */
@@ -258,7 +255,6 @@ class Plugins {
         return $remove;
     }
 
-
     /**
      * Check if any filter has been registered for a hook.
      *
@@ -310,7 +306,6 @@ class Plugins {
 
         return count( $ydb->plugins );
     }
-
 
     /**
      * List plugins in /user/plugins

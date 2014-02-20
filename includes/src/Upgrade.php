@@ -137,7 +137,6 @@ class Upgrade {
         echo "<p>Structure of existing tables updated. Please wait...</p>";
     }
 
-
     /************************** 1.3 -> 1.4 **************************/
 
     /**

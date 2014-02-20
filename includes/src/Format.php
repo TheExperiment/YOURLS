@@ -440,7 +440,6 @@ class Format {
         return strtr( $string, $translation );
     }
 
-
     /**
      * Escaping for HTML blocks. Stolen from WP
      *
