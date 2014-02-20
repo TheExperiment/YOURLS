@@ -20,7 +20,7 @@ class HTML {
      * @param string $context Context of the page (stats, index, infos, ...)
      * @param string $title HTML title of the page
      */
-    public function html_head( $context = 'index', $title = '' ) {
+    public function head( $context = 'index', $title = '' ) {
 
         do_action( 'pre_html_head', $context, $title );
 
@@ -48,7 +48,7 @@ class HTML {
 
         ?>
 <!DOCTYPE html>
-<html <?php html_language_attributes(); ?>>
+<html <?php $this->language_attributes(); ?>>
 <head>
     <meta charset="utf-8">
     <title><?php echo $title ?></title>
@@ -86,11 +86,11 @@ class HTML {
      *
      * @param bool $linked true if a link is wanted
      */
-    public function html_logo( $linked = true ) {
+    public function logo( $linked = true ) {
         do_action( 'pre_html_logo' );
         $logo = '<img class="yourls-logo-img" src="' . site_url( false, YOURLS_ASSETURL . '/img/yourls-logo.png' ) . '" alt="YOURLS" title="YOURLS"/>';
         if ( $linked )
-            $logo = html_link( admin_url( 'index' ), $logo, 'YOURLS', false, false );
+            $logo = $this->link( admin_url( 'index' ), $logo, 'YOURLS', false, false );
         ?>
             <div class="yourls-logo">
                 <?php echo $logo; ?>
@@ -109,7 +109,7 @@ class HTML {
      * @param string $class     Optional html class
      * @param bool   $echo
      */
-    public function html_htag( $title, $size = 1, $subtitle = null, $class = null, $echo = true ) {
+    public function htag( $title, $size = 1, $subtitle = null, $class = null, $echo = true ) {
         $size = intval( $size );
         if( $size < 1 )
             $size = 1;
@@ -136,7 +136,7 @@ class HTML {
      *
      * @param string $current_page Which page is loaded?
      */
-    public function html_menu( $current_page = null ) {
+    public function menu( $current_page = null ) {
         // Build menu links
         $help_link   = apply_filter( 'help-link', '<a href="' . site_url( false ) .'/docs/"><i class="fa fa-question-circle fa-fw"></i> ' . _( 'Help' ) . '</a>' );
 
@@ -241,7 +241,7 @@ class HTML {
      *
      * @since 2.0
      */
-    public function html_global_stats() {
+    public function global_stats() {
         list( $total_urls, $total_clicks ) = array_values( get_db_stats() );
         // @FIXME: this SQL query is also used in admin/index.php - reduce query count
         $html  = '<div class="global-stats"><div class="global-stats-data">';
@@ -310,7 +310,7 @@ class HTML {
      *
      * @since 1.6
      */
-    public function html_language_attributes() {
+    public function language_attributes() {
         $attributes = array();
         $output = '';
 
@@ -335,9 +335,9 @@ class HTML {
      * Display HTML footer (including closing body & html tags)
      *
      */
-    public function html_footer() {
+    public function footer() {
         echo '<hr /><div class="footer" role="contentinfo"><p>';
-        $footer  = s( 'Powered by %s', html_link( 'http://yourls.org/', 'YOURLS', 'YOURLS', false, false ) );
+        $footer  = s( 'Powered by %s', $this->link( 'http://yourls.org/', 'YOURLS', 'YOURLS', false, false ) );
             echo apply_filters( 'html_footer_text', $footer );
         echo '</p></div>';
     }
@@ -346,7 +346,7 @@ class HTML {
      * Display HTML debug infos
      *
      */
-    public function html_debug() {
+    public function debug() {
         global $ydb;
         echo '<pre class="debug-info"><button type="button" class="close" onclick="$(this).parent().fadeOut();return false;" title="Dismiss">&times;</button>';
         echo  'Queries: ' . $ydb->num_queries . "\n";
@@ -361,7 +361,7 @@ class HTML {
      * @param string $url URL to prefill the input with
      * @param string $keyword Keyword to prefill the input with
      */
-    public function html_addnew( $url = '', $keyword = '' ) {
+    public function addnew( $url = '', $keyword = '' ) {
         ?>
             <div class="new-url-form">
                 <div class="new-url-long">
@@ -390,7 +390,7 @@ class HTML {
      * @param array $params Array of all required parameters
      * @return string Result
      */
-    public function html_search( $params = array() ) {
+    public function search( $params = array() ) {
         extract( $params ); // extract $search_text, $search_in ...
         ?>
             <form class="search-form" action="" method="get" role="search">
@@ -404,7 +404,7 @@ class HTML {
                                 'title'   => _( 'Title' ),
                                 'ip'      => _( 'IP' ),
                             );
-                            $_select_search = html_select( 'search_in', $_options, $search_in );
+                            $_select_search = $this->select( 'search_in', $_options, $search_in );
                             $_button = '<span class="input-group-btn">
                             <button type="submit" id="submit-sort" class="btn btn-primary">' . _( 'Search' ) . '</button>
                             <button type="button" id="submit-clear-filter" class="btn btn-danger" onclick="window.parent.location.href = \'index\'">' . _( 'Clear' ) . '</button>
@@ -418,20 +418,20 @@ class HTML {
                                 'ip'           => _( 'IP' ),
                                 'clicks'       => _( 'Clicks' ),
                             );
-                            $_select_order = html_select( 'sort_by', $_options, $sort_by );
+                            $_select_order = $this->select( 'sort_by', $_options, $sort_by );
                             $sort_order = isset( $sort_order ) ? $sort_order : 'desc' ;
                             $_options = array(
                                 'asc'  => _( 'Ascending' ),
                                 'desc' => _( 'Descending' ),
                             );
-                            $_select2_order = html_select( 'sort_order', $_options, $sort_order );
+                            $_select2_order = $this->select( 'sort_order', $_options, $sort_order );
 
                             // Fourth search control: Show links with more than XX clicks
                             $_options = array(
                                 'more' => _( 'more' ),
                                 'less' => _( 'less' ),
                             );
-                            $_select_clicks = html_select( 'click_filter', $_options, $click_filter );
+                            $_select_clicks = $this->select( 'click_filter', $_options, $click_filter );
                             $_input_clicks  = '<input type="text" name="click_limit" class="form-control" value="' . $click_limit . '" /> ';
 
                             // Fifth search control: Show links created before/after/between ...
@@ -440,7 +440,7 @@ class HTML {
                                 'after'   => _( 'after' ),
                                 'between' => _( 'between' ),
                             );
-                            $_select_creation = html_select( 'date_filter', $_options, $date_filter );
+                            $_select_creation = $this->select( 'date_filter', $_options, $date_filter );
                             $_input_creation  = '<input type="text" name="date-first" class="form-control date-first" value="' . $date_first . '" />';
                             $_input2_creation = '<input type="text" name="date-second" class="form-control date-second" value="' . $date_second . '"' . ( $date_filter === 'between' ? ' style="display:inline"' : '' ) . '/>';
 
@@ -483,7 +483,7 @@ class HTML {
      *
      * @param array $params
      */
-    public function html_pagination( $params = array() ) {
+    public function pagination( $params = array() ) {
         extract( $params ); // extract $page, ...
         if( $total_pages > 1 ) {
                 ?>
@@ -528,7 +528,7 @@ class HTML {
      * @param int $max_on_page
      * @param int $total_items Total of items in data
      */
-    public function html_displaying_count( $item_type, $min_on_page, $max_on_page, $total_items ) {
+    public function displaying_count( $item_type, $min_on_page, $max_on_page, $total_items ) {
         if( $max_on_page - $min_on_page + 1 >= $total_items )
             printf( _( 'Displaying <strong class="increment">all %1$s</strong> %2$s' ), $max_on_page, $item_type );
         else
@@ -546,7 +546,7 @@ class HTML {
      * @param boolean $display false (default) to return, true to echo
      * @return string HTML content of the select element
      */
-    public function html_select( $name, $options, $selected = '', $display = false ) {
+    public function select( $name, $options, $selected = '', $display = false ) {
         $html = '<select name="' . $name . '" class="input-group-addon">';
         foreach( $options as $value => $text ) {
             $html .= '<option value="' . $value .'"';
@@ -600,7 +600,7 @@ class HTML {
                     <?php echo $shortlink_title; ?>
                     <div class="input-group col col-lg-4">
                         <input id="copylink" type="text" value="<?php echo esc_url( $shorturl ); ?>"/><span class="input-group-btn">
-                            <?php html_zeroclipboard( 'copylink' ); ?>
+                            <?php $this->zeroclipboard( 'copylink' ); ?>
                         </span>
                     </div>
                     <p>
@@ -634,7 +634,7 @@ class HTML {
      * @param string $clipboard_target Id of the fetched element to copy value
      * @param bool $echo true to print, false to return
      */
-    public function html_zeroclipboard( $clipboard_target, $echo = true ) {
+    public function zeroclipboard( $clipboard_target, $echo = true ) {
         $html = apply_filter( 'html_zeroclipboard',
         '<button class="btn-clipboard" data-copied-hint="' . _( 'Copied!' ) . '" data-clipboard-target="' . $clipboard_target . '" data-placement="bottom" data-trigger="manual" data-original-title="' . _( 'Copy to clipboard' ) . '"><i class="fa fa-copy"></i></button>',
         $clipboard_target );
@@ -652,7 +652,7 @@ class HTML {
         status_header( $header_code );
 
         if( !$head = did_action( 'html_head' ) ) {
-            html_head( 'die', _( 'Fatal error' ) );
+            $this->head( 'die', _( 'Fatal error' ) );
             template_content( 'before', 'die' );
         }
 
@@ -924,7 +924,7 @@ class HTML {
     public function wrapper_end() {
         echo apply_filter( 'wrapper_end', '</div></div>' );
         if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
-            html_debug();
+            $this->debug();
         }
     }
 
@@ -959,7 +959,7 @@ class HTML {
      * @param bool $echo
      * @return HTML tag with all contents
      */
-    public function html_link( $href, $content = '', $title = '', $class = false, $echo = true ) {
+    public function link( $href, $content = '', $title = '', $class = false, $echo = true ) {
         if( !$content )
             $content = esc_html( $href );
         if( $title ) {
@@ -982,12 +982,12 @@ class HTML {
         // Since the user is not authed, we don't disclose any kind of stats
         remove_from_template( 'html_global_stats' );
 
-        html_head( 'login' );
+        $this->head( 'login' );
 
         $action = ( isset( $_GET['action'] ) && $_GET['action'] == 'logout' ? '?' : '' );
 
         template_content( 'before' );
-        html_htag( 'YOURLS', 1, 'Your Own URL Shortener' );
+        $this->htag( 'YOURLS', 1, 'Your Own URL Shortener' );
 
         ?>
             <div id="login">
@@ -1110,7 +1110,7 @@ class HTML {
 
         switch( $_GET['login_msg'] ) {
             case 'pwdclear':
-                $message  = html_htag( _( 'Warning' ), 4, null, null, false );
+                $message  = $this->htag( _( 'Warning' ), 4, null, null, false );
                 $message .= '<p>' . _( 'Your password is stored as clear text in your <code>config.php</code>' );
                 $message .= '<br />' . _( 'Did you know you can easily improve the security of your YOURLS install by <strong>encrypting</strong> your password?' );
                 $message .= '<br />' . _( 'See <a href="http://yourls.org/userpassword">UsernamePassword</a> for details.' ) . '</p>';
@@ -1124,7 +1124,7 @@ class HTML {
      *
      * @since 2.0
      */
-    public function html_ending() {
+    public function ending() {
         do_action( 'html_ending' );
         echo '</div></body></html>';
     }
@@ -1134,10 +1134,10 @@ class HTML {
      *
      * @since 2.0
      */
-    public function html_callout( $type, $content, $title = '' ) {
+    public function callout( $type, $content, $title = '' ) {
         echo '<div class="callout callout-' . $type . '">';
         if ( $title != '' )
-            html_htag( $title, 4 );
+            $this->htag( $title, 4 );
         echo $content;
         echo '</div>';
     }
