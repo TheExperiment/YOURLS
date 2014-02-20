@@ -13,6 +13,29 @@ namespace YOURLS;
  * Useful methods to convert anything
  */
 class Format {
+    
+    /**
+     * Summary of $data
+     * @var mixed
+     * @todo Exp
+     */
+    private $input;
+    
+    /**
+     * Summary of $output
+     * @var mixed
+     * @todo Exp
+     */
+    public $output;
+    
+    /**
+     * Summary of __construct
+     * @param mixed $data 
+     * @todo Exp
+     */
+    public function __construct( $data ) {
+        $this->input = $data;
+    }
 
     /**
      * Convert an integer (1337) to a string (3jk).
@@ -77,7 +100,7 @@ class Format {
      *
      */
     public function sanitize_keyword( $keyword ) {
-        return sanitize_string( $keyword );
+        return $this->sanitize_string( $keyword );
     }
 
     /**
@@ -100,7 +123,7 @@ class Format {
      * @return string Safe URL
      */
     public function sanitize_url( $unsafe_url, $protocols = array() ) {
-        $url = esc_url( $unsafe_url, 'redirection', $protocols );
+        $url = $this->esc_url( $unsafe_url, 'redirection', $protocols );
 
         return apply_filter( 'sanitize_url', $url, $unsafe_url );
     }
@@ -144,13 +167,13 @@ class Format {
         if( is_array( $data ) ) {
             foreach( $data as $k => $v ) {
                 if( is_array( $v ) ) {
-                    $data[ $k ] = escape( $v );
+                    $data[ $k ] = $this->escape( $v );
                 } else {
-                    $data[ $k ] = escape_real( $v );
+                    $data[ $k ] = $this->escape_real( $v );
                 }
             }
         } else {
-            $data = escape_real( $data );
+            $data = $this->escape_real( $data );
         }
 
         return $data;
@@ -203,7 +226,7 @@ class Format {
      *
      */
     public function sanitize_date_for_sql( $date ) {
-        if( !sanitize_date( $date ) )
+        if( !$this->sanitize_date( $date ) )
 
             return false;
         return date( 'Y-m-d', strtotime( $date ) );
@@ -354,19 +377,20 @@ class Format {
 
         // Handle double encoding ourselves
         if ( $double_encode ) {
-            $string = @htmlspecialchars( $string, $quote_style, $charset );
+            $string = @$this->htmlspecialchars( $string, $quote_style, $charset );
         } else {
             // Decode &amp; into &
-            $string = specialchars_decode( $string, $_quote_style );
+            $string = $this->specialchars_decode( $string, $_quote_style );
 
+            $kses = new KSES();
             // Guarantee every &entity; is valid or re-encode the &
-            $string = kses_normalize_entities( $string );
+            $string = $kses->normalize_entities( $string );
 
             // Now re-encode everything except &entity;
             $string = preg_split( '/(&#?x?[0-9a-z]+;)/i', $string, -1, PREG_SPLIT_DELIM_CAPTURE );
 
             for ( $i = 0; $i < count( $string ); $i += 2 )
-                $string[$i] = @htmlspecialchars( $string[$i], $quote_style, $charset );
+                $string[$i] = @$this->htmlspecialchars( $string[$i], $quote_style, $charset );
 
             $string = implode( '', $string );
         }
@@ -449,8 +473,8 @@ class Format {
      * @return string
      */
     public function esc_html( $text ) {
-        $safe_text = check_invalid_utf8( $text );
-        $safe_text = specialchars( $safe_text, ENT_QUOTES );
+        $safe_text = $this->check_invalid_utf8( $text );
+        $safe_text = $this->specialchars( $safe_text, ENT_QUOTES );
 
         return apply_filters( 'esc_html', $safe_text, $text );
     }
@@ -464,8 +488,8 @@ class Format {
      * @return string
      */
     public function esc_attr( $text ) {
-        $safe_text = check_invalid_utf8( $text );
-        $safe_text = specialchars( $safe_text, ENT_QUOTES );
+        $safe_text = $this->check_invalid_utf8( $text );
+        $safe_text = $this->specialchars( $safe_text, ENT_QUOTES );
 
         return apply_filters( 'esc_attr', $safe_text, $text );
     }
@@ -495,7 +519,7 @@ class Format {
             return $url;
 
         // make sure there's a protocol, add http:// if not
-        if ( ! get_protocol( $url ) )
+        if ( ! $http->get_protocol( $url ) )
             $url = 'http://'.$url;
 
         $original_url = $url;
@@ -515,12 +539,13 @@ class Format {
         // Previous regexp in YOURLS was '|[^a-z0-9-~+_.?\[\]\^#=!&;,/:%@$\|*`\'<>"()\\x80-\\xff\{\}]|i'
         // TODO: check if that was it too destructive
         $strip = array( '%0d', '%0a', '%0D', '%0A' );
-        $url = deep_replace( $strip, $url );
+        $url = $this->deep_replace( $strip, $url );
         $url = str_replace( ';//', '://', $url );
 
         // Replace ampersands and single quotes only when displaying.
         if ( 'display' == $context ) {
-            $url = kses_normalize_entities( $url );
+            $kses = new KSES();
+            $url = $kses->normalize_entities( $url );
             $url = str_replace( '&amp;', '&#038;', $url );
             $url = str_replace( "'", '&#039;', $url );
         }
@@ -531,7 +556,7 @@ class Format {
             // Note: $allowedprotocols is also globally filterable in functions-kses.php/kses_init()
         }
 
-        if ( !is_allowed_protocol( $url, $protocols ) )
+        if ( !$http->is_allowed_protocol( $url, $protocols ) )
             return '';
 
         // I didn't use KSES function kses_bad_protocol() because it doesn't work the way I liked (returns //blah from illegal://blah)
@@ -554,8 +579,8 @@ class Format {
      * @return string Escaped text.
      */
     public function esc_js( $text ) {
-        $safe_text = check_invalid_utf8( $text );
-        $safe_text = specialchars( $safe_text, ENT_COMPAT );
+        $safe_text = $this->check_invalid_utf8( $text );
+        $safe_text = $this->specialchars( $safe_text, ENT_COMPAT );
         $safe_text = preg_replace( '/&#(x)?0*(?(1)27|39);?/i', "'", stripslashes( $safe_text ) );
         $safe_text = str_replace( "\r", '', $safe_text );
         $safe_text = str_replace( "\n", '\\n', addslashes( $safe_text ) );
@@ -572,7 +597,7 @@ class Format {
      * @return string
      */
     public function esc_textarea( $text ) {
-        $safe_text = htmlspecialchars( $text, ENT_QUOTES );
+        $safe_text = $this->htmlspecialchars( $text, ENT_QUOTES );
 
         return apply_filters( 'esc_textarea', $safe_text, $text );
     }
@@ -587,7 +612,7 @@ class Format {
      */
     public function encodeURI( $url ) {
         // Decode URL all the way
-        $result = rawurldecode_while_encoded( $url );
+        $result = $this->rawurldecode_while_encoded( $url );
         // Encode once
         $result = strtr( rawurlencode( $result ), array (
             '%3B' => ';', '%2C' => ',', '%2F' => '/', '%3F' => '?', '%3A' => ':', '%40' => '@',
@@ -640,8 +665,8 @@ class Format {
      */
     public function rawurldecode_while_encoded( $string ) {
         $string = rawurldecode( $string );
-        if( is_rawurlencoded( $string ) ) {
-            $string = rawurldecode_while_encoded( $string );
+        if( $this->is_rawurlencoded( $string ) ) {
+            $string = $this->rawurldecode_while_encoded( $string );
         }
 
         return $string;
