@@ -23,8 +23,11 @@ module.exports = function (grunt) {
             }
         },
         phpcsfixer: {
-            app: {
+            yourls: {
                 dir: 'includes/src'
+            },
+            admin: {
+                dir: 'includes/admin'
             },
             options: {
                 level: 'all',
@@ -83,7 +86,7 @@ module.exports = function (grunt) {
             },
             php: {
                 files: 'includes/src/**/*.php',
-                tasks: [/*'phpcsfixer', */'phpunit']
+                tasks: ['phpcsfixer:yourls', 'phpunit']
             }
         }
     });
