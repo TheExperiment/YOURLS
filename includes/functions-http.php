@@ -1,6 +1,14 @@
 <?php
+
 /**
- * Functions that relate to HTTP requests
+ * HTTP Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+/**
+ * Class that relate to HTTP requests
  *
  * On functions using the 3rd party library Requests: 
  * Thir goal here is to provide convenient wrapper functions to the Requests library. There are
@@ -13,7 +21,6 @@
  *
  * @since 1.7
  */
-
 class HTTP {
     
     /**
