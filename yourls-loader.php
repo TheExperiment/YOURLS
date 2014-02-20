@@ -17,5 +17,5 @@ if ( '/robots.txt' == $_SERVER['REQUEST_URI'] ) {
 // Start YOURLS
 require __DIR__ . '/includes/vendor/autoload.php';
 
-$yourls = new YOURLS\Loader();
+$yourls = new YOURLS\Loader;
 $yourls->run();

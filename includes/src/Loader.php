@@ -9,6 +9,8 @@
 
 namespace YOURLS;
 
+use YOURLS\Extensions\Filters;
+
 /**
  * Summary of Loader
  */
@@ -109,22 +111,20 @@ class Loader {
         // Include all functions
         require_once YOURLS_INC . '/version.php';
 
-        // Load locale
-        yourls_load_default_textdomain();
-
+        $funct = new Functions;
         // Check if we are in maintenance mode - if yes, it will die here.
-        yourls_check_maintenance_mode();
+        $funct->check_maintenance_mode();
 
         // Fix REQUEST_URI for IIS
-        yourls_fix_request_uri();
+        $funct->fix_request_uri();
 
         // If request for an admin page is http:// and SSL is required, redirect
-        if( yourls_is_admin() && yourls_needs_ssl() && !yourls_is_ssl() ) {
+        if( $funct->is_admin() && $funct->needs_ssl() && !$funct->is_ssl() ) {
             if ( 0 === strpos( $_SERVER['REQUEST_URI'], 'http' ) ) {
-                yourls_redirect( preg_replace( '|^http://|', 'https://', $_SERVER['REQUEST_URI'] ) );
+                $funct->redirect( preg_replace( '|^http://|', 'https://', $_SERVER['REQUEST_URI'] ) );
                 exit();
             } else {
-                yourls_redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+                $funct->redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
                 exit();
             }
         }
@@ -136,8 +136,8 @@ class Loader {
         if( file_exists( YOURLS_USERDIR . '/db.php' ) ) {
             require_once YOURLS_USERDIR . '/db.php';
         } else {
-            require_once YOURLS_INC . '/class-mysql.php';
-            yourls_db_connect();
+            $db = new MySQL;
+            $db->connect();
         }
 
         // Allow early inclusion of a cache layer
@@ -145,29 +145,31 @@ class Loader {
             require_once YOURLS_USERDIR . '/cache.php';
 
         // Read options right from start
-        yourls_get_all_options();
+        $funct->get_all_options();
 
         // Register shutdown function
         register_shutdown_function( 'yourls_shutdown' );
 
+        $filters = new Filters;
         // Core now loaded
-        yourls_do_action( 'init' ); // plugins can't see this, not loaded yet
+        $filters->do_action( 'init' ); // plugins can't see this, not loaded yet
 
         // Check if need to redirect to install procedure
-        if( !yourls_is_installed() && !yourls_is_installing() ) {
-            yourls_redirect( YOURLS_SITE .'/yourls-install.php', 302 );
+        if( !$funct->is_installed() && !$funct->is_installing() ) {
+            $funct->redirect( YOURLS_SITE .'/yourls-install.php', 302 );
         }
 
         // Check if upgrade is needed (bypassed if upgrading or installing)
-        if ( !yourls_is_upgrading() && !yourls_is_installing() ) {
-            if ( yourls_upgrade_is_needed() ) {
-                yourls_redirect( yourls_admin_url( 'upgrade' ), 302 );
+        if ( !$funct->is_upgrading() && !$funct->is_installing() ) {
+            if ( $funct->upgrade_is_needed() ) {
+                $funct->redirect( $funct->admin_url( 'upgrade' ), 302 );
             }
         }
-
+        
+        $plug = new Extensions\Plugins;
         // Init all plugins
-        yourls_load_plugins();
-        yourls_do_action( 'plugins_loaded' );
+        $plug->load_plugins();
+        $filters->do_action( 'plugins_loaded' );
 
         // Init themes if applicable
         if( yourls_has_interface() ) {
