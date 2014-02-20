@@ -64,9 +64,9 @@ class Themes {
         global $ydb;
 
         if( $where ) {
-            remove_from_array_deep( $ydb->template[ $where ], $function, $replace_with );
+            $this->remove_from_array_deep( $ydb->template[ $where ], $function, $replace_with );
         } else {
-            remove_from_array_deep( $ydb->template, $function, $replace_with );
+            $this->remove_from_array_deep( $ydb->template, $function, $replace_with );
         }
     }
 
@@ -81,7 +81,7 @@ class Themes {
     public function remove_from_array_deep( &$array, $remove, $replace_with = null ) {
         foreach( $array as $key => &$value ) {
             if( is_array( $value ) ) {
-                remove_from_array_deep( $value, $remove, $replace_with );
+                $this->remove_from_array_deep( $value, $remove, $replace_with );
             } else {
                 if( $remove == $value ) {
                     if( $replace_with ) {
@@ -159,7 +159,7 @@ class Themes {
         // Filter the asset list before echoing links
         $assets = apply_filter( 'html_assets_queue', $ydb->assets );
 
-        $core = core_assets();
+        $core = $this->core_assets();
 
         // Include assets
         foreach( $assets as $type => $files ) {
@@ -207,7 +207,7 @@ class Themes {
         }
 
         global $ydb;
-        if( is_asset_queued( $name, $type ) ) {
+        if( $this->is_asset_queued( $name, $type ) ) {
             unset( $ydb->assets[ $type ][ $name ] );
 
             return true;
@@ -235,14 +235,14 @@ class Themes {
         }
 
         // Already in queue?
-        if( is_asset_queued( $name, $type ) )
+        if( $this->is_asset_queued( $name, $type ) )
 
             return false;
 
         // Are there any (core) dependencies needed first?
         if( $deps ) {
             foreach( (array)$deps as $dep ) {
-                enqueue_asset( $dep, $type );
+                $this->enqueue_asset( $dep, $type );
             }
         }
 
@@ -265,7 +265,7 @@ class Themes {
      * @return bool         false on error, true otherwise
      */
     public function enqueue_style( $name, $src = '', $deps = array() ) {
-        return enqueue_asset( $name, 'css', $src, $deps  );
+        return $this->enqueue_asset( $name, 'css', $src, $deps  );
     }
 
     /**
@@ -281,7 +281,7 @@ class Themes {
      * @return bool         false on error, true otherwise
      */
     public function enqueue_script( $name, $src = '', $deps = array() ) {
-        return enqueue_asset( $name, 'js', $src, $deps );
+        return $this->enqueue_asset( $name, 'js', $src, $deps );
     }
 
     /**
@@ -295,7 +295,7 @@ class Themes {
      * @return bool         false on error, true otherwise
      */
     public function dequeue_style( $name ) {
-        return dequeue_asset( $name, 'css' );
+        return $this->dequeue_asset( $name, 'css' );
     }
 
     /**
@@ -309,7 +309,7 @@ class Themes {
      * @return bool         false on error, true otherwise
      */
     public function dequeue_script( $name ) {
-        return dequeue_asset( $name, 'js' );
+        return $this->dequeue_asset( $name, 'js' );
     }
 
     /**
@@ -336,7 +336,7 @@ class Themes {
      * @return bool         true if the script is in the queue, false otherwise
      */
     public function is_script_queued( $name ) {
-        return is_asset_queued( $name, 'js' );
+        return $this->is_asset_queued( $name, 'js' );
     }
 
     /**
@@ -349,7 +349,7 @@ class Themes {
      * @return bool         true if the stylesheet is in the queue, false otherwise
      */
     public function is_style_queued( $name ) {
-        return is_asset_queued( $name, 'css' );
+        return $this->is_asset_queued( $name, 'css' );
     }
 
     /**
@@ -360,7 +360,7 @@ class Themes {
      * @return array Array of [/themedir/theme.css]=>array('Name'=>'Leo', 'Title'=>'My Theme', ... )
      */
     public function get_themes() {
-        return get_plugins( 'themes' );
+        return $this->get_plugins( 'themes' );
     }
 
     /**
@@ -373,15 +373,15 @@ class Themes {
 
         // Enqueue default asset files - $ydb->assets will keep a list of needed CSS and JS
         // Asset src are defined in core_assets()
-        enqueue_style( 'style' );
-        enqueue_script( 'jquery' );
-        enqueue_script( 'clipboard' );
-        enqueue_script( 'yourls' );
-        enqueue_script( 'scripts' );
-        enqueue_script( 'details' );
+        $this->enqueue_style( 'style' );
+        $this->enqueue_script( 'jquery' );
+        $this->enqueue_script( 'clipboard' );
+        $this->enqueue_script( 'yourls' );
+        $this->enqueue_script( 'scripts' );
+        $this->enqueue_script( 'details' );
 
         // Set default template structure
-        set_template_content();
+        $this->set_template_content();
 
         // Don't load theme when installing or updating.
         if( is_installing() OR is_upgrading() )
@@ -389,7 +389,7 @@ class Themes {
             return;
 
         // Load theme if applicable
-        load_active_theme();
+        $this->load_active_theme();
     }
 
     /**
@@ -403,7 +403,7 @@ class Themes {
         do_action( 'pre_load_active_theme' );
 
         // is there an active theme ?
-        $active_theme = get_active_theme();
+        $active_theme = $this->get_active_theme();
         if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
             global $ydb;
             $ydb->debug_log[] = 'Theme: ' . $active_theme;
@@ -415,7 +415,7 @@ class Themes {
         }
 
         // Try to load the active theme
-        $load = load_theme( $active_theme );
+        $load = $this->load_theme( $active_theme );
         if( $load === true ) {
             do_action( 'load_active_theme' );
 
@@ -423,7 +423,7 @@ class Themes {
         }
 
         // There was a problem : deactivate theme and report error
-        activate_theme( 'default' );
+        $this->activate_theme( 'default' );
         add_notice( $load );
         /*add_notice( s( 'Deactivated theme: %s' ), $active_theme );*/
 
@@ -438,9 +438,9 @@ class Themes {
      * @return mixed          true, or an error message
      */
     public function load_theme( $theme ) {
-        $theme_php     = get_theme_dir( $theme ) . '/theme.php';
-        $theme_css     = get_theme_dir( $theme ) . '/theme.css';
-        $theme_css_url = get_theme_url( $theme ) . '/theme.css';
+        $theme_php     = $this->get_theme_dir( $theme ) . '/theme.php';
+        $theme_css     = $this->get_theme_dir( $theme ) . '/theme.css';
+        $theme_css_url = $this->get_theme_url( $theme ) . '/theme.css';
 
         if( !is_readable( $theme_css ) )
 
@@ -460,7 +460,7 @@ class Themes {
         }
 
         // Enqueue theme.css
-        enqueue_style( $theme, $theme_css_url );
+        $this->enqueue_style( $theme, $theme_css_url );
 
         // Success !
         do_action( 'theme_loaded' );
@@ -484,8 +484,8 @@ class Themes {
             return true;
         }
 
-        $theme_php = get_theme_dir( $theme ) . '/theme.php';
-        $theme_css = get_theme_dir( $theme ) . '/theme.css';
+        $theme_php = $this->get_theme_dir( $theme ) . '/theme.php';
+        $theme_css = $this->get_theme_dir( $theme ) . '/theme.css';
 
         // Check if the theme has a theme.css
         if( !is_readable( $theme_css ) )
@@ -493,17 +493,17 @@ class Themes {
             return s( 'Cannot find <code>theme.css</code> in <code>%s</code>', $theme );
 
         // Validate theme.php file if exists
-        if( is_readable( $theme_php ) && !validate_plugin_file( $theme_php ) )
+        if( is_readable( $theme_php ) && !$this->validate_plugin_file( $theme_php ) )
 
             return s( 'Not a valid <code>theme.php</code> file in <code>%s</code>', $theme );
 
         // Check that it's not activated already
-        if( $theme == get_active_theme() )
+        if( $theme == $this->get_active_theme() )
 
             return _( 'Theme already activated' );
 
         // Attempt to load the theme
-        $load = load_theme( $theme );
+        $load = $this->load_theme( $theme );
 
         if( $load === true ) {
             // so far, so good
@@ -566,7 +566,7 @@ class Themes {
      * @return string        sanitized physical path, or an empty string
      */
     public function get_active_theme_dir( ) {
-        return ( get_active_theme() ? get_theme_dir( get_active_theme() ) : '' );
+        return ( $this->get_active_theme() ? $this->get_theme_dir( $this->get_active_theme() ) : '' );
     }
 
     /**
@@ -576,7 +576,7 @@ class Themes {
      * @return string        sanitized URL,  or an empty string
      */
     public function get_active_theme_url( ) {
-        return ( get_active_theme() ? get_theme_url( get_active_theme() ) : '' );
+        return ( $this->get_active_theme() ? $this->get_theme_url( $this->get_active_theme() ) : '' );
     }
 
 
@@ -591,7 +591,7 @@ class Themes {
      * @param array $plugin_b
      * @return int 0, 1 or -1, see uasort()
      */
-    public function themes_sort_callback( $theme_a, $theme_b ) {
+    public function sort_callback( $theme_a, $theme_b ) {
         $orderby = apply_filters( 'themes_sort_callback', 'Theme Name' );
         $order   = apply_filters( 'themes_sort_callback', 'ASC' );
 
@@ -621,8 +621,8 @@ class Themes {
 
         // search for screenshot.(gif|jpg|png)
         foreach( array( 'png', 'jpg', 'gif' ) as $ext ) {
-            if( file_exists( get_theme_dir( $theme_dir ) . '/screenshot.' . $ext ) ) {
-                $screenshot = get_theme_url( $theme_dir ) . '/screenshot.' . $ext;
+            if( file_exists( $this->get_theme_dir( $theme_dir ) . '/screenshot.' . $ext ) ) {
+                $screenshot = $this->get_theme_url( $theme_dir ) . '/screenshot.' . $ext;
                 break;
             }
         }
