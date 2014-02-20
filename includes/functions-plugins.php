@@ -1,7 +1,14 @@
 <?php
 
 /**
- * The filter/plugin API is located in this file, which allows for creating filters
+ * Plugins Wrapper
+ * 
+ * @since 1.5
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+/**
+ * The filter/plugin API which allows for creating filters
  * and hooking functions, and methods. The functions or methods will be run when
  * the filter is called.
  *
@@ -14,13 +21,13 @@
  * @author Ozh
  * @since 1.5
  */
-
 class Plugins {
     
-    $yourls_filters = array();
-    /* This global var will collect filters with the following structure:
+    /**
+     * This global var will collect filters with the following structure:
      * $yourls_filters['hook']['array of priorities']['serialized function names']['array of ['array (functions, accepted_args)]']
      */
+    private $yourls_filters = array();
 
     /**
      * Registers a filtering function
