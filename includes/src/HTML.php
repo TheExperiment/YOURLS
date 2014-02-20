@@ -850,26 +850,6 @@ class HTML {
     }
 
     /**
-     * Callback class for yourls_table_add_row
-     *
-     * See comment about PHP 5.3+ in yourls_table_add_row()
-     *
-     * @since 1.7
-     */
-    class yourls_table_add_row_callback {
-        private $elements;
-    
-        function __construct($elements) {
-            $this->elements = $elements;
-        }
-    
-        function callback( $matches ) {
-            return $this->elements[ $matches[1] ];
-        }
-    }
-
-
-    /**
      * Echo the main table head
      *
      */
