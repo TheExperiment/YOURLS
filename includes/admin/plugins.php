@@ -12,7 +12,7 @@
  */
 
 define( 'YOURLS_ADMIN', true );
-require_once dirname( dirname( __FILE__ ) ) . '/load-yourls.php';
+require_once dirname( __DIR__ ) . '/load-yourls.php';
 yourls_maybe_require_auth();
 
 // Handle plugin administration pages

@@ -17,19 +17,19 @@ function string_to_HTML_ID($string) {
     return substr( strtolower( preg_replace( '/[^a-zA-Z0-9-]+/', '-', $string ) ), 0, 13 );
 }
 
-require_once dirname( __FILE__ ) . '/Michelf/Markdown.inc.php';
+require_once __DIR__ . '/Michelf/Markdown.inc.php';
 use \Michelf\Markdown;
 
-include_once( dirname( dirname( __FILE__ ) ) . '/includes/version.php' );
+include_once( dirname( __DIR__ ) . '/includes/version.php' );
 
-$files = scandir( dirname( __FILE__ ) );
+$files = scandir( __DIR__ );
 $html = $menu = '';
 foreach( $files as $file ) {
     if( substr( $file, -3 ) == '.md' && $file != 'README.md' ) {
         $file_name = substr( $file, 2, -3 );
         $html .= '<div id="'. string_to_HTML_ID( $file_name ) .'">';
         $html .= '<h1>' . $file_name . '</h1>';
-        $html .= Markdown::defaultTransform( file_get_contents( dirname( __FILE__ ) . '/' . $file ) );
+        $html .= Markdown::defaultTransform( file_get_contents( __DIR__ . '/' . $file ) );
         $html .= '</div>';
         $menu .= '<li><a href="#' . string_to_HTML_ID( $file_name ) . '">' . $file_name . '</a></li>';
     }
