@@ -2,7 +2,7 @@
 
 /**
  * Plugins Wrapper
- * 
+ *
  * @since 1.5
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -24,7 +24,7 @@ namespace YOURLS;
  * @since 1.5
  */
 class Plugins {
-    
+
     /**
      * This global var will collect filters with the following structure:
      * $filters['hook']['array of priorities']['serialized function names']['array of ['array (functions, accepted_args)]']
@@ -33,7 +33,7 @@ class Plugins {
 
     /**
      * Registers a filtering function
-     * 
+     *
      * Typical use:
      *		add_filter('some_hook', 'function_handler_for_hook');
      *
@@ -48,7 +48,7 @@ class Plugins {
         global $filters;
         // At this point, we cannot check if the function exists, as it may well be defined later (which is OK)
         $id = filter_unique_id( $hook, $function_name, $priority );
-    
+
         $filters[ $hook ][ $priority ][ $id ] = array(
             'function'      => $function_name,
             'accepted_args' => $accepted_args,
@@ -124,7 +124,7 @@ class Plugins {
      *		2) Trigger functions is attached to event 'event'
      *		apply_filter( 'event' );
      *      (see do_action() )
-     * 
+     *
      * Returns an element which may have been filtered by a filter.
      *
      * @global array $filters storage for all of the filters
@@ -136,12 +136,12 @@ class Plugins {
         global $filters;
         if ( !isset( $filters[ $hook ] ) )
             return $value;
-    
+
         $args = func_get_args();
-    
+
         // Sort filters by priority
         ksort( $filters[ $hook ] );
-    
+
         // Loops through each filter
         reset( $filters[ $hook ] );
         do {
@@ -160,7 +160,7 @@ class Plugins {
             }
 
         } while ( next( $filters[ $hook ] ) !== false );
-    
+
         if( $the_['type'] == 'filter' )
             return $value;
     }
@@ -184,13 +184,13 @@ class Plugins {
 
     /**
      * Performs an action triggered by a YOURLS event.
-    * 
+    *
      * @param string $hook the name of the YOURLS action
      * @param mixed $arg action arguments
      */
     function do_action( $hook, $arg = '' ) {
         global $actions;
-    
+
         // Keep track of actions that are "done"
         if ( !isset( $actions ) )
             $actions = array();
@@ -206,7 +206,7 @@ class Plugins {
             $args[] = $arg;
         for ( $a = 2; $a < func_num_args(); $a++ )
             $args[] = func_get_arg( $a );
-    
+
         apply_filter( $hook, $args );
     }
 
@@ -242,7 +242,7 @@ class Plugins {
      */
     function remove_filter( $hook, $function_to_remove, $priority = 10, $accepted_args = 1 ) {
         global $filters;
-    
+
         $function_to_remove = filter_unique_id( $hook, $function_to_remove, $priority );
 
         $remove = isset( $filters[ $hook ][ $priority ][ $function_to_remove ] );
@@ -284,7 +284,7 @@ class Plugins {
 
     /**
      * Check if a funtion has a specific action
-     * 
+     *
      * @param string $hook The name of the filter hook.
      * @param string $function_to_check
      * @return bool
@@ -300,10 +300,10 @@ class Plugins {
      */
     function has_active_plugins( ) {
         global $ydb;
-    
+
         if( !property_exists( $ydb, 'plugins' ) || !$ydb->plugins )
             $ydb->plugins = array();
-        
+
         return count( $ydb->plugins );
     }
 
@@ -319,16 +319,16 @@ class Plugins {
             $plugins = (array) glob( THEMEDIR .'/*/theme.css');
         else
         $plugins = (array) glob( PLUGINDIR .'/*/plugin.php');
-    
+
         if( !$plugins )
             return array();
-    
+
         foreach( $plugins as $key => $plugin ) {
             $_plugin = plugin_basename( $plugin, $category );
             $plugins[ $_plugin ] = get_plugin_data( $plugin );
             unset( $plugins[ $key ] );
         }
-    
+
         return $plugins;
     }
 
@@ -341,10 +341,10 @@ class Plugins {
     function is_active_plugin( $plugin ) {
         if( !has_active_plugins( ) )
             return false;
-    
+
         global $ydb;
         $plugin = plugin_basename( $plugin );
-    
+
         return in_array( $plugin, $ydb->plugins );
 
     }
@@ -359,11 +359,11 @@ class Plugins {
         $fp = fopen( $file, 'r' ); // assuming $file is readable, since load_plugins() filters this
         $data = fread( $fp, 8192 ); // get first 8kb
         fclose( $fp );
-    
+
         // Capture all the header within first comment block
         if( !preg_match( '!.*?/\*(.*?)\*/!ms', $data, $matches ) )
             return array();
-    
+
         // Capture each line with "Something: some text"
         unset( $data );
         $lines = preg_split( "[\n|\r]", $matches[1] );
@@ -373,11 +373,11 @@ class Plugins {
         foreach( $lines as $line ) {
             if( !preg_match( '!(.*?):\s+(.*)!', $line, $matches ) )
                 continue;
-        
+
             list( $null, $field, $value ) = array_map( 'trim', $matches);
             $plugin_data[ $field ] = $value;
         }
-    
+
         return $plugin_data;
     }
 
@@ -388,17 +388,17 @@ class Plugins {
         // Don't load plugins when installing or updating
         if( is_installing() OR is_upgrading() )
             return;
-    
+
         $active_plugins = get_option( 'active_plugins' );
         if( false === $active_plugins )
             return;
-    
+
         global $ydb;
         $ydb->plugins = array();
 
         if( defined( 'DEBUG' ) && DEBUG == true )
             $ydb->debug_log[] = 'Plugins: ' . count( $active_plugins );
-    
+
         foreach( (array)$active_plugins as $key=>$plugin ) {
             if( validate_plugin_file( PLUGINDIR.'/'.$plugin ) ) {
                 include_once( PLUGINDIR.'/'.$plugin );
@@ -406,7 +406,7 @@ class Plugins {
                 unset( $active_plugins[$key] );
             }
         }
-    
+
         // $active_plugins should be empty now, if not, a plugin could not be find: remove it
         if( count( $active_plugins ) ) {
             update_option( 'active_plugins', $ydb->plugins );
@@ -433,7 +433,7 @@ class Plugins {
             !is_readable( $file )
         )
             return false;
-        
+
         return true;
     }
 
@@ -449,12 +449,12 @@ class Plugins {
         $plugindir = sanitize_filename( PLUGINDIR );
         if( !validate_plugin_file( $plugindir.'/'.$plugin ) )
             return _( 'Not a valid plugin file' );
-        
+
         // check not activated already
         global $ydb;
         if( has_active_plugins() && in_array( $plugin, $ydb->plugins ) )
             return _( 'Plugin already activated' );
-    
+
         // attempt activation. TODO: uber cool fail proof sandbox like in WP.
         ob_start();
         include_once( PLUGINDIR.'/'.$plugin );
@@ -463,13 +463,13 @@ class Plugins {
             $output = ob_get_clean();
             return s( 'Plugin generated unexpected output. Error was: <br/><pre>%s</pre>', $output );
         }
-    
+
         // so far, so good: update active plugin list
         $ydb->plugins[] = $plugin;
         update_option( 'active_plugins', $ydb->plugins );
         do_action( 'activated_plugin', $plugin );
         do_action( 'activated_' . $plugin );
-    
+
         return true;
     }
 
@@ -485,18 +485,18 @@ class Plugins {
         // Check plugin is active
         if( !is_active_plugin( $plugin ) )
             return _( 'Plugin not active' );
-    
+
         // Deactivate the plugin
         global $ydb;
         $key = array_search( $plugin, $ydb->plugins );
         if( $key !== false ) {
             array_splice( $ydb->plugins, $key, 1 );
         }
-    
+
         update_option( 'active_plugins', $ydb->plugins );
         do_action( 'deactivated_plugin', $plugin );
         do_action( 'deactivated_' . $plugin );
-    
+
         return true;
     }
 
@@ -528,10 +528,10 @@ class Plugins {
      */
     function list_plugin_admin_pages() {
         global $ydb;
-    
+
         if( !property_exists( $ydb, 'plugin_pages' ) || !$ydb->plugin_pages )
             return;
-    
+
         $plugin_links = array();
         foreach( (array)$ydb->plugin_pages as $plugin => $page ) {
             $plugin_links[ $plugin ] = array(
@@ -547,7 +547,7 @@ class Plugins {
      */
     function register_plugin_page( $slug, $title, $function ) {
         global $ydb;
-    
+
         if( !property_exists( $ydb, 'plugin_pages' ) || !$ydb->plugin_pages )
             $ydb->plugin_pages = array();
 
@@ -569,20 +569,20 @@ class Plugins {
         if( !isset( $ydb->plugin_pages[$plugin_page] ) ) {
             die( _( 'This page does not exist. Maybe a plugin you thought was activated is inactive?' ), _( 'Invalid link' ) );
         }
-    
+
         // Draw the page itself
         do_action( 'load-' . $plugin_page);
         html_head( $type . '_page_' . $plugin_page, $ydb->plugin_pages[$plugin_page]['title'] );
         template_content( 'before', $type );
-    
+
         call_user_func( $ydb->plugin_pages[$plugin_page]['function'] );
-    
+
         template_content( 'after', $type . '_page_' . $plugin_page );
         die();
     }
 
     /**
-     * Callback function: Sort plugins 
+     * Callback function: Sort plugins
      *
      * @link http://php.net/uasort
      *
@@ -603,7 +603,7 @@ class Plugins {
         if ( 'DESC' == $order )
             return ( $a < $b ) ? 1 : -1;
         else
-            return ( $a < $b ) ? -1 : 1;		
+            return ( $a < $b ) ? -1 : 1;
     }
 
 }

@@ -2,7 +2,7 @@
 
 /**
  * Authentication Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -15,24 +15,24 @@ use Hautelook\Phpass\PasswordHash;
  * Summary of Authentication
  */
 class Authentication {
-    
+
     /**
      * Check for valid user via login form or stored cookie. Returns true or an error message
      *
      */
     function is_valid_user() {
         static $valid = false;
-        
+
         if( $valid )
             return true;
-        
+
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_is_valid_user', null );
         if ( null !== $pre ) {
             $valid = ( $pre === true ) ;
             return $pre;
         }
-        
+
         // $unfiltered_valid : are credentials valid? Boolean value. It's "unfiltered" to allow plugins to eventually filter it.
         $unfiltered_valid = false;
 
@@ -42,7 +42,7 @@ class Authentication {
             store_cookie( null );
             return array( _( 'Logged out successfully' ), 'success' );
         }
-        
+
         // Check cookies or login request. Login form has precedence.
 
         do_action( 'pre_login' );
@@ -59,7 +59,7 @@ class Authentication {
             do_action( 'pre_login_signature_timestamp' );
             $unfiltered_valid = check_signature_timestamp();
         }
-        
+
         elseif
             // API only: Secure (no login or pwd)
             // ?signature=md5(totoblah)
@@ -71,7 +71,7 @@ class Authentication {
             do_action( 'pre_login_signature' );
             $unfiltered_valid = check_signature();
         }
-        
+
         elseif
             // API or normal: login with username & pwd
             ( isset( $_REQUEST['username'] ) && isset( $_REQUEST['password'] )
@@ -80,38 +80,38 @@ class Authentication {
             do_action( 'pre_login_username_password' );
             $unfiltered_valid = check_username_password();
         }
-        
+
         elseif
             // Normal only: cookies
-            ( !is_API() && 
+            ( !is_API() &&
               isset( $_COOKIE['username'] ) )
         {
             do_action( 'pre_login_cookie' );
             $unfiltered_valid = check_auth_cookie();
         }
-        
+
         // Regardless of validity, allow plugins to filter the boolean and have final word
         $valid = apply_filter( 'is_valid_user', $unfiltered_valid );
 
         // Login for the win!
         if ( $valid ) {
             do_action( 'login' );
-            
+
             // (Re)store encrypted cookie if needed
             if ( !is_API() ) {
                 store_cookie( USER );
-                
+
                 // Login form : redirect to requested URL to avoid re-submitting the login form on page reload
                 if( isset( $_REQUEST['username'] ) && isset( $_REQUEST['password'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
                     $url = $_SERVER['REQUEST_URI'];
                     redirect( $url );
                 }
             }
-            
+
             // Login successful
             return true;
         }
-        
+
         // Login failed
         do_action( 'login_failed' );
 
@@ -141,10 +141,10 @@ class Authentication {
      */
     function check_password_hash( $user, $submitted_password ) {
         global $user_passwords;
-        
+
         if( !isset( $user_passwords[ $user ] ) )
             return false;
-        
+
         if ( has_phpass_password( $user ) ) {
             // Stored password is hashed with phpass
             list( , $hash ) = explode( ':', $user_passwords[ $user ] );
@@ -170,17 +170,17 @@ class Authentication {
     function hash_passwords_now( $config_file ) {
         if( !is_readable( $config_file ) )
             return 'cannot read file'; // not sure that can actually happen...
-        
+
         if( !is_writable( $config_file ) )
-            return 'cannot write file';	
-        
+            return 'cannot write file';
+
         // Include file to read value of $user_passwords
         // Temporary suppress error reporting to avoid notices about redeclared constants
         $errlevel = error_reporting();
         error_reporting( 0 );
         require $config_file;
         error_reporting( $errlevel );
-        
+
         $configdata = file_get_contents( $config_file );
         if( $configdata == false )
             return 'could not read file';
@@ -204,10 +204,10 @@ class Authentication {
                 }
             }
         }
-        
+
         if( $to_hash == 0 )
             return 0; // There was no password to encrypt
-        
+
         $success = file_put_contents( $config_file, $configdata );
         if ( $success === FALSE ) {
             debug_log( 'Failed writing to ' . $config_file );
@@ -257,14 +257,14 @@ class Authentication {
         if( $instance == false ) {
             $instance = new PasswordHash( $iteration, $portable );
         }
-        
+
         return $instance;
     }
 
 
     /**
      * Check to see if any passwords are stored as cleartext.
-     * 
+     *
      * @since 1.7
      * @return bool true if any passwords are cleartext
      */
@@ -406,15 +406,15 @@ class Authentication {
             }
             $time = time() + COOKIE_LIFE;
         }
-        
+
         $domain   = apply_filter( 'setcookie_domain',   parse_url( SITE, 1 ) );
         $secure   = apply_filter( 'setcookie_secure',   is_ssl() );
         $httponly = apply_filter( 'setcookie_httponly', true );
 
         // Some browser refuse to store localhost cookie
-        if ( $domain == 'localhost' ) 
+        if ( $domain == 'localhost' )
             $domain = '';
-        
+
         if ( !headers_sent() ) {
             // Set httponly if the php version is >= 5.2.0
             if( version_compare( phpversion(), '5.2.0', 'ge' ) ) {
@@ -436,5 +436,5 @@ class Authentication {
         if( !defined( 'USER' ) )
             define( 'USER', $user );
     }
-    
+
 }

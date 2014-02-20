@@ -2,7 +2,7 @@
 
 /**
  * XML Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -10,19 +10,19 @@
 namespace YOURLS;
 
 /**
- * This class stores associative arrays in an xml formatted string.      
- * There's also a function thar retrieves them. If you try to use        
- * xml2array with a general xml, it can fail, since there can be some   
+ * This class stores associative arrays in an xml formatted string.
+ * There's also a function thar retrieves them. If you try to use
+ * xml2array with a general xml, it can fail, since there can be some
  * repeated indexes...
- * 
+ *
  * @link http://www.phpclasses.org/browse/package/2286/
  * @deprecated We have to move to http://www.php.net/manual/fr/simplexml.examples.php
  */
 class XML {
-    
+
     var $text;
     var $arrays, $keys, $node_flag, $depth, $xml_parser;
-    
+
     /**
      * Converts an array to an xml string
      */
@@ -55,7 +55,7 @@ class XML {
         //return $array_text;
 
     }
-    
+
     /**
      * Transform an XML string to associative array "XML Parser Functions"
      */
@@ -71,19 +71,19 @@ class XML {
         return $this->arrays[0];
 
     }
-    
+
     function startElement($parser, $name, $attrs) {
         $this->keys[]=$name; //We add a key
         $this->node_flag=1;
         $this->depth++;
     }
-    
+
     function characterData($parser,$data) {
         $key=end($this->keys);
         $this->arrays[$this->depth][$key]=$data;
         $this->node_flag=0; //So that we don't add as an array, but as an element
     }
-    
+
     function endElement($parser, $name) {
         $key=array_pop($this->keys);
         //If $node_flag==1 we add as an array, if not, as an element

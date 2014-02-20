@@ -2,7 +2,7 @@
 
 /**
  * HTML Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -13,7 +13,7 @@ namespace YOURLS;
  * Here we prepare HTML output
  */
 class HTML {
-    
+
     /**
      * Display HTML head and <body> tag
      *
@@ -23,7 +23,7 @@ class HTML {
     function html_head( $context = 'index', $title = '' ) {
 
         do_action( 'pre_html_head', $context, $title );
-    
+
         // Force no cache for all admin pages
         if( is_admin() && !headers_sent() ) {
             header( 'Expires: Thu, 23 Mar 1972 07:00:00 GMT' );
@@ -33,19 +33,19 @@ class HTML {
             content_type_header( apply_filters( 'html_head_content-type', 'text/html' ) );
             do_action( 'admin_headers', $context, $title );
         }
-    
+
         // Store page context in global object
         global $ydb;
         $ydb->context = $context;
-    
+
         // Body class
         $bodyclass = apply_filter( 'bodyclass', '' );
-    
+
         // Page title
         $_title = 'YOURLS &middot; Your Own URL Shortener';
         $title = $title ? $title . " &mdash; " . $_title : $_title;
         $title = apply_filter( 'html_title', $title, $context );
-    
+
         ?>
 <!DOCTYPE html>
 <html <?php html_language_attributes(); ?>>
@@ -57,7 +57,7 @@ class HTML {
     <meta name="generator" content="YOURLS <?php echo VERSION ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="<?php site_url(); ?>/">
-    <?php  
+    <?php
         favicon();
         output_asset_queue();
         if ( $context == 'infos' ) { 	// Load charts component as needed ?>
@@ -107,7 +107,7 @@ class HTML {
      * @param int    $size      Optional size, 1 to 6, defaults to 6
      * @param string $subtitle  Optional subtitle to be echoed after the title
      * @param string $class     Optional html class
-     * @param bool   $echo      
+     * @param bool   $echo
      */
     function html_htag( $title, $size = 1, $subtitle = null, $class = null, $echo = true ) {
         $size = intval( $size );
@@ -115,11 +115,11 @@ class HTML {
             $size = 1;
         elseif( $size > 6 )
             $size = 6;
-        
+
         if( $class ) {
             $class = 'class="' . esc_attr( $class ) . '"';
         }
-    
+
         $result = "<h$size$class>$title";
         if ( $subtitle ) {
             $result .= " <small>&mdash; $subtitle</small>";
@@ -139,17 +139,17 @@ class HTML {
     function html_menu( $current_page = null ) {
         // Build menu links
         $help_link   = apply_filter( 'help-link', '<a href="' . site_url( false ) .'/docs/"><i class="fa fa-question-circle fa-fw"></i> ' . _( 'Help' ) . '</a>' );
-    
+
         $admin_links    = array();
         $admin_sublinks = array();
-    
+
         $admin_links['admin'] = array(
             'url'    => admin_url( 'index' ),
             'title'  => _( 'Go to the admin interface' ),
             'anchor' => _( 'Interface' ),
             'icon'   => 'home'
         );
-    
+
         if( ( is_admin() && is_public_or_logged() ) || defined( 'USER' ) ) {
             $admin_links['tools'] = array(
                 'url'    => admin_url( 'tools' ),
@@ -168,10 +168,10 @@ class HTML {
             );
             $admin_sublinks['plugins'] = list_plugin_admin_pages();
         }
-    
+
         $admin_links    = apply_filter( 'admin-links',    $admin_links );
         $admin_sublinks = apply_filter( 'admin-sublinks', $admin_sublinks );
-    
+
         // Build menu HTML
         $menu = apply_filter( 'admin_menu_start', '<nav class="sidebar-responsive-collapse"><ul class="admin-menu">' );
         if( defined( 'USER' ) && is_private() ) {
@@ -185,10 +185,10 @@ class HTML {
                 $anchor = isset( $ar['anchor'] ) ? $ar['anchor'] : $link;
                 $title  = isset( $ar['title'] ) ? 'title="' . $ar['title'] . '"' : '';
                 $class_active  = $current_page == $link ? ' active' : '';
-            
+
                 $format = '<li id="admin-menu-%link%-link" class="admin-menu-toplevel%class%">
                     <a href="%url%" %title%><i class="fa fa-%icon% fa-fw"></i> %anchor%</a></li>';
-                $data   = array( 
+                $data   = array(
                     'link'   => $link,
                     'class'  => $class_active,
                     'url'    => $ar['url'],
@@ -196,10 +196,10 @@ class HTML {
                     'icon'   => $ar['icon'],
                     'anchor' => $anchor,
                 );
-            
+
                 $menu .= apply_filter( 'admin-menu-link-' . $link, replace_string_tokens( $format, $data ), $format, $data );
             }
-        
+
             // Submenu if any. TODO: clean up, too many code duplicated here
             if( isset( $admin_sublinks[$link] ) ) {
                 $menu .= '<ul class="admin-menu submenu" id="admin-submenu-' . $link . '">';
@@ -208,7 +208,7 @@ class HTML {
                         $anchor = isset( $ar['anchor'] ) ? $ar['anchor'] : $link;
                         $title  = isset( $ar['title'] ) ? 'title="' . $ar['title'] . '"' : '';
                         $class_active  = ( isset( $_GET['page'] ) && $_GET['page'] == $link ) ? ' active' : '';
-                    
+
                         $format = '<li id="admin-menu-%link%-link" class="admin-menu-sublevel admin-menu-sublevel-%link%%class%">
                             <a href="%url%" %itle%>%anchor%</a></li>';
                         $data   = array(
@@ -218,19 +218,19 @@ class HTML {
                             'title'  => $title,
                             'anchor' => $anchor,
                         );
-                    
+
                         $menu .= apply_filter( 'admin_menu_sublink_' . $link, replace_string_tokens( $format, $data ), $format, $data );
                     }
                 }
                 $menu .=  '</ul>';
             }
         }
-    
+
         if ( isset( $help_link ) )
             $menu .=  '<li id="admin-menu-help-link">' . $help_link .'</li>';
-    
+
         $menu .=  apply_filter( 'admin_menu_end', '</ul></nav>' );
-    
+
         do_action( 'pre_admin_menu' );
         echo apply_filter( 'html_admin_menu', $menu );
         do_action( 'post_admin_menu' );
@@ -258,14 +258,14 @@ class HTML {
      * @param string $style notice / error / info / warning / success
      */
     function add_notice( $message, $style = 'notice' ) {
-        // Escape single quotes in $message to avoid breaking the anonymous function 
-        $message = notice_box( strtr( $message, array( "'" => "\'" ) ), $style ); 
+        // Escape single quotes in $message to avoid breaking the anonymous function
+        $message = notice_box( strtr( $message, array( "'" => "\'" ) ), $style );
         add_action( 'admin_notice', create_function( '', "echo '$message';" ) );
     }
 
     /**
      * Return a formatted notice
-     * 
+     *
      * @param string $message The message showed
      * @param string $style notice / error / info / warning / success
      */
@@ -299,7 +299,7 @@ class HTML {
         do_action( 'pre_page', $page );
         include_once( $include );
         do_action( 'post_page', $page );
-        die();	
+        die();
     }
 
     /**
@@ -313,9 +313,9 @@ class HTML {
     function html_language_attributes() {
         $attributes = array();
         $output = '';
-    
+
         $attributes[] = ( is_rtl() ? 'dir="rtl"' : 'dir="ltr"' );
-    
+
         $doctype = apply_filters( 'html_language_attributes_doctype', 'html' );
         // Experimental: get HTML lang from locale. Should work. Convert fr_FR -> fr-FR
         if ( $lang = str_replace( '_', '-', get_locale() ) ) {
@@ -379,7 +379,7 @@ class HTML {
                 <div class="feedback"></div>
                 <?php do_action( 'html_addnew' ); ?>
             </div>
-            <?php 
+            <?php
     }
 
     /**
@@ -403,13 +403,13 @@ class HTML {
                                 'url'     => _( 'URL' ),
                                 'title'   => _( 'Title' ),
                                 'ip'      => _( 'IP' ),
-                            );							
+                            );
                             $_select_search = html_select( 'search_in', $_options, $search_in );
                             $_button = '<span class="input-group-btn">
                             <button type="submit" id="submit-sort" class="btn btn-primary">' . _( 'Search' ) . '</button>
                             <button type="button" id="submit-clear-filter" class="btn btn-danger" onclick="window.parent.location.href = \'index\'">' . _( 'Clear' ) . '</button>
                             </span>';
-                        
+
                             // Second search control: order by
                             $_options = array(
                                 'keyword'      => _( 'Short URL' ),
@@ -425,7 +425,7 @@ class HTML {
                                 'desc' => _( 'Descending' ),
                             );
                             $_select2_order = html_select( 'sort_order', $_options, $sort_order );
-                        
+
                             // Fourth search control: Show links with more than XX clicks
                             $_options = array(
                                 'more' => _( 'more' ),
@@ -477,15 +477,15 @@ class HTML {
                 }
                 do_action( 'html_search' );
     }
-            
+
     /**
      * Wrapper function to display the global pagination on interface
-     * 
+     *
      * @param array $params
      */
     function html_pagination( $params = array() ) {
         extract( $params ); // extract $page, ...
-        if( $total_pages > 1 ) { 
+        if( $total_pages > 1 ) {
                 ?>
             <div>
                 <ul class="pagination">
@@ -520,7 +520,7 @@ class HTML {
 
     /**
      * Wrapper function to display how many items are shown
-     * 
+     *
      * @since 2.0
      *
      * @param string $item_type Type of the item (e.g. "links")
@@ -570,23 +570,23 @@ class HTML {
             $shortlink_title = '<h2>' . _( 'Your short link' ) . '</h2>';
         if ( $share_title == '' )
             $share_title = '<h2>' . _( 'Quick Share' ) . '</h2>';
-    
+
         // Allow plugins to short-circuit the whole function
         $pre = apply_filter( 'shunt_share_box', false );
         if ( false !== $pre )
             return $pre;
-        
+
         $text   = ( $text ? '"' . $text . '" ' : '' );
         $title  = ( $title ? "$title " : '' );
         $share  = esc_textarea( $title.$text.$shorturl );
         $count  = 140 - strlen( $share );
         $hidden = ( $hidden ? 'style="display:none;"' : '' );
-    
+
         // Allow plugins to filter all data
         $data = compact( 'longurl', 'shorturl', 'title', 'text', 'shortlink_title', 'share_title', 'share', 'count', 'hidden' );
         $data = apply_filter( 'share_box_data', $data );
         extract( $data );
-    
+
         $_share = rawurlencode( $share );
         $_url   = rawurlencode( $shorturl );
         ?>
@@ -648,16 +648,16 @@ class HTML {
      */
     function die( $message = '', $title = '', $header_code = 200 ) {
         status_header( $header_code );
-    
+
         if( !$head = did_action( 'html_head' ) ) {
             html_head( 'die', _( 'Fatal error' ) );
             template_content( 'before', 'die' );
         }
-    
+
         echo apply_filter( 'die_title', "<h2>$title</h2>" );
         echo apply_filter( 'die_message', "<p>$message</p>" );
         do_action( 'die' );
-    
+
         if( !$head ) {
             template_content( 'after', 'die' );
         }
@@ -674,14 +674,14 @@ class HTML {
         $keyword = sanitize_string( $keyword );
         $id = string2htmlid( $keyword ); // used as HTML #id
         $url = get_keyword_longurl( $keyword );
-    
+
         $title = htmlspecialchars( get_keyword_title( $keyword ) );
         $safe_url = esc_attr( $url );
         $safe_title = esc_attr( $title );
         $www = link();
-    
+
         $nonce = create_nonce( 'edit-save_'.$id );
-    
+
         // @TODO: HTML Clean up
         if( $url ) {
             $return = '
@@ -698,7 +698,7 @@ class HTML {
                 </td>
             </tr>
             ';
-        
+
             $data = array(
                 'id' => $id,
                 'keyword' => $keyword,
@@ -708,7 +708,7 @@ class HTML {
                 'www' => link(),
                 'l10n_long_url' => _( 'Long URL' ),
                 'l10n_short_url' => _( 'Short URL' ),
-                'l10n_title' => _( 'Title' ), 
+                'l10n_title' => _( 'Title' ),
                 'l10n_save' => _( 'Save' ),
                 'l10n_edit' => _( 'Cancel' ),
             );
@@ -717,7 +717,7 @@ class HTML {
         } else {
             $return = '<tr class="edit-row notfound"><td class="edit-row notfound">' . _( 'Error, URL not found' ) . '</td></tr>';
         }
-    
+
         $return = apply_filter( 'table_edit_row', $return, $format, $data );
         // Compat note : up to YOURLS 1.6 the values passed to this filter where: $return, $keyword, $url, $title
 
@@ -735,15 +735,15 @@ class HTML {
         $shorturl = link( $keyword );
 
         $statlink = statlink( $keyword );
-        
+
         $delete_link = nonce_url( 'delete-link-'.$id,
-            add_query_arg( array( 'id' => $id, 'action' => 'delete', 'keyword' => $keyword ), admin_url( 'admin-ajax.php' ) ) 
+            add_query_arg( array( 'id' => $id, 'action' => 'delete', 'keyword' => $keyword ), admin_url( 'admin-ajax.php' ) )
         );
-    
+
         $edit_link = nonce_url( 'edit-link-'.$id,
-            add_query_arg( array( 'id' => $id, 'action' => 'edit', 'keyword' => $keyword ), admin_url( 'admin-ajax.php' ) ) 
+            add_query_arg( array( 'id' => $id, 'action' => 'edit', 'keyword' => $keyword ), admin_url( 'admin-ajax.php' ) )
         );
-    
+
         // Action link buttons: the array
         $actions = array(
             'stats' => array(
@@ -779,7 +779,7 @@ class HTML {
             )
         );
         $actions = apply_filter( 'table_add_row_action_array', $actions );
-    
+
         // @TODO: HTML Clean up
         // Action link buttons: the HTML
         $action_links = '<div class="btn-group">';
@@ -816,7 +816,7 @@ class HTML {
         </td>
         <td class="clicks" id="clicks-%id%">%clicks%</td>
         </tr>';
-    
+
         // Highlight domain in displayed URL
         $domain = parse_url( $url, PHP_URL_HOST );
         if( $domain ) {
@@ -843,11 +843,11 @@ class HTML {
             'actions'       => $action_links,
             'copy'          => 'data-clipboard-target="' . 'shorturl-' . $id /*. '" data-copied-hint="' . _( 'Copied!' ) . '" data-placement="top" data-trigger="manual" data-original-title="' . _( 'Copy to clipboard' ) */. '"',
         );
-        
+
         $row = replace_string_tokens( $format, $data );
         $row = apply_filter( 'table_add_row', $row, $format, $data );
         // Compat note : up to YOURLS 1.6 the values passed to this filter where: $keyword, $url, $title, $ip, $clicks, $timestamp
-    
+
         return $row;
     }
 
@@ -857,7 +857,7 @@ class HTML {
      */
     function table_head( $data = null ) {
         echo apply_filter( 'table_head_start', '<thead><tr>' );
-    
+
         if( $data === null )  {
             $data = array(
             'shorturl' => _( 'Short URL' ),
@@ -865,7 +865,7 @@ class HTML {
             'clicks'   => _( 'Clicks' ),
             );
         }
-    
+
         $cells = '';
         foreach( $data as $id => $name ) {
             $cells .= '<th id="table-head-' . $id . '">' . $name . '</th>';
@@ -956,7 +956,7 @@ class HTML {
      * @param string $content
      * @param string $title Optionnal "title" attribut
      * @param bool $class Optionnal "class" attribut
-     * @param bool $echo 
+     * @param bool $echo
      * @return HTML tag with all contents
      */
     function html_link( $href, $content = '', $title = '', $class = false, $echo = true ) {
@@ -970,7 +970,7 @@ class HTML {
         $link = sprintf( '<a href="%s"%s%s>%s</a>', esc_url( $href ), $class, $title, $content );
         if ( $echo )
             echo apply_filter( 'html_link', $link );
-        else 
+        else
             return apply_filter( 'html_link', $link );
     }
 
@@ -983,16 +983,16 @@ class HTML {
         remove_from_template( 'html_global_stats' );
 
         html_head( 'login' );
-    
+
         $action = ( isset( $_GET['action'] ) && $_GET['action'] == 'logout' ? '?' : '' );
-    
+
         template_content( 'before' );
         html_htag( 'YOURLS', 1, 'Your Own URL Shortener' );
-    
+
         ?>
             <div id="login">
                 <form method="post" class="login-screen" action="<?php echo $action; // reset any QUERY parameters ?>">
-                    <?php 
+                    <?php
                     if( !empty( $error_msg ) ) {
                         echo notice_box( $error_msg[0], $error_msg[1] );
         }
@@ -1015,10 +1015,10 @@ class HTML {
                 </form>
             </div>
 <?php
-    
+
         template_content( 'after' );
 
-        die();	
+        die();
     }
 
     /**
@@ -1033,7 +1033,7 @@ class HTML {
         echo "var l10n_cal_today = \"" . esc_js( _( 'Today' ) ) . "\";";
         echo "var l10n_cal_close = \"" . esc_js( _( 'Close' ) ) . "\";";
         echo "</script>";
-    
+
         // Dummy returns, to initialize l10n strings used in the calendar
         _( 'Today' );
         _( 'Close' );
@@ -1048,9 +1048,9 @@ class HTML {
     function new_core_version_notice() {
 
         debug_log( 'Check for new version: ' . ( maybe_check_core_version() ? 'yes' : 'no' ) );
-    
+
         $checks = get_option( 'core_version_checks' );
-    
+
         if( isset( $checks->last_result->latest ) AND version_compare( $checks->last_result->latest, VERSION, '>' ) ) {
             $msg = s( '<a href="%s">YOURLS version %s</a> is available. Please update!', 'http://yourls.org/download', $checks->last_result->latest );
             add_notice( $msg );
@@ -1092,7 +1092,7 @@ class HTML {
             $search .= $_GET['search_slashes'];
         if( isset( $_GET['search'] ) )
             $search .= $_GET['search'];
-    
+
         return htmlspecialchars( trim( $search ) );
     }
 
@@ -1104,7 +1104,7 @@ class HTML {
     function display_login_message() {
         if( !isset( $_GET['login_msg'] ) )
             return;
-    
+
         switch( $_GET['login_msg'] ) {
             case 'pwdclear':
                 $message  = html_htag( _( 'Warning' ), 4, null, null, false );

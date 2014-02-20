@@ -2,7 +2,7 @@
 
 /**
  * Upgrade Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -13,7 +13,7 @@ namespace YOURLS;
  * Summary of Upgrade
  */
 class Upgrade {
-    
+
     /**
      * Upgrade YOURLS and DB schema
      *
@@ -23,28 +23,28 @@ class Upgrade {
         if( $oldsql == 100 ) {
             upgrade_to_14( $step );
         }
-        
+
         // other upgrades which are done in a single pass
         switch( $step ) {
-            
+
             case 1:
             case 2:
                 if( $oldsql < 210 )
                     upgrade_to_141();
-                
+
                 if( $oldsql < 220 )
                     upgrade_to_143();
-                
+
                 if( $oldsql < 250 )
                     upgrade_to_15();
-                
+
                 if( $oldsql < 482 )
                     upgrade_482();
-                
+
                 redirect_javascript( admin_url( "upgrade?step=3" ) );
 
                 break;
-            
+
             case 3:
                 // Update options to reflect latest version
                 update_option( 'version', VERSION );
@@ -77,14 +77,14 @@ class Upgrade {
         if( get_option( 'active_plugins' ) === false )
             add_option( 'active_plugins', array() );
         echo "<p>Enabling the plugin API. Please wait...</p>";
-        
+
         // Alter URL table to store titles
         global $ydb;
         $table_url = DB_TABLE_URL;
         $sql = "ALTER TABLE `$table_url` ADD `title` TEXT AFTER `url`;";
         $ydb->query( $sql );
         echo "<p>Updating table structure. Please wait...</p>";
-        
+
         // Update .htaccess
         create_htaccess();
         echo "<p>Updating .htaccess file. Please wait...</p>";
@@ -145,7 +145,7 @@ class Upgrade {
      *
      */
     function upgrade_to_14( $step ) {
-        
+
         switch( $step ) {
             case 1:
                 // create table log & table options
@@ -159,12 +159,12 @@ class Upgrade {
                     echo "<p class='warning'>Please create your <code>.htaccess</code> file (I could not do it for you). Please refer to <a href='http://yourls.org/htaccess'>http://yourls.org/htaccess</a>.";
                 redirect_javascript( admin_url( "upgrade?step=2&oldver=1.3&newver=1.4&oldsql=100&newsql=200" ), $create );
                 break;
-            
+
             case 2:
                 // convert each link in table url
                 update_table_to_14();
                 break;
-            
+
             case 3:
                 // update table url structure part 2: recreate indexes
                 alter_url_table_to_14_part_two();
@@ -184,7 +184,7 @@ class Upgrade {
     function update_options_to_14() {
         update_option( 'version', '1.4' );
         update_option( 'db_version', '200' );
-        
+
         if( defined('DB_TABLE_NEXTDEC') ) {
             global $ydb;
             $table = DB_TABLE_NEXTDEC;
@@ -205,7 +205,7 @@ class Upgrade {
 
         $queries = array();
 
-        $queries[DB_TABLE_OPTIONS] = 
+        $queries[DB_TABLE_OPTIONS] =
             'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_OPTIONS.'` ('.
             '`option_id` int(11) unsigned NOT NULL auto_increment,'.
             '`option_name` varchar(64) NOT NULL default "",'.
@@ -213,8 +213,8 @@ class Upgrade {
             'PRIMARY KEY (`option_id`,`option_name`),'.
             'KEY `option_name` (`option_name`)'.
             ');';
-        
-        $queries[DB_TABLE_LOG] = 
+
+        $queries[DB_TABLE_LOG] =
             'CREATE TABLE IF NOT EXISTS `'.DB_TABLE_LOG.'` ('.
             '`click_id` int(11) NOT NULL auto_increment,'.
             '`click_time` datetime NOT NULL,'.
@@ -226,11 +226,11 @@ class Upgrade {
             'PRIMARY KEY (`click_id`),'.
             'KEY `shorturl` (`shorturl`)'.
             ');';
-        
+
         foreach( $queries as $query ) {
             $ydb->query( $query ); // There's no result to be returned to check if table was created (except making another query to check table existence, which we'll avoid)
         }
-        
+
         echo "<p>New tables created. Please wait...</p>";
 
     }
@@ -248,11 +248,11 @@ class Upgrade {
         $alters[] = "ALTER TABLE `$table` CHANGE `id` `keyword` VARCHAR( 200 ) NOT NULL";
         $alters[] = "ALTER TABLE `$table` CHANGE `url` `url` TEXT NOT NULL";
         $alters[] = "ALTER TABLE `$table` DROP PRIMARY KEY";
-        
+
         foreach ( $alters as $query ) {
             $ydb->query( $query );
         }
-        
+
         echo "<p>Structure of existing tables updated. Please wait...</p>";
     }
 
@@ -263,12 +263,12 @@ class Upgrade {
     function alter_url_table_to_14_part_two() {
         global $ydb;
         $table = DB_TABLE_URL;
-        
+
         $alters = array();
         $alters[] = "ALTER TABLE `$table` ADD PRIMARY KEY ( `keyword` )";
         $alters[] = "ALTER TABLE `$table` ADD INDEX ( `ip` )";
         $alters[] = "ALTER TABLE `$table` ADD INDEX ( `timestamp` )";
-        
+
         foreach ( $alters as $query ) {
             $ydb->query( $query );
         }
@@ -289,11 +289,11 @@ class Upgrade {
         $from = isset($_GET['from']) ? intval( $_GET['from'] ) : 0 ;
         $total = get_db_stats();
         $total = $total['total_links'];
-        
+
         $sql = "SELECT `keyword`,`url` FROM `$table` WHERE 1=1 ORDER BY `url` ASC LIMIT $from, $chunk ;";
-        
+
         $rows = $ydb->get_results($sql);
-        
+
         $count = 0;
         $queries = 0;
         foreach( $rows as $row ) {
@@ -308,7 +308,7 @@ class Upgrade {
             }
             $count++;
         }
-        
+
         // All done for this chunk of queries, did it all go as expected?
         $success = true;
         if( $count != $queries ) {
@@ -316,7 +316,7 @@ class Upgrade {
             $num = $count - $queries;
             echo "<p>$num error(s) occured while updating the URL table :(</p>";
         }
-        
+
         if ( $count == $chunk ) {
             // there are probably other rows to convert
             $from = $from + $chunk;
@@ -328,7 +328,7 @@ class Upgrade {
             echo '<p>All rows converted! Please wait...</p>';
             redirect_javascript( admin_url( "upgrade?step=3&oldver=1.3&newver=1.4&oldsql=100&newsql=200" ), $success );
         }
-        
+
     }
 
     /**
@@ -337,7 +337,7 @@ class Upgrade {
      */
     function clean_htaccess_for_14() {
         $filename = ABSPATH.'/.htaccess';
-        
+
         $result = false;
         if( is_writeable( $filename ) ) {
             $contents = implode( '', file( $filename ) );
@@ -348,16 +348,16 @@ class Upgrade {
             $replace = "# You can safely remove this 5 lines block -- it's no longer used in YOURLS\n".
                     "# $find";
             $contents = str_replace( $find, $replace, $contents );
-            
+
             // Write cleaned file
             $f = fopen( $filename, 'w' );
             fwrite( $f, $contents );
             fclose( $f );
-            
+
             $result = true;
         }
 
         return $result;
     }
-    
+
 }

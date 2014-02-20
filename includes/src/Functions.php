@@ -2,7 +2,7 @@
 
 /**
  * Functions Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -11,15 +11,15 @@ namespace YOURLS;
 
 /**
  * Summary of Functions
- * 
+ *
  * @deprecated Too much methods!
  * @todo We have to separate methods!
  */
 class Functions {
-    
+
     /**
      * Determine the allowed character set in short URLs
-     * 
+     *
      */
     function get_shorturl_charset() {
         static $charset = null;
@@ -29,17 +29,17 @@ class Functions {
         if( defined('URL_CONVERT') && in_array( URL_CONVERT, array( 62, 64 ) ) ) {
             $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         } else {
-            // defined to 36, or wrongly defined 
+            // defined to 36, or wrongly defined
             $charset = '0123456789abcdefghijklmnopqrstuvwxyz';
         }
 
         $charset = apply_filter( 'get_shorturl_charset', $charset );
         return $charset;
     }
-    
+
     /**
      * Make an optimized regexp pattern from a string of characters
-     * 
+     *
      */
     function make_regexp_pattern( $string ) {
         $pattern = preg_quote( $string, '-' ); // add - as an escaped characters -- this is fixed in PHP 5.3
@@ -49,25 +49,25 @@ class Functions {
 
     /**
      * Is a URL a short URL? Accept either 'http://sho.rt/abc' or 'abc'
-     * 
+     *
      */
     function is_shorturl( $shorturl ) {
         // TODO: make sure this function evolves with the feature set.
-        
+
         $is_short = false;
-        
+
         // Is $shorturl a URL (http://sho.rt/abc) or a keyword (abc) ?
         if( get_protocol( $shorturl ) ) {
             $keyword = get_relative_url( $shorturl );
         } else {
             $keyword = $shorturl;
         }
-        
+
         // Check if it's a valid && used keyword
         if( $keyword && $keyword == sanitize_string( $keyword ) && keyword_is_taken( $keyword ) ) {
             $is_short = true;
         }
-        
+
         return apply_filter( 'is_shorturl', $is_short, $shorturl );
     }
 
@@ -79,14 +79,14 @@ class Functions {
         global $reserved_URL;
         $keyword = sanitize_keyword( $keyword );
         $reserved = false;
-        
+
         if ( in_array( $keyword, $reserved_URL)
             or file_exists( PAGEDIR ."/$keyword.php" )
             or is_dir( ABSPATH ."/$keyword" )
             or ( substr( $keyword, 0, strlen( ADMIN_LOCATION ) + 1 ) === ADMIN_LOCATION."/" )
         )
             $reserved = true;
-        
+
         return apply_filter( 'keyword_is_reserved', $reserved, $keyword );
     }
 
@@ -105,11 +105,11 @@ class Functions {
                 break;
             }
         }
-        
+
         // headers can contain multiple IPs (X-Forwarded-For = client, proxy1, proxy2). Take first one.
         if ( strpos( $ip, ',' ) !== false )
             $ip = substr( $ip, 0, strpos( $ip, ',' ) );
-        
+
         return apply_filter( 'get_IP', sanitize_ip( $ip ) );
     }
 
@@ -141,7 +141,7 @@ class Functions {
         $pre = apply_filter( 'shunt_delete_link_by_keyword', null, $keyword );
         if ( null !== $pre )
             return $pre;
-        
+
         global $ydb;
 
         $table = DB_TABLE_URL;
@@ -157,7 +157,7 @@ class Functions {
      */
     function insert_link_in_db( $url, $keyword, $title = '' ) {
         global $ydb;
-        
+
         $url     = escape( sanitize_url( $url ) );
         $keyword = escape( sanitize_keyword( $keyword ) );
         $title   = escape( sanitize_title( $title ) );
@@ -166,9 +166,9 @@ class Functions {
         $timestamp = date('Y-m-d H:i:s');
         $ip = get_IP();
         $insert = $ydb->query("INSERT INTO `$table` (`keyword`, `url`, `title`, `timestamp`, `ip`, `clicks`) VALUES('$keyword', '$url', '$title', '$timestamp', '$ip', 0);");
-        
+
         do_action( 'insert_link', (bool)$insert, $url, $keyword, $title, $timestamp, $ip );
-        
+
         return (bool)$insert;
     }
 
@@ -186,7 +186,7 @@ class Functions {
         $table = DB_TABLE_URL;
         $url   = escape( sanitize_url( $url) );
         $url_exists = $ydb->get_row( "SELECT * FROM `$table` WHERE `url` = '".$url."';" );
-        
+
         return apply_filter( 'url_exists', $url_exists, $url );
     }
 
@@ -199,7 +199,7 @@ class Functions {
         $pre = apply_filter( 'shunt_add_new_link', false, $url, $keyword, $title );
         if ( false !== $pre )
             return $pre;
-        
+
         $url = encodeURI( $url );
         $url = escape( sanitize_url( $url ) );
         if ( !$url || $url == 'http://' || $url == 'https://' ) {
@@ -209,11 +209,11 @@ class Functions {
             $return['errorCode'] = '400';
             return apply_filter( 'add_new_link_fail_nourl', $return, $url, $keyword, $title );
         }
-        
+
         // Prevent DB flood
         $ip = get_IP();
         check_IP_flood( $ip );
-        
+
         // Prevent internal redirection loops: cannot shorten a shortened URL
         if( get_relative_url( $url ) ) {
             if( is_shorturl( $url ) ) {
@@ -226,13 +226,13 @@ class Functions {
         }
 
         do_action( 'pre_add_new_link', $url, $keyword, $title );
-        
+
         $strip_url = stripslashes( $url );
         $return = array();
 
         // duplicates allowed or new URL => store it
         if( allow_duplicate_longurls() || !( $url_exists = url_exists( $url ) ) ) {
-            
+
             if( isset( $title ) && !empty( $title ) ) {
                 $title = sanitize_title( $title );
             } else {
@@ -242,9 +242,9 @@ class Functions {
 
             // Custom keyword provided
             if ( $keyword ) {
-                
+
                 do_action( 'add_new_link_custom_keyword', $url, $keyword, $title );
-                
+
                 $keyword = escape( sanitize_string( $keyword ) );
                 $keyword = apply_filter( 'custom_keyword', $keyword, $url, $title );
                 if ( !keyword_is_free( $keyword ) ) {
@@ -263,11 +263,11 @@ class Functions {
                     $return['shorturl'] = SITE .'/'. $keyword;
                 }
 
-                // Create random keyword	
+                // Create random keyword
             } else {
-                
+
                 do_action( 'add_new_link_create_keyword', $url, $keyword, $title );
-                
+
                 $timestamp = date( 'Y-m-d H:i:s' );
                 $id = get_next_decimal();
                 $ok = false;
@@ -298,17 +298,17 @@ class Functions {
 
             // URL was already stored
         } else {
-            
+
             do_action( 'add_new_link_already_stored', $url, $keyword, $title );
-            
+
             $return['status']   = 'fail';
             $return['code']     = 'error:url';
             $return['url']      = array( 'keyword' => $url_exists->keyword, 'url' => $strip_url, 'title' => $url_exists->title, 'date' => $url_exists->timestamp, 'ip' => $url_exists->ip, 'clicks' => $url_exists->clicks );
             $return['message']  = /* //translators: eg "http://someurl/ already exists" */ s( '%s already exists in database', trim_long_string( $strip_url ) );
-            $return['title']    = $url_exists->title; 
+            $return['title']    = $url_exists->title;
             $return['shorturl'] = SITE .'/'. $url_exists->keyword;
         }
-        
+
         do_action( 'post_add_new_link', $url, $keyword, $title );
 
         $return['statusCode'] = 200; // regardless of result, this is still a valid request
@@ -336,23 +336,23 @@ class Functions {
         $strip_url = stripslashes( $url );
         $strip_title = stripslashes( $title );
         $old_url = $ydb->get_var( "SELECT `url` FROM `$table` WHERE `keyword` = '$keyword';" );
-        
+
         // Check if new URL is not here already
         if ( $old_url != $url && !allow_duplicate_longurls() ) {
             $new_url_already_there = intval($ydb->get_var("SELECT COUNT(keyword) FROM `$table` WHERE `url` = '$url';"));
         } else {
             $new_url_already_there = false;
         }
-        
+
         // Check if the new keyword is not here already
         if ( $newkeyword != $keyword ) {
             $keyword_is_ok = keyword_is_free( $newkeyword );
         } else {
             $keyword_is_ok = true;
         }
-        
+
         do_action( 'pre_edit_link', $url, $keyword, $newkeyword, $new_url_already_there, $keyword_is_ok );
-        
+
         // All clear, update
         if ( ( !$new_url_already_there || allow_duplicate_longurls() ) && $keyword_is_ok ) {
             $update_url = $ydb->query( "UPDATE `$table` SET `url` = '$url', `keyword` = '$newkeyword', `title` = '$title' WHERE `keyword` = '$keyword';" );
@@ -364,13 +364,13 @@ class Functions {
                 $return['status']  = 'fail';
                 $return['message'] = /* //translators: "Error updating http://someurl/ (Shorturl: http://sho.rt/blah)" */ s( 'Error updating %s (Short URL: %s)', trim_long_string( $strip_url ), $keyword ) ;
             }
-            
+
             // Nope
         } else {
             $return['status']  = 'fail';
             $return['message'] = _( 'URL or keyword already exists in database' );
         }
-        
+
         return apply_filter( 'edit_link', $return, $url, $keyword, $newkeyword, $title, $new_url_already_there, $keyword_is_ok );
     }
 
@@ -385,10 +385,10 @@ class Functions {
             return $pre;
 
         global $ydb;
-        
+
         $keyword = escape( sanitize_keyword( $keyword ) );
         $title = escape( sanitize_title( $title ) );
-        
+
         $table = DB_TABLE_URL;
         $update = $ydb->query("UPDATE `$table` SET `title` = '$title' WHERE `keyword` = '$keyword';");
 
@@ -404,12 +404,12 @@ class Functions {
         $free = true;
         if ( keyword_is_reserved( $keyword ) or keyword_is_taken( $keyword ) )
             $free = false;
-        
+
         return apply_filter( 'keyword_is_free', $free, $keyword );
     }
 
     /**
-     * Check if a keyword is taken (ie there is already a short URL with this id). Return bool.		
+     * Check if a keyword is taken (ie there is already a short URL with this id). Return bool.
      *
      */
     function keyword_is_taken( $keyword ) {
@@ -418,7 +418,7 @@ class Functions {
         $pre = apply_filter( 'shunt_keyword_is_taken', false, $keyword );
         if ( false !== $pre )
             return $pre;
-        
+
         global $ydb;
         $keyword = escape( sanitize_keyword( $keyword ) );
         $taken = false;
@@ -453,19 +453,19 @@ class Functions {
         if( isset( $ydb->infos[$keyword] ) && $use_cache == true ) {
             return apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
         }
-        
+
         do_action( 'get_keyword_not_cached', $keyword );
-        
+
         $table = DB_TABLE_URL;
         $infos = $ydb->get_row( "SELECT * FROM `$table` WHERE `keyword` = '$keyword'" );
-        
+
         if( $infos ) {
             $infos = (array)$infos;
             $ydb->infos[ $keyword ] = $infos;
         } else {
             $ydb->infos[ $keyword ] = false;
         }
-        
+
         return apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
     }
 
@@ -482,12 +482,12 @@ class Functions {
 
         $keyword = sanitize_string( $keyword );
         $infos = get_keyword_infos( $keyword );
-        
+
         $return = $notfound;
         if ( isset( $infos[ $field ] ) && $infos[ $field ] !== false )
             $return = $infos[ $field ];
 
-        return apply_filter( 'get_keyword_info', $return, $keyword, $field, $notfound );	
+        return apply_filter( 'get_keyword_info', $return, $keyword, $field, $notfound );
     }
 
     /**
@@ -579,7 +579,7 @@ class Functions {
                 $sort_order = 'desc';
                 break;
         }
-        
+
         // Fetch links
         $limit = intval( $limit );
         $start = intval( $start );
@@ -587,10 +587,10 @@ class Functions {
 
             $table_url = DB_TABLE_URL;
             $results = $ydb->get_results( "SELECT * FROM `$table_url` WHERE 1=1 ORDER BY `$sort_by` $sort_order LIMIT $start, $limit;" );
-            
+
             $return = array();
             $i = 1;
-            
+
             foreach ( (array)$results as $res ) {
                 $return['links']['link_'.$i++] = array(
                     'shorturl' => SITE .'/'. $res->keyword,
@@ -604,7 +604,7 @@ class Functions {
         }
 
         $return['stats'] = get_db_stats();
-        
+
         $return['statusCode'] = 200;
 
         return apply_filter( 'get_stats', $return, $filter, $limit, $start );
@@ -619,7 +619,7 @@ class Functions {
 
         $table_url = DB_TABLE_URL;
         $shorturl  = escape( sanitize_keyword( $shorturl ) );
-        
+
         $res = $ydb->get_row( "SELECT * FROM `$table_url` WHERE keyword = '$shorturl';" );
         $return = array();
 
@@ -660,7 +660,7 @@ class Functions {
 
         $totals = $ydb->get_row( "SELECT COUNT(keyword) as count, SUM(clicks) as sum FROM `$table_url` WHERE 1=1 $where" );
         $return = array( 'total_links' => $totals->count, 'total_clicks' => $totals->sum );
-        
+
         return apply_filter( 'get_db_stats', $return, $where );
     }
 
@@ -681,10 +681,10 @@ class Functions {
     function get_user_agent() {
         if ( !isset( $_SERVER['HTTP_USER_AGENT'] ) )
             return '-';
-        
+
         $ua = strip_tags( html_entity_decode( $_SERVER['HTTP_USER_AGENT'] ));
         $ua = preg_replace('![^0-9a-zA-Z\':., /{}\(\)\[\]\+@&\!\?;_\-=~\*\#]!', '', $ua );
-        
+
         return apply_filter( 'get_user_agent', substr( $ua, 0, 254 ) );
     }
 
@@ -713,7 +713,7 @@ class Functions {
     function status_header( $code = 200 ) {
         if( headers_sent() )
             return;
-        
+
         $protocol = $_SERVER['SERVER_PROTOCOL'];
         if ( 'HTTP/1.1' != $protocol && 'HTTP/1.0' != $protocol )
             $protocol = 'HTTP/1.0';
@@ -837,13 +837,13 @@ REDIR;
 
         global $ydb;
         $table = DB_TABLE_LOG;
-        
+
         $keyword  = escape( sanitize_string( $keyword ) );
         $referrer = ( isset( $_SERVER['HTTP_REFERER'] ) ? escape( sanitize_url( $_SERVER['HTTP_REFERER'] ) ) : 'direct' );
         $ua       = escape( get_user_agent() );
         $ip       = escape( get_IP() );
         $location = escape( geo_ip_to_countrycode( $ip ) );
-        
+
         return $ydb->query( "INSERT INTO `$table` (click_time, shorturl, referrer, user_agent, ip_address, country_code) VALUES (NOW(), '$keyword', '$referrer', '$ua', '$ip', '$location')" );
     }
 
@@ -868,10 +868,10 @@ REDIR;
         $location = apply_filter( 'shunt_geo_ip_to_countrycode', false, $ip, $default ); // at this point $ip can be '', check if your plugin hooks in here
         if ( false !== $location )
             return $location;
-        
+
         if ( $ip == '' )
             $ip = get_IP();
-        
+
         // Use IPv4 or IPv6 DB & functions
         if( false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
             $db   = 'GeoIP.dat';
@@ -880,7 +880,7 @@ REDIR;
             $db   = 'GeoIPv6.dat';
             $func = 'geoip_country_code_by_addr_v6';
         }
-        
+
         if ( !file_exists( INC . '/geo/' . $db ) || !file_exists( INC .'/geo/geoip.inc' ) )
             return $default;
 
@@ -893,7 +893,7 @@ REDIR;
             $location = '';
         }
         geoip_close( $gi );
-        
+
         if( '' == $location )
             $location = $default;
 
@@ -914,7 +914,7 @@ REDIR;
         if( !class_exists( 'GeoIP', false ) ) {
             $temp = geo_ip_to_countrycode( '127.0.0.1' );
         }
-        
+
         if( class_exists( 'GeoIP', false ) ) {
             $geo  = new GeoIP;
             $id   = $geo->GEOIP_COUNTRY_CODE_TO_NUMBER[ $code ];
@@ -943,7 +943,7 @@ REDIR;
         list( $currentver, $currentsql ) = get_current_version_from_sql();
         if( $currentsql < DB_VERSION )
             return true;
-        
+
         return false;
     }
 
@@ -960,7 +960,7 @@ REDIR;
             $currentver = '1.3';
         if( !$currentsql )
             $currentsql = '100';
-        
+
         return array( $currentver, $currentsql);
     }
 
@@ -976,7 +976,7 @@ REDIR;
      */
     function get_option( $option_name, $default = false ) {
         global $ydb;
-        
+
         // Allow plugins to short-circuit options
         $pre = apply_filter( 'shunt_option_'.$option_name, false );
         if ( false !== $pre )
@@ -1017,9 +1017,9 @@ REDIR;
             return $pre;
 
         $table = DB_TABLE_OPTIONS;
-        
+
         $allopt = $ydb->get_results( "SELECT `option_name`, `option_value` FROM `$table` WHERE 1=1" );
-        
+
         foreach( (array)$allopt as $option ) {
             $ydb->option[ $option->option_name ] = maybe_unserialize( $option->option_value );
         }
@@ -1072,7 +1072,7 @@ REDIR;
         }
 
         $_newvalue = escape( maybe_serialize( $newvalue ) );
-        
+
         do_action( 'update_option', $option_name, $oldvalue, $newvalue );
 
         $ydb->query( "UPDATE `$table` SET `option_value` = '$_newvalue' WHERE `option_name` = '$option_name'" );
@@ -1101,11 +1101,11 @@ REDIR;
         $name = trim( $name );
         if ( empty( $name ) )
             return false;
-        
+
         // Use clone to break object refs -- see commit 09b989d375bac65e692277f61a84fede2fb04ae3
         if ( is_object( $value ) )
             $value = clone $value;
-        
+
         $name = escape( $name );
 
         // Make sure the option doesn't already exist
@@ -1140,9 +1140,9 @@ REDIR;
         $option = $ydb->get_row( "SELECT option_id FROM `$table` WHERE `option_name` = '$name'" );
         if ( is_null( $option ) || !$option->option_id )
             return false;
-        
+
         do_action( 'delete_option', $name );
-        
+
         $ydb->query( "DELETE FROM `$table` WHERE `option_name` = '$name'" );
         unset( $ydb->option[ $name ] );
         return true;
@@ -1247,24 +1247,24 @@ REDIR;
         if ( defined('PRIVATE') && PRIVATE == true ) {
 
             // Allow overruling for particular pages:
-            
+
             // API
             if( is_API() ) {
                 if( !defined('PRIVATE_API') || PRIVATE_API != false )
-                    $private = true;		
+                    $private = true;
 
                 // Infos
             } elseif( is_infos() ) {
                 if( !defined('PRIVATE_INFOS') || PRIVATE_INFOS !== false )
                     $private = true;
-                
+
                 // Others
             } else {
                 $private = true;
             }
-            
+
         }
-        
+
         return apply_filter( 'is_private', $private );
     }
 
@@ -1288,7 +1288,7 @@ REDIR;
     function allow_duplicate_longurls() {
         // special treatment if API to check for WordPress plugin requests
         if( is_API() ) {
-            if ( isset($_REQUEST['source']) && $_REQUEST['source'] == 'plugin' ) 
+            if ( isset($_REQUEST['source']) && $_REQUEST['source'] == 'plugin' )
                 return false;
         }
         return ( defined( 'UNIQUE_URLS' ) && UNIQUE_URLS == false );
@@ -1308,7 +1308,7 @@ REDIR;
         $longurl = escape( sanitize_url( $longurl ) );
         $table   = DB_TABLE_URL;
         $query   = "SELECT `keyword` FROM `$table` WHERE `url` = '$longurl'";
-        
+
         // Ensure sort is a column in database (@TODO: update verification array if database changes)
         if ( in_array( $sort, array('keyword','title','timestamp','clicks') ) ) {
             $query .= " ORDER BY '".$sort."'";
@@ -1355,15 +1355,15 @@ REDIR;
                     return true;
             }
         }
-        
+
         $ip = ( $ip ? sanitize_ip( $ip ) : get_IP() );
         $ip = escape( $ip );
-        
+
         do_action( 'check_ip_flood', $ip );
-        
+
         global $ydb;
         $table = DB_TABLE_URL;
-        
+
         $lasttime = $ydb->get_var( "SELECT `timestamp` FROM $table WHERE `ip` = '$ip' ORDER BY `timestamp` DESC LIMIT 1" );
         if( $lasttime ) {
             $now = date( 'U' );
@@ -1374,7 +1374,7 @@ REDIR;
                 die( _( 'Too many URLs added too fast. Slow down please.' ), _( 'Forbidden' ), 403 );
             }
         }
-        
+
         return true;
     }
 
@@ -1413,7 +1413,7 @@ REDIR;
         global $ydb;
         $is_installed = ( property_exists( $ydb, 'installed' ) && $ydb->installed == true );
         return apply_filter( 'is_installed', $is_installed );
-        
+
         /* Note: this test won't work on YOURLS 1.3 or older (Aug 2009...)
         Should someone complain that they cannot upgrade directly from
         1.3 to 1.7: first, laugh at them, then ask them to install 1.6 first.
@@ -1435,41 +1435,41 @@ REDIR;
             case '0':
                 $possible = $charlist ? $charlist : get_shorturl_charset() ;
                 break;
-            
+
             // no vowels to make no offending word, no 0/1/o/l to avoid confusion between letters & digits. Perfect for passwords.
             case '1':
                 $possible = "23456789bcdfghjkmnpqrstvwxyz";
                 break;
-            
+
             // Same, with lower + upper
             case '2':
                 $possible = "23456789bcdfghjkmnpqrstvwxyzBCDFGHJKMNPQRSTVWXYZ";
                 break;
-            
+
             // all letters, lowercase
             case '3':
                 $possible = "abcdefghijklmnopqrstuvwxyz";
                 break;
-            
+
             // all letters, lowercase + uppercase
             case '4':
                 $possible = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 break;
-            
-            // all digits & letters lowercase 
+
+            // all digits & letters lowercase
             case '5':
                 $possible = "0123456789abcdefghijklmnopqrstuvwxyz";
                 break;
-            
+
             // all digits & letters lowercase + uppercase
             case '6':
                 $possible = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 break;
-            
+
         }
 
         $str = substr( str_shuffle( $possible ), 0, $length );
-        
+
         return apply_filter( 'rnd_string', $str, $length, $type, $charlist );
     }
 
@@ -1484,12 +1484,12 @@ REDIR;
 
     /**
      * Add a query var to a URL and return URL. Completely stolen from WP.
-     * 
+     *
      * Works with one of these parameter patterns:
      *     array( 'var' => 'value' )
      *     array( 'var' => 'value' ), $url
      *     'var', 'value'
-     *     'var', 'value', $url 
+     *     'var', 'value', $url
      * If $url omitted, uses $_SERVER['REQUEST_URI']
      *
      */
@@ -1506,10 +1506,10 @@ REDIR;
             else
                 $uri = @func_get_arg( 2 );
         }
-        
+
         $uri = str_replace( '&amp;', '&', $uri );
 
-        
+
         if ( $frag = strstr( $uri, '#' ) )
             $uri = substr( $uri, 0, -strlen( $frag ) );
         else
@@ -1624,7 +1624,7 @@ REDIR;
 
     /**
      * Check validity of a nonce (ie time span, user and action match).
-     * 
+     *
      * Returns true if valid, dies otherwise (die() or die($return) if defined)
      * if $nonce is false or unspecified, it will use $_REQUEST['nonce']
      *
@@ -1633,14 +1633,14 @@ REDIR;
         // get user
         if( false == $user )
             $user = defined( 'USER' ) ? USER : '-1';
-        
+
         // get current nonce value
         if( false == $nonce && isset( $_REQUEST['nonce'] ) )
             $nonce = $_REQUEST['nonce'];
 
         // what nonce should be
         $valid = create_nonce( $action, $user );
-        
+
         if( $nonce == $valid ) {
             return true;
         } else {
@@ -1777,7 +1777,7 @@ REDIR;
     function site_url( $echo = true, $url = '' ) {
         $url = get_relative_url( $url );
         $url = trim( SITE . '/' . $url, '/' );
-        
+
         // Do not enforce (checking need_ssl() ) but check current usage so it won't force SSL on non-admin pages
         if( is_ssl() )
             $url = set_url_scheme( $url, 'https' );
@@ -1824,17 +1824,17 @@ REDIR;
 
         $url = sanitize_url( $url );
 
-        // Only deal with http(s):// 
+        // Only deal with http(s)://
         if( !in_array( get_protocol( $url ), array( 'http://', 'https://' ) ) )
-            return $url;	
+            return $url;
 
         $title = $charset = false;
-        
+
         $response = http_get( $url ); // can be a Request object or an error string
         if( is_string( $response ) ) {
             return $url;
         }
-        
+
         // Page content. No content? Return the URL
         $content = $response->body;
         if( !$content )
@@ -1847,7 +1847,7 @@ REDIR;
         }
         if( !$title )
             return $url;
-        
+
         // Now we have a title. We'll try to get proper utf8 from it.
 
         // Get charset as (and if) defined by the HTML meta tag. We should match
@@ -1864,7 +1864,7 @@ REDIR;
                 unset( $found );
             }
         }
-        
+
         // Conversion to utf-8 if what we have is not utf8 already
         if( strtolower( $charset ) != 'utf-8' && function_exists( 'mb_convert_encoding' ) ) {
             // We use @ to remove warnings because mb_ functions are easily bitching about illegal chars
@@ -1874,13 +1874,13 @@ REDIR;
                 $title = @mb_convert_encoding( $title, 'UTF-8' );
             }
         }
-        
+
         // Remove HTML entities
         $title = html_entity_decode( $title, ENT_QUOTES, 'UTF-8' );
-        
+
         // Strip out evil things
         $title = sanitize_title( $title );
-        
+
         return apply_filter( 'get_remote_title', $title, $url );
     }
 
@@ -1898,10 +1898,10 @@ REDIR;
             'palm', 'phone', 'pocket', 'psp', 'symbian',
             'treo', 'wap', 'windows ce', 'windows phone'
         );
-        
+
         // Current user-agent
         $current = strtolower( $_SERVER['HTTP_USER_AGENT'] );
-        
+
         // Check and return
         $is_mobile = ( str_replace( $mobiles, '', $current ) != $current );
         return apply_filter( 'is_mobile_device', $is_mobile );
@@ -1916,14 +1916,14 @@ REDIR;
         $pre = apply_filter( 'shunt_get_request', false );
         if ( false !== $pre )
             return $pre;
-        
+
         static $request = null;
 
         do_action( 'pre_get_request', $request );
-        
+
         if( $request !== null )
             return $request;
-        
+
         // Ignore protocol & www. prefix
         $root = str_replace( array( 'https://', 'http://', 'https://www.', 'http://www.' ), '', SITE );
         // Case insensitive comparison of the YOURLS root to match both http://Sho.rt/blah and http://sho.rt/blah
@@ -1933,7 +1933,7 @@ REDIR;
         if( !preg_match( "@^[a-zA-Z]+://.+@", $request ) ) {
             $request = current( explode( '?', $request ) );
         }
-        
+
         return apply_filter( 'get_request', $request );
     }
 
@@ -2006,7 +2006,7 @@ REDIR;
         static $favicon = null;
         if( $favicon !== null )
             return $favicon;
-        
+
         // search for favicon.(ico|png|gif)
         foreach( array( 'png', 'ico', 'gif' ) as $ext ) {
             if( file_exists( USERDIR. '/favicon.' . $ext ) ) {
@@ -2016,7 +2016,7 @@ REDIR;
         }
         if ( $favicon === null )
             $favicon = site_url( false, ASSETURL . '/img/favicon.ico' );
-        
+
         if( $echo )
             echo '<link rel="shortcut icon" href="'. $favicon . '">';
         else
@@ -2032,7 +2032,7 @@ REDIR;
         $file = ABSPATH . '/.maintenance' ;
         if ( !file_exists( $file ) || is_upgrading() || is_installing() )
             return;
-        
+
         global $maintenance_start;
 
         include_once( $file );
@@ -2045,7 +2045,7 @@ REDIR;
             include_once( USERDIR.'/maintenance.php' );
             die();
         }
-        
+
         // https://www.youtube.com/watch?v=Xw-m4jEY-Ns
         $title   = _( 'Service temporarily unavailable' );
         $message = _( 'Our service is currently undergoing scheduled maintenance.' ) . "</p><p>" .
@@ -2063,9 +2063,9 @@ REDIR;
     function current_admin_page() {
         if( is_admin() ) {
             $current = substr( get_request(), 6 );
-            if( $current === false ) 
+            if( $current === false )
                 $current = 'index'; // if current page is http://sho.rt/admin/ instead of http://sho.rt/admin/index
-            
+
             return $current;
         }
         return null;
@@ -2089,7 +2089,7 @@ REDIR;
             global $allowedprotocols;
             $protocols = $allowedprotocols;
         }
-        
+
         $protocol = get_protocol( $url );
         return apply_filter( 'is_allowed_protocol', in_array( $protocol, $protocols ), $url, $protocols );
     }
@@ -2124,15 +2124,15 @@ REDIR;
      * @since 1.6
      * @param string $url URL to relativize
      * @param bool $strict if true and if URL isn't relative to YOURLS install, return empty string
-     * @return string URL 
+     * @return string URL
      */
     function get_relative_url( $url, $strict = true ) {
         $url = sanitize_url( $url );
-        
+
         // Remove protocols to make it easier
         $noproto_url  = str_replace( 'https:', 'http:', $url );
         $noproto_site = str_replace( 'https:', 'http:', SITE );
-        
+
         // Trim URL from YOURLS root URL : if no modification made, URL wasn't relative
         $_url = str_replace( $noproto_site . '/', '', $noproto_url );
         if( $_url == $noproto_url )
@@ -2229,14 +2229,14 @@ REDIR;
      */
     function get_protocol_slashes_and_rest( $url, $array = array( 'protocol', 'slashes', 'rest' ) ) {
         $proto = get_protocol( $url );
-        
+
         if( !$proto or count( $array ) != 3 )
             return false;
-        
+
         list( $null, $rest ) = explode( $proto, $url, 2 );
-        
+
         list( $proto, $slashes ) = explode( ':', $proto );
-        
+
         return array( $array[0] => $proto . ':', $array[1] => $slashes, $array[2] => $rest );
     }
 
@@ -2254,5 +2254,5 @@ REDIR;
         }
         return preg_replace( '!^[a-zA-Z0-9\+\.-]+://!', $scheme . '://', $url );
     }
-    
+
 }

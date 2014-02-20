@@ -11,12 +11,12 @@ namespace YOURLS;
 
 /**
  * API's Voice
- * 
+ *
  * Note about translation : this file should NOT be translation ready
  * API messages and returns are supposed to be programmatically tested, so default English is expected
  */
 class API {
-    
+
     /**
      * API function wrapper: Shorten a URL
      *
@@ -90,7 +90,7 @@ class API {
             $return['db_version'] = DB_VERSION;
         return apply_filter( 'api_result_version', $return );
     }
- 
+
     /**
      * Return API result. Dies after this
      *
@@ -100,9 +100,9 @@ class API {
             $simple = $return['simple'];
             unset( $return['simple'] );
         }
-    
+
         do_action( 'pre_api_output', $mode, $return );
-    
+
         if( isset( $return['statusCode'] ) ) {
             $code = $return['statusCode'];
         } elseif ( isset( $return['errorCode'] ) ) {
@@ -111,23 +111,23 @@ class API {
             $code = 200;
         }
         status_header( $code );
-    
+
         switch ( $mode ) {
             case 'jsonp':
                 content_type_header( 'application/javascript' );
                 echo $return['callback'] . '(' . json_encode( $return ) . ')';
                 break;
-    
+
             case 'json':
                 content_type_header( 'application/json' );
                 echo json_encode( $return );
                 break;
-        
+
             case 'xml':
                 content_type_header( 'application/xml' );
                 echo xml_encode( $return );
                 break;
-            
+
             case 'simple':
             default:
                 content_type_header( 'text/plain' );
@@ -137,7 +137,7 @@ class API {
         }
 
         do_action( 'api_output', $mode, $return );
-    
+
         die();
     }
 
@@ -163,7 +163,7 @@ class API {
             'simple'     => 'Need either XML or JSON format for stats',
             'message'    => 'success',
         );
-        
+
         return apply_filter( 'api_db_stats', $return );
     }
 
@@ -187,9 +187,9 @@ class API {
     function api_expand( $shorturl ) {
         $keyword = str_replace( SITE . '/' , '', $shorturl ); // accept either 'http://ozh.in/abc' or 'abc'
         $keyword = sanitize_string( $keyword );
-    
+
         $longurl = get_keyword_longurl( $keyword );
-    
+
         if( $longurl ) {
             $return = array(
                 'keyword'   => $keyword,
@@ -207,7 +207,7 @@ class API {
                 'errorCode' => 404,
             );
         }
-    
+
         return apply_filter( 'api_expand', $return, $shorturl );
     }
 

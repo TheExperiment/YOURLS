@@ -2,7 +2,7 @@
 
 /**
  * HTTP Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -12,7 +12,7 @@ namespace YOURLS;
 /**
  * Class that relate to HTTP requests
  *
- * On functions using the 3rd party library Requests: 
+ * On functions using the 3rd party library Requests:
  * Thir goal here is to provide convenient wrapper functions to the Requests library. There are
  * 2 types of functions for each METHOD, where METHOD is 'get' or 'post' (implement more as needed)
  *     - http_METHOD() :
@@ -24,7 +24,7 @@ namespace YOURLS;
  * @since 1.7
  */
 class HTTP {
-    
+
     /**
      * Perform a GET request, return response object or error string message
      *
@@ -106,7 +106,7 @@ class HTTP {
             'follow_redirects' => true,
             'redirects'        => 3,
         );
-        
+
         if( http_proxy_is_defined() ) {
             if( defined( 'PROXY_USERNAME' ) && defined( 'PROXY_PASSWORD' ) ) {
                 $options['proxy'] = array( PROXY, PROXY_USERNAME, PROXY_PASSWORD );
@@ -115,7 +115,7 @@ class HTTP {
             }
         }
 
-        return apply_filter( 'http_default_options', $options );	
+        return apply_filter( 'http_default_options', $options );
     }
 
     /**
@@ -138,21 +138,21 @@ class HTTP {
             return $pre;
 
         $check = @parse_url( $url );
-        
+
         // Malformed URL, can not process, but this could mean ssl, so let through anyway.
         if ( $check === false )
             return true;
-        
+
         // Self and loopback URLs are considered local (':' is parse_url() host on '::1')
         $home = parse_url( SITE );
         $local = array( 'localhost', '127.0.0.1', '127.1', '[::1]', ':', $home['host'] );
-        
+
         if( in_array( $check['host'], $local ) )
             return false;
-        
+
         if ( !defined( 'PROXY_BYPASS_HOSTS' ) )
             return true;
-        
+
         // Check PROXY_BYPASS_HOSTS
         static $bypass_hosts;
         static $wildcard_regex = false;
@@ -186,17 +186,17 @@ class HTTP {
      */
     function http_request( $type, $url, $headers, $data, $options ) {
         $options = array_merge( http_default_options(), $options );
-        
+
         if( http_proxy_is_defined() && !send_through_proxy( $url ) )
             unset( $options['proxy'] );
-        
+
         try {
             $result = Requests::request( $url, $headers, $data, $type, $options );
         }
         catch( Requests_Exception $e ) {
             $result = debug_log( $e->getMessage() . ' (' . $type . ' on ' . $url . ')' );
         }
-        
+
         return $result;
     }
 
@@ -228,14 +228,14 @@ class HTTP {
     function check_core_version() {
 
         global $ydb, $user_passwords;
-        
+
         $checks = get_option( 'core_version_checks' );
-        
+
         // Invalidate check data when YOURLS version changes
         if ( is_object( $checks ) && VERSION != $checks->version_checked ) {
             $checks = false;
         }
-        
+
         if( !is_object( $checks ) ) {
             $checks = new stdClass;
             $checks->failed_attempts = 0;
@@ -248,7 +248,7 @@ class HTTP {
         $conf_loc = str_replace( ABSPATH, '', CONFIGFILE );
         $conf_loc = str_replace( '/config.php', '', $conf_loc );
         $conf_loc = ( $conf_loc == '/user' ? 'u' : 'i' );
-        
+
         // The collection of stuff to report
         $stuff = array(
             // Globally uniquish site identifier
@@ -278,15 +278,15 @@ class HTTP {
             'num_active_plugins' => has_active_plugins(),
             'num_pages'          => defined( 'PAGEDIR' ) ? count( (array) glob( PAGEDIR .'/*.php') ) : 0,
         );
-        
+
         $stuff = apply_filter( 'version_check_stuff', $stuff );
-        
+
         // Send it in
         $url = 'http://api.yourls.org/core/version/1.0/';
         if( can_http_over_ssl() )
             $url = set_url_scheme( $url, 'https' );
         $req = http_post( $url, array(), $stuff );
-        
+
         $checks->last_attempt = time();
         $checks->version_checked = VERSION;
 
@@ -296,21 +296,21 @@ class HTTP {
             update_option( 'core_version_checks', $checks );
             return false;
         }
-        
+
         // Parse response
         $json = json_decode( trim( $req->body ) );
-        
+
         if( isset( $json->latest ) && isset( $json->zipurl ) ) {
             // All went OK - mark this down
             $checks->failed_attempts = 0;
             $checks->last_result     = $json;
             update_option( 'core_version_checks', $checks );
-            
+
             return $json;
         }
-        
+
         // Request returned actual result, but not what we expected
-        return false;	
+        return false;
     }
 
     /**
@@ -336,7 +336,7 @@ class HTTP {
             return false;
 
         $checks = get_option( 'core_version_checks' );
-        
+
         /* We don't want to check if :
         - last_result is set (a previous check was performed)
         - and it was less than 24h ago (or less than 2h ago if it wasn't successful)
@@ -345,7 +345,7 @@ class HTTP {
          */
         if( !empty( $checks->last_result )
             AND
-            ( 
+            (
                 ( $checks->failed_attempts == 0 && ( ( time() - $checks->last_attempt ) < 24 * 3600 ) )
                 OR
                 ( $checks->failed_attempts > 0  && ( ( time() - $checks->last_attempt ) <  2 * 3600 ) )
@@ -356,11 +356,11 @@ class HTTP {
 
         // We want to check if there's a new version
         $new_check = check_core_version();
-        
+
         // Could not check for a new version, and we don't have ancient data
         if( false == $new_check && !isset( $checks->last_result->latest ) )
             return false;
-        
+
         return true;
     }
 
@@ -372,16 +372,16 @@ class HTTP {
      */
     function can_http_over_ssl() {
         $ssl_curl = $ssl_socket = false;
-        
+
         if( function_exists( 'curl_exec' ) ) {
             $curl_version  = curl_version();
             $ssl_curl = ( $curl_version['features'] & CURL_VERSION_SSL );
         }
-        
+
         if( function_exists( 'stream_socket_client' ) ) {
-            $ssl_socket = extension_loaded( 'openssl' ) && function_exists( 'openssl_x509_parse' );    
+            $ssl_socket = extension_loaded( 'openssl' ) && function_exists( 'openssl_x509_parse' );
         }
-        
+
         return ( $ssl_curl OR $ssl_socket );
     }
 

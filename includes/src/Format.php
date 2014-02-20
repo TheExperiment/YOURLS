@@ -2,7 +2,7 @@
 
 /**
  * Format Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -13,7 +13,7 @@ namespace YOURLS;
  * Useful methods to convert anything
  */
 class Format {
-    
+
     /**
      * Convert an integer (1337) to a string (3jk).
      *
@@ -29,7 +29,7 @@ class Format {
             $string = $chars[ $mod ] . $string;
         }
         $string = $chars[ intval( $num ) ] . $string;
-        
+
         return apply_filter( 'int2string', $string, $num, $chars );
     }
 
@@ -68,7 +68,7 @@ class Format {
         // make a regexp pattern with the shorturl charset, and remove everything but this
         $pattern = make_regexp_pattern( get_shorturl_charset() );
         $valid = substr( preg_replace( '![^'.$pattern.']!', '', $string ), 0, 199 );
-        
+
         return apply_filter( 'sanitize_string', $valid, $string );
     }
 
@@ -120,7 +120,7 @@ class Format {
                 }
             }
         }
-        
+
         return $subject;
     }
 
@@ -150,12 +150,12 @@ class Format {
         } else {
             $data = escape_real( $data );
         }
-        
+
         return $data;
     }
 
     /**
-     * "Real" escape. This function should NOT be called directly. Use escape() instead. 
+     * "Real" escape. This function should NOT be called directly. Use escape() instead.
      *
      * This function uses a "real" escape if possible, using PDO, MySQL or MySQLi functions,
      * with a fallback to a "simple" addslashes
@@ -170,9 +170,9 @@ class Format {
         global $ydb;
         if( isset( $ydb ) && ( $ydb instanceof ezSQLcore ) )
             return $ydb->escape( $string );
-        
+
         // YOURLS DB classes have been bypassed by a custom DB engine or a custom cache layer
-        return apply_filters( 'custom_escape_real', addslashes( $string ), $string );	
+        return apply_filters( 'custom_escape_real', addslashes( $string ), $string );
     }
 
     /**
@@ -212,11 +212,11 @@ class Format {
         $newstring = $string;
         if( function_exists( 'mb_substr' ) ) {
             if ( mb_strlen( $newstring ) > $length ) {
-                $newstring = mb_substr( $newstring, 0, $length - mb_strlen( $append ), 'UTF-8' ) . $append;	
+                $newstring = mb_substr( $newstring, 0, $length - mb_strlen( $append ), 'UTF-8' ) . $append;
             }
         } else {
             if ( strlen( $newstring ) > $length ) {
-                $newstring = substr( $newstring, 0, $length - strlen( $append ) ) . $append;	
+                $newstring = substr( $newstring, 0, $length - strlen( $append ) ) . $append;
             }
         }
         return apply_filter( 'trim_long_string', $newstring, $string, $length, $append );
@@ -476,7 +476,7 @@ class Format {
      */
     function esc_url( $url, $context = 'display', $protocols = array() ) {
         // make sure there's only one 'http://' at the beginning (prevents pasting a URL right after the default 'http://')
-        $url = str_replace( 
+        $url = str_replace(
             array( 'http://http://', 'http://https://' ),
             array( 'http://',        'https://'        ),
             $url
@@ -515,7 +515,7 @@ class Format {
             $url = str_replace( '&amp;', '&#038;', $url );
             $url = str_replace( "'", '&#039;', $url );
         }
-        
+
         if ( ! is_array( $protocols ) or ! $protocols ) {
             global $allowedprotocols;
             $protocols = apply_filter( 'esc_url_protocols', $allowedprotocols );
@@ -524,11 +524,11 @@ class Format {
 
         if ( !is_allowed_protocol( $url, $protocols ) )
             return '';
-        
+
         // I didn't use KSES function kses_bad_protocol() because it doesn't work the way I liked (returns //blah from illegal://blah)
 
         $url = substr( $url, 0, 1999 );
-        
+
         return apply_filter( 'esc_url', $url, $original_url, $context );
     }
 
@@ -656,14 +656,14 @@ class Format {
      */
     function replace_string_tokens( $format, array $tokens, $default = '' ) {
         preg_match_all( '/%([a-zA-Z0-9-_]+)%/', $format, $matches );
-        
+
         foreach( (array)$matches[1] as $token ) {
             if( !isset( $tokens[ $token ] ) ) {
                 $tokens[ $token ] = $default;
             }
             $format = str_replace( "%$token%", $tokens[ $token ], $format );
         }
-        
+
         return $format;
     }
 

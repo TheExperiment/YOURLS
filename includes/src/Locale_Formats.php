@@ -2,7 +2,7 @@
 
 /**
  * Locale_Formats Wrapper
- * 
+ *
  * @since 1.6
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -266,7 +266,7 @@ class Locale_Formats {
      * @return string Translated full month name
      */
     function get_month( $month_number ) {
-        return $this->month[ sprintf( '%02s', $month_number ) ];		
+        return $this->month[ sprintf( '%02s', $month_number ) ];
     }
 
     /**

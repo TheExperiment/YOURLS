@@ -2,7 +2,7 @@
 
 /**
  * Localization Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -19,7 +19,7 @@ use POMO\Translations\NOOPTranslations;
  * GPL License
  */
 class Localization {
-    
+
     /**
      * Gets the current locale.
      *
@@ -127,27 +127,27 @@ class Localization {
      * @return string Translated text
      */
     function s( $pattern ) {
-        // Get pattern and pattern arguments 
+        // Get pattern and pattern arguments
         $args = func_get_args();
         // If s() called by se(), all arguments are wrapped in the same array key
         if( count( $args ) == 1 && is_array( $args[0] ) ) {
             $args = $args[0];
         }
         $pattern = $args[0];
-        
+
         // get list of sprintf tokens (%s and such)
         $num_of_tokens = substr_count( $pattern, '%' ) - 2 * substr_count( $pattern, '%%' );
-        
+
         $domain = 'default';
         // More arguments passed than needed for the sprintf? The last one will be the domain
         if( $num_of_tokens < ( count( $args ) - 1 ) ) {
             $domain = array_pop( $args );
         }
-        
+
         // Translate text
         $args[0] = _( $pattern, $domain );
-        
-        return call_user_func_array( 'sprintf', $args );	
+
+        return call_user_func_array( 'sprintf', $args );
     }
 
     /**
@@ -384,7 +384,7 @@ class Localization {
     function n_noop( $singular, $plural, $domain = null ) {
         return array(
             0 => $singular,
-            1 => $plural, 
+            1 => $plural,
             'singular' => $singular,
             'plural' => $plural,
             'context' => null,
@@ -513,7 +513,7 @@ class Localization {
      */
     function load_default_textdomain() {
         $locale = get_locale();
-        
+
         if( !empty( $locale ) )
             return load_textdomain( 'default', LANG_DIR . "/$locale.mo" );
     }
@@ -569,13 +569,13 @@ class Localization {
      */
     function get_available_languages( $dir = null ) {
         $languages = array();
-        
+
         $dir = is_null( $dir) ? LANG_DIR : $dir;
-        
+
         foreach( (array) glob( $dir . '/*.mo' ) as $lang_file ) {
             $languages[] = basename( $lang_file, '.mo' );
         }
-        
+
         return apply_filters( 'get_available_languages', $languages );
     }
 
@@ -592,7 +592,7 @@ class Localization {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
-        
+
         $formatted = number_format( $number, abs( intval( $decimals ) ), $locale_formats->number_format['decimal_point'], $locale_formats->number_format['thousands_sep'] );
         return apply_filters( 'number_format_i18n', $formatted );
     }
@@ -641,7 +641,7 @@ class Localization {
             $dateweekday_abbrev   = $locale_formats->get_weekday_abbrev( $dateweekday );
             $datemeridiem         = $locale_formats->get_meridiem( $datefunc( 'a', $i ) );
             $datemeridiem_capital = $locale_formats->get_meridiem( $datefunc( 'A', $i ) );
-            
+
             $dateformatstring = ' '.$dateformatstring;
             $dateformatstring = preg_replace( "/([^\\\])D/", "\\1" . backslashit( $dateweekday_abbrev ), $dateformatstring );
             $dateformatstring = preg_replace( "/([^\\\])F/", "\\1" . backslashit( $datemonth ), $dateformatstring );
@@ -655,7 +655,7 @@ class Localization {
         $timezone_formats = array( 'P', 'I', 'O', 'T', 'Z', 'e' );
         $timezone_formats_re = implode( '|', $timezone_formats );
         if ( preg_match( "/$timezone_formats_re/", $dateformatstring ) ) {
-            
+
             // TODO: implement a timezone option
             $timezone_string = get_option( 'timezone_string' );
             if ( $timezone_string ) {
@@ -733,7 +733,7 @@ class Localization {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
-        
+
         return $locale_formats->is_rtl();
     }
 
@@ -751,10 +751,10 @@ class Localization {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
-        
+
         if( $weekday === '' )
             return $locale_formats->weekday_abbrev;
-        
+
         if( is_int( $weekday ) ) {
             $day = $locale_formats->weekday[ $weekday ];
             return $locale_formats->weekday_abbrev[ $day ];
@@ -777,10 +777,10 @@ class Localization {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
-        
+
         if( $weekday === '' )
             return $locale_formats->weekday_initial;
-        
+
         if( is_int( $weekday ) ) {
             $weekday = $locale_formats->weekday[ $weekday ];
             return $locale_formats->weekday_initial[ $weekday ];
@@ -803,10 +803,10 @@ class Localization {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
-        
+
         if( $month === '' )
             return $locale_formats->month_abbrev;
-        
+
         if( intval( $month ) > 0 ) {
             $month = $locale_formats->month[ $month ];
             return $locale_formats->month_abbrev[ $month ];
@@ -825,7 +825,7 @@ class Localization {
         global $locale_formats;
         if( !isset( $locale_formats ) )
             $locale_formats = new Locale_Formats();
-        
+
         return $locale_formats->month;
     }
 }

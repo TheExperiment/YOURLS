@@ -2,7 +2,7 @@
 
 /**
  * Info Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -13,7 +13,7 @@ namespace YOURLS;
  * Summary of Info
  */
 class Info {
-    
+
     /**
      * Echoes an image tag of Google Charts map from sorted array of 'country_code' => 'number of visits' (sort by DESC)
      *
@@ -21,7 +21,7 @@ class Info {
     function stats_countries_map( $countries, $id = null ) {
 
         do_action( 'pre_stats_countries_map' );
-        
+
         // if $id is null then assign a random string
         if( $id === null )
             $id = uniqid ( 'stats_map_' );
@@ -37,7 +37,7 @@ class Info {
             'theme'           => 'maximized'
         );
         $options = apply_filter( 'stats_countries_map_options', $options );
-        
+
         $map = google_viz_code( 'GeoChart', $data, $options, $id );
 
         echo apply_filter( 'stats_countries_map', $map, $countries, $options, $id );
@@ -50,7 +50,7 @@ class Info {
     function stats_pie( $data, $limit = 10, $size = '340x220', $id = null ) {
 
         do_action( 'pre_stats_pie' );
-        
+
         // if $id is null then assign a random string
         if( $id === null )
             $id = uniqid ( 'stats_pie_' );
@@ -69,12 +69,12 @@ class Info {
             }
             $data = $trim_data;
         }
-        
+
         // Scale items
         $_data = scale_data( $data );
-        
+
         list($width, $height) = explode( 'x', $size );
-        
+
         $options = array(
             'theme'  => 'maximized',
             'width'   => $width,
@@ -115,7 +115,7 @@ class Info {
         ),
         )
          */
-        
+
         if( !$dates )
             return array();
 
@@ -130,12 +130,12 @@ class Info {
         $_keys       = array_keys( $dates[ $last_year ] );
         $last_month  = end( $_keys );
         reset( $dates );
-        
+
         // Get first & last days from our range. In our example: 29 & 05
         $first_day = key( $dates[ $first_year ][ $first_month ] );
         $_keys     = array_keys( $dates[ $last_year ][ $last_month ] );
         $last_day  = end( $_keys );
-        
+
         unset( $_keys );
 
         // Now build a list of all years (2009), month (08 & 09) and days (all from 2009-08-29 to 2009-09-05)
@@ -159,7 +159,7 @@ class Info {
                 }
             }
         }
-        
+
         return array(
             'list_of_days'   => $list_of_days,
             'list_of_months' => $list_of_months,
@@ -169,28 +169,28 @@ class Info {
 
     /**
      * Echoes an image tag of Google Charts line graph from array of values (eg 'number of clicks').
-     * 
+     *
      * $legend1_list & legend2_list are values used for the 2 x-axis labels. $id is an HTML/JS id
      *
      */
     function stats_line( $values, $id = null ) {
 
         do_action( 'pre_stats_line' );
-        
+
         // if $id is null then assign a random string
         if( $id === null )
             $id = uniqid( 'stats_line_' );
-        
+
         // If we have only 1 day of data, prepend a fake day with 0 hits for a prettier graph
         if ( count( $values ) == 1 )
             array_unshift( $values, 0 );
-        
+
         // Keep only a subset of values to keep graph smooth
         $values = array_granularity( $values, 30 );
-        
+
         $data = array_merge( array( 'Time' => 'Hits' ), $values );
         $data = google_array_to_data_table( $data );
-        
+
         $options = array(
             "legend"      => "none",
             "pointSize"   => "3",
@@ -203,7 +203,7 @@ class Info {
             "colors"	  => "['#2a85b3']",
         );
         $options = apply_filter( 'stats_line_options', $options );
-        
+
         $lineChart = google_viz_code( 'LineChart', $data, $options, $id );
 
         echo apply_filter( 'stats_line', $lineChart, $values, $options, $id );
@@ -242,11 +242,11 @@ class Info {
         $scheme = isset( $parse['scheme'] ) ? $parse['scheme'] : '';
         $path = isset( $parse['path'] ) ? $parse['path'] : '';
         if( !$host )
-            $host = $path;	
-        
+            $host = $path;
+
         if ( $include_scheme && $scheme )
             $host = $scheme.'://'.$host;
-        
+
         return $host;
     }
 
@@ -317,7 +317,7 @@ class Info {
             $str .= "],";
         }
         $str = substr( $str, 0, -1 ); // remove the trailing comma/return, reappend the return
-        $str .= "]);"; // wrap it up	
+        $str .= "]);"; // wrap it up
         return $str;
     }
 
@@ -334,7 +334,7 @@ class Info {
 
         $code .= "var options = {";
         foreach( $options as $field => $value ) {
-            if( !is_numeric( $value ) && strpos( $value, '[' ) !== 0 && strpos( $value, '{' ) !== 0 ) { 
+            if( !is_numeric( $value ) && strpos( $value, '[' ) !== 0 && strpos( $value, '{' ) !== 0 ) {
                 $value = "\"$value\"";
             }
             $code .= "'$field': $value,";
@@ -344,7 +344,7 @@ class Info {
         $code .= "google.setOnLoadCallback( $function_name );";
         $code .= "</script>";
         $code .= "<div id=\"visualization_$id\"></div>";
-        
+
         return $code;
     }
 

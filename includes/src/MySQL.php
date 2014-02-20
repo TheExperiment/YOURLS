@@ -2,7 +2,7 @@
 
 /**
  * MySQL Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -11,11 +11,11 @@ namespace YOURLS;
 
 /**
  * Connection with database
- * 
+ *
  * Load everything (driver and subclasses) to talk with MySQL.
  */
 class MySQL {
-    
+
     /**
      * Pick the right DB class and return an instance
      *
@@ -37,7 +37,7 @@ class MySQL {
         } else {
             $driver = '';
         }
-    
+
         // Set the new driver
         if ( in_array( $driver, array( 'mysql', 'mysqli', 'pdo' ) ) ) {
             $class = require_db_files( $driver );
@@ -53,9 +53,9 @@ class MySQL {
                 503
             );
         }
-    
+
         do_action( 'set_DB_driver', $driver );
-        
+
         $ydb = new $class( DB_USER, DB_PASS, DB_NAME, DB_HOST );
         $ydb->DB_driver = $driver;
 
@@ -77,7 +77,7 @@ class MySQL {
         require_once( INC . '/ezSQL/ez_sql_' . $driver . '.php' );
         require_once( INC . '/ezSQL/ez_sql_' . $driver . '_yourls.php' );
         return 'ezSQL_' . $driver . '_yourls';
-    } 
+    }
 
     /**
      * Connect to DB
@@ -91,7 +91,7 @@ class MySQL {
             or !defined( 'DB_PASS' )
             or !defined( 'DB_NAME' )
             or !defined( 'DB_HOST' )
-        ) die ( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );	
+        ) die ( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );
 
         // Are we standalone or in the WordPress environment?
         if ( class_exists( 'wpdb', false ) ) {
@@ -100,7 +100,7 @@ class MySQL {
         } else {
             set_DB_driver();
         }
-    
+
         return $ydb;
     }
 
@@ -114,26 +114,26 @@ class MySQL {
      */
     function is_db_alive() {
         global $ydb;
-    
+
         $alive = false;
         switch( $ydb->DB_driver ) {
             case 'pdo' :
                 $alive = isset( $ydb->dbh );
                 break;
-    
+
             case 'mysql' :
                 $alive = ( isset( $ydb->dbh ) && false !== $ydb->dbh );
                 break;
-    
+
             case 'mysqli' :
                 $alive = ( null == mysqli_connect_error() );
                 break;
-        
+
             // Custom DB driver & class : delegate check
             default:
                 $alive = apply_filter( 'is_db_alive_custom', false );
         }
-    
+
         return $alive;
     }
 

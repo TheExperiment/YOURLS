@@ -2,7 +2,7 @@
 
 /**
  * Themes Wrapper
- * 
+ *
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
@@ -13,11 +13,11 @@ namespace YOURLS;
  * The theme API, which allows designing and customizing the interface.
  *
  * Several functions used by themes are shared with plugins: see functions-plugins.php
- * 
+ *
  * @since 2.0
  */
 class Themes {
-    
+
     /**
      * Define default page structure (ie callable functions to render a page)
      *
@@ -27,12 +27,12 @@ class Themes {
      * - 'main' elements: the main content of the page: plugin list, short URL list, plugin sub page...
      * - 'after' elements: footer, ...
      * The 'before' and 'after' elements can be modified with filter 'template_content'
-     * 
+     *
      * @since 1.7
      */
     function set_template_content() {
         global $ydb;
-        
+
         // Page structure
         $elements = array (
             'before' => array(
@@ -48,7 +48,7 @@ class Themes {
                 'wrapper_end',     // themes should probably not remove this
             )
         );
-        
+
         $ydb->template = apply_filter( 'set_template_content', $elements );
     }
 
@@ -62,7 +62,7 @@ class Themes {
      */
     function remove_from_template( $function, $replace_with = null, $where = null ) {
         global $ydb;
-        
+
         if( $where ) {
             remove_from_array_deep( $ydb->template[ $where ], $function, $replace_with );
         } else {
@@ -78,9 +78,9 @@ class Themes {
      * @param string $replace_with  Optional, element to replace with
      * @return unknown
      */
-    function remove_from_array_deep( &$array, $remove, $replace_with = null ) { 
+    function remove_from_array_deep( &$array, $remove, $replace_with = null ) {
         foreach( $array as $key => &$value ) {
-            if( is_array( $value ) ) { 
+            if( is_array( $value ) ) {
                 remove_from_array_deep( $value, $remove, $replace_with );
             } else {
                 if( $remove == $value ) {
@@ -97,7 +97,7 @@ class Themes {
 
     /**
      * Draw page with HTML functions in requested order
-     * 
+     *
      * @since 1.7
      * @param string $template_part what template part (eg 'before' or 'after' the page main content)
      */
@@ -107,10 +107,10 @@ class Themes {
         // Collect additional optional arguments, for instance the page context ('admin', 'plugins'...)
         $args = func_get_args();
         array_shift( $args ); // remove first element which is $template_part
-        
+
         // Allow theming!
         $elements = apply_filter( 'template_content', $ydb->template, $template_part, $args );
-        
+
         // 'Draw' page. Each template function is passed all arguments passed to template_content()
         foreach( (array) $elements[ $template_part ] as $element ) {
             if( is_callable( $element ) ) {
@@ -119,7 +119,7 @@ class Themes {
                 add_notice( s( 'Undefined template function <code>%s</code>', $element ), 'error' ); //@TODO notice style
             }
         }
-        
+
         if( $template_part == 'after' )
             html_ending();
     }
@@ -156,12 +156,12 @@ class Themes {
      */
     function output_asset_queue() {
         global $ydb;
-        
+
         // Filter the asset list before echoing links
         $assets = apply_filter( 'html_assets_queue', $ydb->assets );
-        
+
         $core = core_assets();
-        
+
         // Include assets
         foreach( $assets as $type => $files ) {
             foreach( $files as $name => $src ) {
@@ -173,21 +173,21 @@ class Themes {
                         $src = site_url( false, ASSETURL . "/$type/" . $core[ $type ][ $name ] . ".$type?v=" . VERSION );
                     }
                 }
-                
+
                 $src = sanitize_url( $src );
-                
+
                 // Output asset HTML tag
                 switch( $type ) {
                     case 'css':
                         echo '<link rel="stylesheet" href="' . $src . '" type="text/css" media="screen">';
                         break;
-                    
+
                     case 'js':
                         echo '<script src="' . $src . '" type="text/javascript"></script>';
                         break;
-                    
+
                     default:
-                        add_notice( _( 'You can only enqueue "css" or "js" files' ) ); 
+                        add_notice( _( 'You can only enqueue "css" or "js" files' ) );
                 }
             }
         }
@@ -206,7 +206,7 @@ class Themes {
         if( !in_array( $type, array( 'css', 'js' ) ) ) {
             return false;
         }
-        
+
         global $ydb;
         if( is_asset_queued( $name, $type ) ) {
             unset( $ydb->assets[ $type ][ $name ] );
@@ -231,18 +231,18 @@ class Themes {
             add_notice( _( 'You can only enqueue "css" or "js" files' ) );
             return false;
         }
-        
+
         // Already in queue?
         if( is_asset_queued( $name, $type ) )
             return false;
-        
+
         // Are there any (core) dependencies needed first?
         if( $deps ) {
             foreach( (array)$deps as $dep ) {
                 enqueue_asset( $dep, $type );
             }
         }
-        
+
         global $ydb;
         $ydb->assets[ $type ][ $name ] = $src;
         return true;
@@ -374,14 +374,14 @@ class Themes {
         enqueue_script( 'yourls' );
         enqueue_script( 'scripts' );
         enqueue_script( 'details' );
-        
+
         // Set default template structure
         set_template_content();
-        
+
         // Don't load theme when installing or updating.
         if( is_installing() OR is_upgrading() )
             return;
-        
+
         // Load theme if applicable
         load_active_theme();
     }
@@ -406,14 +406,14 @@ class Themes {
             do_action( 'load_active_theme_empty' );
             return false;
         }
-        
+
         // Try to load the active theme
         $load = load_theme( $active_theme );
         if( $load === true ) {
             do_action( 'load_active_theme' );
             return true;
         }
-        
+
         // There was a problem : deactivate theme and report error
         activate_theme( 'default' );
         add_notice( $load );
@@ -450,7 +450,7 @@ class Themes {
 
         // Enqueue theme.css
         enqueue_style( $theme, $theme_css_url );
-        
+
         // Success !
         do_action( 'theme_loaded' );
         return true;
@@ -470,7 +470,7 @@ class Themes {
             do_action( 'activated_' . $theme );
             return true;
         }
-        
+
         $theme_php = get_theme_dir( $theme ) . '/theme.php';
         $theme_css = get_theme_dir( $theme ) . '/theme.css';
 
@@ -481,14 +481,14 @@ class Themes {
         // Validate theme.php file if exists
         if( is_readable( $theme_php ) && !validate_plugin_file( $theme_php ) )
             return s( 'Not a valid <code>theme.php</code> file in <code>%s</code>', $theme );
-        
+
         // Check that it's not activated already
         if( $theme == get_active_theme() )
             return _( 'Theme already activated' );
-        
+
         // Attempt to load the theme
         $load = load_theme( $theme );
-        
+
         if( $load === true ) {
             // so far, so good
             update_option( 'active_theme', $theme );
@@ -563,7 +563,7 @@ class Themes {
 
 
     /**
-     * Callback function: Sort themes 
+     * Callback function: Sort themes
      *
      * @link http://php.net/uasort
      *
@@ -585,7 +585,7 @@ class Themes {
         if ( 'DESC' == $order )
             return ( $a < $b ) ? 1 : -1;
         else
-            return ( $a < $b ) ? -1 : 1;		
+            return ( $a < $b ) ? -1 : 1;
     }
 
     /**
@@ -599,7 +599,7 @@ class Themes {
      */
     function get_theme_screenshot( $theme_dir ) {
         $screenshot = '';
-        
+
         // search for screenshot.(gif|jpg|png)
         foreach( array( 'png', 'jpg', 'gif' ) as $ext ) {
             if( file_exists( get_theme_dir( $theme_dir ) . '/screenshot.' . $ext ) ) {
@@ -607,8 +607,8 @@ class Themes {
                 break;
             }
         }
-        
-        return $screenshot;	
+
+        return $screenshot;
     }
 
 }
