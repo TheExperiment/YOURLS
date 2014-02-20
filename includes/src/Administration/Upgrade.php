@@ -18,28 +18,14 @@ class Upgrade {
      * Upgrade YOURLS and DB schema
      *
      */
-    public function upgrade( $step, $oldver, $newver, $oldsql, $newsql ) {
-        // special case for 1.3: the upgrade is a multi step procedure
-        if( $oldsql == 100 ) {
-            upgrade_to_14( $step );
-        }
-
+    public function __construct( $step, $oldver, $newver, $oldsql, $newsql ) {
         // other upgrades which are done in a single pass
         switch( $step ) {
 
             case 1:
             case 2:
-                if( $oldsql < 210 )
-                    upgrade_to_141();
-
-                if( $oldsql < 220 )
-                    upgrade_to_143();
-
-                if( $oldsql < 250 )
-                    upgrade_to_15();
-
                 if( $oldsql < 482 )
-                    upgrade_482();
+                    upgrade_to_15();
 
                 redirect_javascript( admin_url( "upgrade?step=3" ) );
 
@@ -54,21 +40,6 @@ class Upgrade {
     }
 
     /**
-     * Upgrade r482
-     *
-     */
-    public function upgrade_482() {
-        // Change URL title charset to UTF8
-        global $ydb;
-        $table_url = YOURLS_DB_TABLE_URL;
-        $sql = "ALTER TABLE `$table_url` CHANGE `title` `title` TEXT CHARACTER SET utf8;";
-        $ydb->query( $sql );
-        echo "<p>Updating table structure. Please wait...</p>";
-    }
-
-    /************************** 1.4.3 -> 1.5 **************************/
-
-    /**
      * Main func for upgrade from 1.4.3 to 1.5
      *
      */
@@ -81,99 +52,13 @@ class Upgrade {
         // Alter URL table to store titles
         global $ydb;
         $table_url = YOURLS_DB_TABLE_URL;
-        $sql = "ALTER TABLE `$table_url` ADD `title` TEXT AFTER `url`;";
+        $sql = "ALTER TABLE `$table_url` ADD `title` TEXT CHARACTER SET utf8 AFTER `url`;";
         $ydb->query( $sql );
         echo "<p>Updating table structure. Please wait...</p>";
 
         // Update .htaccess
         create_htaccess();
         echo "<p>Updating .htaccess file. Please wait...</p>";
-    }
-
-    /************************** 1.4.1 -> 1.4.3 **************************/
-
-    /**
-     * Main func for upgrade from 1.4.1 to 1.4.3
-     *
-     */
-    public function upgrade_to_143( ) {
-        // Check if we have 'keyword' (borked install) or 'shorturl' (ok install)
-        global $ydb;
-        $table_log = YOURLS_DB_TABLE_LOG;
-        $sql = "SHOW COLUMNS FROM `$table_log`";
-        $cols = $ydb->get_results( $sql );
-        if ( $cols[2]->Field == 'keyword' ) {
-            $sql = "ALTER TABLE `$table_log` CHANGE `keyword` `shorturl` VARCHAR( 200 ) BINARY;";
-            $ydb->query( $sql );
-        }
-        echo "<p>Structure of existing tables updated. Please wait...</p>";
-    }
-
-    /************************** 1.4 -> 1.4.1 **************************/
-
-    /**
-     * Main func for upgrade from 1.4 to 1.4.1
-     *
-     */
-    public function upgrade_to_141( ) {
-        // Kill old cookies from 1.3 and prior
-        setcookie('username', null, time() - 3600 );
-        setcookie('password', null, time() - 3600 );
-        // alter table URL
-        alter_url_table_to_141();
-        // recreate the htaccess file if needed
-        create_htaccess();
-    }
-
-    /**
-     * Alter table URL to 1.4.1
-     *
-     */
-    public function alter_url_table_to_141() {
-        global $ydb;
-        $table_url = YOURLS_DB_TABLE_URL;
-        $alter = "ALTER TABLE `$table_url` CHANGE `keyword` `keyword` VARCHAR( 200 ) BINARY, CHANGE `url` `url` TEXT BINARY ";
-        $ydb->query( $alter );
-        echo "<p>Structure of existing tables updated. Please wait...</p>";
-    }
-
-    /************************** 1.3 -> 1.4 **************************/
-
-    /**
-     * Main func for upgrade from 1.3-RC1 to 1.4
-     *
-     */
-    public function upgrade_to_14( $step ) {
-
-        switch( $step ) {
-            case 1:
-                // create table log & table options
-                // update table url structure
-                // update .htaccess
-                create_tables_for_14(); // no value returned, assuming it went OK
-                alter_url_table_to_14(); // no value returned, assuming it went OK
-                $clean = clean_htaccess_for_14(); // returns bool
-                $create = create_htaccess(); // returns bool
-                if ( !$create )
-                    echo "<p class='warning'>Please create your <code>.htaccess</code> file (I could not do it for you). Please refer to <a href='http://yourls.org/htaccess'>http://yourls.org/htaccess</a>.";
-                redirect_javascript( admin_url( "upgrade?step=2&oldver=1.3&newver=1.4&oldsql=100&newsql=200" ), $create );
-                break;
-
-            case 2:
-                // convert each link in table url
-                update_table_to_14();
-                break;
-
-            case 3:
-                // update table url structure part 2: recreate indexes
-                alter_url_table_to_14_part_two();
-                // update version & db_version & next_id in the option table
-                // attempt to drop YOURLS_DB_TABLE_NEXTDEC
-                update_options_to_14();
-                // Now upgrade to 1.4.1
-                redirect_javascript( admin_url( "upgrade?step=1&oldver=1.4&newver=1.4.1&oldsql=200&newsql=210" ) );
-                break;
-        }
     }
 
     /**
