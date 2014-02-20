@@ -1,4 +1,5 @@
 <?php
+
 /**
  * YOURLS modification of a small subset from WordPress' KSES implementation.
  * Straight from the Let's Not Reinvent The Wheel department.
@@ -6,6 +7,8 @@
  * @since 2.0
  * @copyright 2009-2014 YOURLS - MIT
  */
+
+namespace YOURLS;
 
 /* NOTE ABOUT GLOBALS
  * Two globals are defined: $allowedentitynames and $allowedprotocols
@@ -57,31 +60,31 @@ class KSES {
         global $allowedentitynames, $allowedprotocols;
 
         if( ! $allowedentitynames ) {
-            $allowedentitynames = apply_filter( 'kses_allowed_entities', kses_allowed_entities() );
+            $allowedentitynames = apply_filter( 'kses_allowed_entities', $this->allowed_entities() );
         }
 
         if( ! $allowedprotocols ) {
-            $allowedprotocols   = apply_filter( 'kses_allowed_protocols', kses_allowed_protocols() );
+            $allowedprotocols   = apply_filter( 'kses_allowed_protocols', $this->allowed_protocols() );
         }
 
         /** See NOTE ABOUT GLOBALS **
 
         if( ! $allowedtags_all ) {
-        $allowedtags_all = kses_allowed_tags_all();
+        $allowedtags_all = $this->allowed_tags_all();
         $allowedtags_all = array_map( '_add_global_attributes', $allowedtags_all );
         $allowedtags_all = apply_filter( 'kses_allowed_tags_all', $allowedtags_all );
         } else {
         // User defined: let's sanitize
-        $allowedtags_all = kses_array_lc( $allowedtags_all );
+        $allowedtags_all = $this->array_lc( $allowedtags_all );
         }
 
         if( ! $allowedtags ) {
-        $allowedtags = kses_allowed_tags();
+        $allowedtags = $this->allowed_tags();
         $allowedtags = array_map( '_add_global_attributes', $allowedtags );
         $allowedtags = apply_filter( 'kses_allowed_tags', $allowedtags );
         } else {
         // User defined: let's sanitize
-        $allowedtags = kses_array_lc( $allowedtags );
+        $allowedtags = $this->array_lc( $allowedtags );
         }
 
         /**/
@@ -97,7 +100,7 @@ class KSES {
      *
      * @return array All tags
      */
-    public function kses_allowed_tags_all() {
+    public function allowed_tags_all() {
         return array(
             'address' => array(),
             'a' => array(
@@ -423,7 +426,7 @@ class KSES {
      *
      * @return array Allowed tags
      */
-    public function kses_allowed_tags() {
+    public function allowed_tags() {
         return array(
             'a' => array(
                 'href' => true,
@@ -461,7 +464,7 @@ class KSES {
      *
      * @return array Allowed entities
      */
-    public function kses_allowed_entities() {
+    public function allowed_entities() {
         return array(
             'nbsp',    'iexcl',  'cent',    'pound',  'curren', 'yen',
             'brvbar',  'sect',   'uml',     'copy',   'ordf',   'laquo',
@@ -514,7 +517,7 @@ class KSES {
      *
      * @return array Allowed protocols
      */
-    public function kses_allowed_protocols() {
+    public function allowed_protocols() {
         // More or less common stuff in links. From http://en.wikipedia.org/wiki/URI_scheme
         return array(
             // Common
@@ -573,22 +576,22 @@ class KSES {
      * @param string $string Content to normalize entities
      * @return string Content with normalized entities
      */
-    public function kses_normalize_entities($string) {
+    public function normalize_entities($string) {
         # Disarm all entities by converting & to &amp;
 
         $string = str_replace('&', '&amp;', $string);
 
         # Change back the allowed entities in our entity whitelist
 
-        $string = preg_replace_callback('/&amp;([A-Za-z]{2,8});/', 'kses_named_entities', $string);
-        $string = preg_replace_callback('/&amp;#(0*[0-9]{1,7});/', 'kses_normalize_entities2', $string);
-        $string = preg_replace_callback('/&amp;#[Xx](0*[0-9A-Fa-f]{1,6});/', 'kses_normalize_entities3', $string);
+        $string = preg_replace_callback('/&amp;([A-Za-z]{2,8});/', '$this->named_entities', $string);
+        $string = preg_replace_callback('/&amp;#(0*[0-9]{1,7});/', '$this->normalize_entities2', $string);
+        $string = preg_replace_callback('/&amp;#[Xx](0*[0-9A-Fa-f]{1,6});/', '$this->normalize_entities3', $string);
 
         return $string;
     }
 
     /**
-     * Callback for kses_normalize_entities() regular expression.
+     * Callback for $this->normalize_entities() regular expression.
      *
      * This function only accepts valid named entity references, which are finite,
      * case-sensitive, and highly scrutinized by HTML and XML validators.
@@ -598,7 +601,7 @@ class KSES {
      * @param array $matches preg_replace_callback() matches array
      * @return string Correctly encoded entity
      */
-    public function kses_named_entities($matches) {
+    public function named_entities($matches) {
         global $allowedentitynames;
 
         if ( empty($matches[1]) )
@@ -610,9 +613,9 @@ class KSES {
     }
 
     /**
-     * Callback for kses_normalize_entities() regular expression.
+     * Callback for $this->normalize_entities() regular expression.
      *
-     * This function helps kses_normalize_entities() to only accept 16-bit values
+     * This function helps $this->normalize_entities() to only accept 16-bit values
      * and nothing more for &#number; entities.
      *
      * @access private
@@ -621,7 +624,7 @@ class KSES {
      * @param array $matches preg_replace_callback() matches array
      * @return string Correctly encoded entity
      */
-    public function kses_normalize_entities2($matches) {
+    public function normalize_entities2($matches) {
         if ( empty($matches[1]) )
             return '';
 
@@ -637,9 +640,9 @@ class KSES {
     }
 
     /**
-     * Callback for kses_normalize_entities() for regular expression.
+     * Callback for $this->normalize_entities() for regular expression.
      *
-     * This function helps kses_normalize_entities() to only accept valid Unicode
+     * This function helps $this->normalize_entities() to only accept valid Unicode
      * numeric entities in hex form.
      *
      * @access private
@@ -648,7 +651,7 @@ class KSES {
      * @param array $matches preg_replace_callback() matches array
      * @return string Correctly encoded entity
      */
-    public function kses_normalize_entities3($matches) {
+    public function normalize_entities3($matches) {
         if ( empty($matches[1]) )
             return '';
 
@@ -706,7 +709,7 @@ class KSES {
      * @param array $inarray Unfiltered array
      * @return array Fixed array with all lowercase keys
      */
-    public function kses_array_lc($inarray) {
+    public function array_lc($inarray) {
         $outarray = array ();
 
         foreach ( (array) $inarray as $inkey => $inval) {
@@ -734,9 +737,9 @@ class KSES {
      * @param string $string Content to change entities
      * @return string Content after decoded entities
      */
-    public function kses_decode_entities($string) {
-        $string = preg_replace_callback('/&#([0-9]+);/', '_kses_decode_entities_chr', $string);
-        $string = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', '_kses_decode_entities_chr_hexdec', $string);
+    public function decode_entities($string) {
+        $string = preg_replace_callback('/&#([0-9]+);/', '$this->_decode_entities_chr', $string);
+        $string = preg_replace_callback('/&#[Xx]([0-9A-Fa-f]+);/', '$this->_decode_entities_chr_hexdec', $string);
 
         return $string;
     }
@@ -749,7 +752,7 @@ class KSES {
      * @param array $match preg match
      * @return string
      */
-    public function _kses_decode_entities_chr( $match ) {
+    public function _decode_entities_chr( $match ) {
         return chr( $match[1] );
     }
 
@@ -761,7 +764,7 @@ class KSES {
      * @param array $match preg match
      * @return string
      */
-    public function _kses_decode_entities_chr_hexdec( $match ) {
+    public function _decode_entities_chr_hexdec( $match ) {
         return chr( hexdec( $match[1] ) );
     }
 
@@ -773,7 +776,7 @@ class KSES {
      * @param string $string
      * @return string
      */
-    public function kses_no_null($string) {
+    public function no_null($string) {
         $string = preg_replace( '/\0+/', '', $string );
         $string = preg_replace( '/(\\\\0)+/', '', $string );
 
