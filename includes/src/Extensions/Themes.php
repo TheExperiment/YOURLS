@@ -16,7 +16,14 @@ namespace YOURLS\Extensions;
  *
  * @since 2.0
  */
-class Themes {
+class Themes extends Extensions {
+    
+    /**
+     * Summary of __construct
+     */
+    public function __construct() {
+        $this->category = 'themes';
+    }
 
     /**
      * Define default page structure (ie callable functions to render a page)
@@ -353,17 +360,6 @@ class Themes {
     }
 
     /**
-     * List themes in /user/themes
-     *
-     * @since 1.7
-     * @global object $ydb Storage of mostly everything YOURLS needs to know
-     * @return array Array of [/themedir/theme.css]=>array('Name'=>'Leo', 'Title'=>'My Theme', ... )
-     */
-    public function get_themes() {
-        return $this->get_plugins( 'themes' );
-    }
-
-    /**
      * Init theme API and load active theme if any
      *
      * @since 1.7
@@ -577,34 +573,6 @@ class Themes {
      */
     public function get_active_theme_url( ) {
         return ( $this->get_active_theme() ? $this->get_theme_url( $this->get_active_theme() ) : '' );
-    }
-
-
-
-    /**
-     * Callback function: Sort themes
-     *
-     * @link http://php.net/uasort
-     *
-     * @since 1.7
-     * @param array $plugin_a
-     * @param array $plugin_b
-     * @return int 0, 1 or -1, see uasort()
-     */
-    public function sort_callback( $theme_a, $theme_b ) {
-        $orderby = apply_filters( 'themes_sort_callback', 'Theme Name' );
-        $order   = apply_filters( 'themes_sort_callback', 'ASC' );
-
-        $a = $theme_a[$orderby];
-        $b = $theme_b[$orderby];
-
-        if ( $a == $b )
-            return 0;
-
-        if ( 'DESC' == $order )
-            return ( $a < $b ) ? 1 : -1;
-        else
-            return ( $a < $b ) ? -1 : 1;
     }
 
     /**
