@@ -18,7 +18,7 @@ class Loader {
      * Summary of __construct
      * @param mixed $config
      */
-    public function __construct( $config ) {
+    public function __construct( $config = null ) {
         if ( file_exists( str_replace( '\\', '/', $config ) ) ) {
             define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', $config ) );
         } elseif ( file_exists( dirname( dirname( __FILE__ ) ) . '/user/config.php' ) ) {
