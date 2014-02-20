@@ -17,7 +17,7 @@ namespace YOURLS\Extensions;
  * @since 2.0
  */
 class Themes extends Extensions {
-    
+
     /**
      * Summary of __construct
      */

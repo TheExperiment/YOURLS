@@ -11,15 +11,15 @@ namespace YOURLS\Extensions;
 
 /**
  * Extensions API
- * 
+ *
  * @author Ozh
  * @since 1.5
  */
 class Extensions {
-    
+
     /**
      * Category of extensions
-     * 
+     *
      * @var string
      */
     protected $category;
@@ -94,7 +94,7 @@ class Extensions {
             OR
             false !== strpos( $file, './' )
             OR // a extension must be named 'plugin.php', a theme must be named 'theme.php'
-            ( 'plugin.php' !== substr( $file, -10 )	&& 'theme.php' !== substr( $file, -9 ) )	
+            ( 'plugin.php' !== substr( $file, -10 )	&& 'theme.php' !== substr( $file, -9 ) )
             OR
             !is_readable( $file )
         )
@@ -117,7 +117,6 @@ class Extensions {
 
         return trim( $file, '/' );
     }
-
 
     /**
      * Handle extension or theme administration page

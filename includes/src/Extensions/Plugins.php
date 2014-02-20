@@ -11,19 +11,19 @@ namespace YOURLS\Extensions;
 
 /**
  * Plugins API
- * 
+ *
  * @author Ozh
  * @since 1.5
  */
 class Plugins extends Extensions {
-    
+
     /**
      * Summary of __construct
      */
     public function __construct() {
         $this->category = 'plugins';
     }
-    
+
     /**
      * Return number of active plugins
      *

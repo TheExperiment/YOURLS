@@ -13,24 +13,24 @@ namespace YOURLS;
  * Useful methods to convert anything
  */
 class Format {
-    
+
     /**
      * Summary of $data
      * @var mixed
      * @todo Exp
      */
     private $input;
-    
+
     /**
      * Summary of $output
      * @var mixed
      * @todo Exp
      */
     public $output;
-    
+
     /**
      * Summary of __construct
-     * @param mixed $data 
+     * @param mixed $data
      * @todo Exp
      */
     public function __construct( $data ) {
