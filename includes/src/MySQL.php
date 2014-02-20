@@ -23,7 +23,7 @@ class MySQL {
      * @param string $extension Optional: user defined choice
      * @return class $ydb DB class instance
      */
-    public function set_YOURLS_DB_driver( ) {
+    public function set_driver() {
 
         // Auto-pick the driver. Priority: user defined, then PDO, then mysqli, then mysql
         if ( defined( 'YOURLS_DB_DRIVER' ) ) {
@@ -40,7 +40,7 @@ class MySQL {
 
         // Set the new driver
         if ( in_array( $driver, array( 'mysql', 'mysqli', 'pdo' ) ) ) {
-            $class = require_db_files( $driver );
+            $class = $this->require_files( $driver );
         }
 
         global $ydb;
@@ -71,7 +71,7 @@ class MySQL {
      * @param string $driver DB driver
      * @return string name of the DB class to instantiate
      */
-    public function require_db_files( $driver ) {
+    public function require_files( $driver ) {
         require_once( YOURLS_INC . '/ezSQL/ez_sql_core.php' );
         require_once( YOURLS_INC . '/ezSQL/ez_sql_core_yourls.php' );
         require_once( YOURLS_INC . '/ezSQL/ez_sql_' . $driver . '.php' );
@@ -85,7 +85,7 @@ class MySQL {
      *
      * @since 1.0
      */
-    public function db_connect() {
+    public function connect() {
         global $ydb;
 
         if (   !defined( 'YOURLS_DB_YOURLS_USER' )
@@ -99,7 +99,7 @@ class MySQL {
             /* TODO: should we deprecate this? Follow WP dev in that area */
             $ydb =  new wpdb( YOURLS_DB_YOURLS_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
         } else {
-            set_YOURLS_DB_driver();
+            $this->set_driver();
         }
 
         return $ydb;
@@ -113,7 +113,7 @@ class MySQL {
      *
      * @since 1.7.1
      */
-    public function is_db_alive() {
+    public function is_alive() {
         global $ydb;
 
         $alive = false;
@@ -145,7 +145,7 @@ class MySQL {
      *
      * @since 1.7.1
      */
-    public function db_dead() {
+    public function dead() {
         // Use any /user/db_error.php file
         if( file_exists( YOURLS_USERDIR . '/db_error.php' ) ) {
             include_once( YOURLS_USERDIR . '/db_error.php' );
