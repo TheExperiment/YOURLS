@@ -1,7 +1,6 @@
 <?php
 define( 'YOURLS_ADMIN', true );
 define( 'YOURLS_AJAX', true );
-require_once dirname( __DIR__ ) . '/load-yourls.php';
 yourls_maybe_require_auth();
 
 // This file will output a JSON string

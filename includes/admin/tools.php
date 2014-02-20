@@ -1,6 +1,5 @@
 <?php
 define( 'YOURLS_ADMIN', true );
-require_once dirname( __DIR__ ) . '/load-yourls.php';
 yourls_maybe_require_auth();
 
 yourls_html_head( 'tools', yourls__( 'Cool YOURLS Tools' ) );
