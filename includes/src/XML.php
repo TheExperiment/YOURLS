@@ -1,6 +1,13 @@
 <?php
 
 /**
+ * XML Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+/**
  * This class stores associative arrays in an xml formatted string.      
  * There's also a function thar retrieves them. If you try to use        
  * xml2array with a general xml, it can fail, since there can be some   
@@ -11,21 +18,21 @@
  */
 class XML {
     
-	var $text;
-	var $arrays, $keys, $node_flag, $depth, $xml_parser;
+    var $text;
+    var $arrays, $keys, $node_flag, $depth, $xml_parser;
     
-	/**
+    /**
      * Converts an array to an xml string
      */
-	function array2xml($array) {
+    function array2xml($array) {
         //global $text;
         $this->text="<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><result>";
         $this->text.= $this->array_transform($array);
         $this->text .="</result>";
         return $this->text;
-	}
+    }
 
-	function array_transform($array){
+    function array_transform($array){
         //global $array_text;
         foreach($array as $key => $value){
             if(!is_array($value)){
@@ -45,12 +52,12 @@ class XML {
         }
         //return $array_text;
 
-	}
+    }
     
-	/**
+    /**
      * Transform an XML string to associative array "XML Parser Functions"
      */
-	function xml2array($xml){
+    function xml2array($xml){
         $this->depth=-1;
         $this->xml_parser = xml_parser_create();
         xml_set_object($this->xml_parser, $this);
@@ -61,21 +68,21 @@ class XML {
         xml_parser_free($this->xml_parser);
         return $this->arrays[0];
 
-	}
+    }
     
-	function startElement($parser, $name, $attrs) {
+    function startElement($parser, $name, $attrs) {
         $this->keys[]=$name; //We add a key
         $this->node_flag=1;
         $this->depth++;
     }
     
-	function characterData($parser,$data) {
+    function characterData($parser,$data) {
         $key=end($this->keys);
         $this->arrays[$this->depth][$key]=$data;
         $this->node_flag=0; //So that we don't add as an array, but as an element
     }
     
-	function endElement($parser, $name) {
+    function endElement($parser, $name) {
         $key=array_pop($this->keys);
         //If $node_flag==1 we add as an array, if not, as an element
         if($this->node_flag==1){
