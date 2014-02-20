@@ -1,184 +1,248 @@
 <?php
-// This file initialize everything needed for YOURLS
 
-// Include settings
-if( file_exists( dirname( dirname( __FILE__ ) ) . '/user/config.php' ) ) {
-	// config.php in /user/
-	define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( dirname( __FILE__ ) ) ) . '/user/config.php' );
-} elseif ( file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
-	// config.php in /includes/
-	define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( __FILE__ ) ) . '/config.php' );
-} else {
-	// config.php not found :(
-	die( '<p class="error">Cannot find <code>config.php</code>.</p><p>Please read the <a href="../docs/#install">documentation</a> to learn how to install YOURLS</p>' );
-}
-require_once YOURLS_CONFIGFILE;
+/**
+ * YOURLS Loader
+ *
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
 
-// Check if config.php was properly updated for 1.4
-if( !defined( 'YOURLS_DB_PREFIX' ) )
-	die( '<p class="error">Your <code>config.php</code> does not contain all the required constant definitions.</p><p>Please check <code>config-sample.php</code> and update your config accordingly, there are new stuffs!</p>' );
+namespace YOURLS;
 
-	
-// Define core constants that have not been user defined in config.php
-$yourls_definitions = array(
-    // physical path of YOURLS root
-    'YOURLS_ABSPATH'             => str_replace( '\\', '/', dirname( dirname( __FILE__ ) ) ),
-    // physical path of includes directory
-    'YOURLS_INC'                 => array( 'YOURLS_ABSPATH', '/includes' ),
+/**
+ * Summary of Loader
+ */
+class Loader {
 
-    // physical path and url of asset directory
-    'YOURLS_ASSETDIR'            => array( 'YOURLS_ABSPATH', '/assets' ),
-    'YOURLS_ASSETURL'            => array( 'YOURLS_SITE', '/assets' ),
+    /**
+     * Summary of __construct
+     * @param mixed $config
+     */
+    public function __construct( $config ) {
+        if ( file_exists( str_replace( '\\', '/', $config ) ) ) {
+            define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', $config ) );
+        } elseif ( file_exists( dirname( dirname( __FILE__ ) ) . '/user/config.php' ) ) {
+            // config.php in /user/
+            define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( dirname( __FILE__ ) ) ) . '/user/config.php' );
+        } elseif ( file_exists( dirname( __FILE__ ) . '/config.php' ) ) {
+            // config.php in /includes/
+            define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( __FILE__ ) ) . '/config.php' );
+        } else {
+            // config.php not found :(
+            die( '<p class="error">Cannot find <code>config.php</code>.</p><p>Please read the <a href="../docs/#install">documentation</a> to learn how to install YOURLS</p>' );
+        }
 
-    // physical path and url of user directory
-    'YOURLS_USERDIR'             => array( 'YOURLS_ABSPATH', '/user' ),
-    'YOURLS_USERURL'             => array( 'YOURLS_SITE', '/user' ),
-    // physical path of translations directory
-    'YOURLS_LANG_DIR'            => array( 'YOURLS_USERDIR', '/languages' ),
-    // physical path and url of plugins directory
-    'YOURLS_PLUGINDIR'           => array( 'YOURLS_USERDIR', '/plugins' ),
-    'YOURLS_PLUGINURL'           => array( 'YOURLS_USERURL', '/plugins' ),
-    // physical path and url of themes directory
-    'YOURLS_THEMEDIR'            => array( 'YOURLS_USERDIR', '/themes' ),
-    'YOURLS_THEMEURL'            => array( 'YOURLS_USERURL', '/themes' ),
-    // physical path of pages directory
-    'YOURLS_PAGEDIR'             => array( 'YOURLS_USERDIR', '/pages' ),
+        require_once YOURLS_CONFIGFILE;
 
-    // admin pages location
-    'YOURLS_ADMIN_LOCATION'           => 'admin',
+        // Check if config.php was properly updated for 1.4
+        if( !defined( 'YOURLS_DB_PREFIX' ) )
+            die( '<p class="error">Your <code>config.php</code> does not contain all the required constant definitions.</p><p>Please check <code>config-sample.php</code> and update your config accordingly, there are new stuffs!</p>' );
 
-    // table to store URLs
-    'YOURLS_DB_TABLE_URL'        => array( 'YOURLS_DB_PREFIX', 'url' ),
-    // table to store options
-    'YOURLS_DB_TABLE_OPTIONS'    => array( 'YOURLS_DB_PREFIX', 'options' ),
-    // table to store hits, for stats
-    'YOURLS_DB_TABLE_LOG'        => array( 'YOURLS_DB_PREFIX', 'log' ),
+        // Define core constants that have not been user defined in config.php
+        $yourls_definitions = array(
+            // physical path of YOURLS root
+            'YOURLS_ABSPATH'             => str_replace( '\\', '/', dirname( dirname( __FILE__ ) ) ),
+            // physical path of includes directory
+            'YOURLS_INC'                 => array( 'YOURLS_ABSPATH', '/includes' ),
 
-    // minimum delay in sec before a same IP can add another URL. Note: logged in users are not throttled down.
-    'YOURLS_FLOOD_DELAY_SECONDS' => 15,
-    // comma separated list of IPs that can bypass flood check.
-    'YOURLS_FLOOD_IP_WHITELIST'  => '',
-    'YOURLS_COOKIE_LIFE'         => 60*60*24*7,
-    // life span of a nonce in seconds
-    'YOURLS_NONCE_LIFE'          => 43200, // 3600 *,12
+            // physical path and url of asset directory
+            'YOURLS_ASSETDIR'            => array( 'YOURLS_ABSPATH', '/assets' ),
+            'YOURLS_ASSETURL'            => array( 'YOURLS_SITE', '/assets' ),
 
-    // if set to true, disable stat logging (no use for it, too busy servers, ...)
-    'YOURLS_NOSTATS'             => false,
-    // if set to true, force https:// in the admin area
-    'YOURLS_ADMIN_SSL'           => false,
-    // if set to true, verbose debug infos. Will break things. Don't enable.
-    'YOURLS_DEBUG'               => false,
-);
+            // physical path and url of user directory
+            'YOURLS_USERDIR'             => array( 'YOURLS_ABSPATH', '/user' ),
+            'YOURLS_USERURL'             => array( 'YOURLS_SITE', '/user' ),
+            // physical path of translations directory
+            'YOURLS_LANG_DIR'            => array( 'YOURLS_USERDIR', '/languages' ),
+            // physical path and url of plugins directory
+            'YOURLS_PLUGINDIR'           => array( 'YOURLS_USERDIR', '/plugins' ),
+            'YOURLS_PLUGINURL'           => array( 'YOURLS_USERURL', '/plugins' ),
+            // physical path and url of themes directory
+            'YOURLS_THEMEDIR'            => array( 'YOURLS_USERDIR', '/themes' ),
+            'YOURLS_THEMEURL'            => array( 'YOURLS_USERURL', '/themes' ),
+            // physical path of pages directory
+            'YOURLS_PAGEDIR'             => array( 'YOURLS_USERDIR', '/pages' ),
 
-foreach ( $yourls_definitions as $const_name => $const_default_value ) {
-	if( !defined( $const_name ) ) {
-		if ( is_array( $const_default_value ) ) {
-			define( $const_name, constant( $const_default_value[0] ) . $const_default_value[1] );
-		} else {
-			define( $const_name, $const_default_value );
-		}
-	}
-}
-	
-// Error reporting
-if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
-	error_reporting( -1 );
-} else {
-	error_reporting( E_ERROR | E_PARSE );
-}
+            // admin pages location
+            'YOURLS_ADMIN_LOCATION'           => 'admin',
 
-// Include needed libraries
-require YOURLS_INC . '/vendor/autoload.php';
+            // table to store URLs
+            'YOURLS_DB_TABLE_URL'        => array( 'YOURLS_DB_PREFIX', 'url' ),
+            // table to store options
+            'YOURLS_DB_TABLE_OPTIONS'    => array( 'YOURLS_DB_PREFIX', 'options' ),
+            // table to store hits, for stats
+            'YOURLS_DB_TABLE_LOG'        => array( 'YOURLS_DB_PREFIX', 'log' ),
 
-// Include all functions
-require_once YOURLS_INC . '/version.php';
-require_once YOURLS_INC . '/functions.php';
-require_once YOURLS_INC . '/functions-plugins.php';
-require_once YOURLS_INC . '/functions-formatting.php';
-require_once YOURLS_INC . '/functions-api.php';
-require_once YOURLS_INC . '/functions-kses.php';
-require_once YOURLS_INC . '/functions-l10n.php';
-require_once YOURLS_INC . '/functions-compat.php';
-require_once YOURLS_INC . '/functions-html.php';
-require_once YOURLS_INC . '/functions-http.php';
-require_once YOURLS_INC . '/functions-infos.php';
-require_once YOURLS_INC . '/functions-themes.php';
+            // minimum delay in sec before a same IP can add another URL. Note: logged in users are not throttled down.
+            'YOURLS_FLOOD_DELAY_SECONDS' => 15,
+            // comma separated list of IPs that can bypass flood check.
+            'YOURLS_FLOOD_IP_WHITELIST'  => '',
+            'YOURLS_COOKIE_LIFE'         => 60*60*24*7,
+            // life span of a nonce in seconds
+            'YOURLS_NONCE_LIFE'          => 43200, // 3600 *,12
 
-// Load auth functions if needed
-if( yourls_is_private() )
-	require_once YOURLS_INC.'/functions-auth.php';
+            // if set to true, disable stat logging (no use for it, too busy servers, ...)
+            'YOURLS_NOSTATS'             => false,
+            // if set to true, force https:// in the admin area
+            'YOURLS_ADMIN_SSL'           => false,
+            // if set to true, verbose debug infos. Will break things. Don't enable.
+            'YOURLS_DEBUG'               => false,
+        );
 
-// Load locale
-yourls_load_default_textdomain();
+        foreach ( $yourls_definitions as $const_name => $const_default_value ) {
+            if( !defined( $const_name ) ) {
+                if ( is_array( $const_default_value ) ) {
+                    define( $const_name, constant( $const_default_value[0] ) . $const_default_value[1] );
+                } else {
+                    define( $const_name, $const_default_value );
+                }
+            }
+        }
 
-// Check if we are in maintenance mode - if yes, it will die here.
-yourls_check_maintenance_mode();
+        // Error reporting
+        if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
+            error_reporting( -1 );
+        } else {
+            error_reporting( E_ERROR | E_PARSE );
+        }
 
-// Fix REQUEST_URI for IIS
-yourls_fix_request_uri();
-	
-// If request for an admin page is http:// and SSL is required, redirect
-if( yourls_is_admin() && yourls_needs_ssl() && !yourls_is_ssl() ) {
-	if ( 0 === strpos( $_SERVER['REQUEST_URI'], 'http' ) ) {
-		yourls_redirect( preg_replace( '|^http://|', 'https://', $_SERVER['REQUEST_URI'] ) );
-		exit();
-	} else {
-		yourls_redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
-		exit();
-	}
-}
+        // Include all functions
+        require_once YOURLS_INC . '/version.php';
 
-// Create the YOURLS object $ydb that will contain everything we globally need
-global $ydb;
+        // Load locale
+        yourls_load_default_textdomain();
 
-// Allow drop-in replacement for the DB engine
-if( file_exists( YOURLS_USERDIR . '/db.php' ) ) {
-	require_once YOURLS_USERDIR . '/db.php';
-} else {
-	require_once YOURLS_INC . '/class-mysql.php';
-	yourls_db_connect();
-}
+        // Check if we are in maintenance mode - if yes, it will die here.
+        yourls_check_maintenance_mode();
 
-// Allow early inclusion of a cache layer
-if( file_exists( YOURLS_USERDIR . '/cache.php' ) )
-	require_once YOURLS_USERDIR . '/cache.php';
+        // Fix REQUEST_URI for IIS
+        yourls_fix_request_uri();
 
-// Read options right from start
-yourls_get_all_options();
+        // If request for an admin page is http:// and SSL is required, redirect
+        if( yourls_is_admin() && yourls_needs_ssl() && !yourls_is_ssl() ) {
+            if ( 0 === strpos( $_SERVER['REQUEST_URI'], 'http' ) ) {
+                yourls_redirect( preg_replace( '|^http://|', 'https://', $_SERVER['REQUEST_URI'] ) );
+                exit();
+            } else {
+                yourls_redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+                exit();
+            }
+        }
 
-// Register shutdown function
-register_shutdown_function( 'yourls_shutdown' );
+        // Create the YOURLS object $ydb that will contain everything we globally need
+        global $ydb;
 
-// Core now loaded
-yourls_do_action( 'init' ); // plugins can't see this, not loaded yet
+        // Allow drop-in replacement for the DB engine
+        if( file_exists( YOURLS_USERDIR . '/db.php' ) ) {
+            require_once YOURLS_USERDIR . '/db.php';
+        } else {
+            require_once YOURLS_INC . '/class-mysql.php';
+            yourls_db_connect();
+        }
 
-// Check if need to redirect to install procedure
-if( !yourls_is_installed() && !yourls_is_installing() ) {
-	yourls_redirect( YOURLS_SITE .'/yourls-install.php', 302 );
-}
+        // Allow early inclusion of a cache layer
+        if( file_exists( YOURLS_USERDIR . '/cache.php' ) )
+            require_once YOURLS_USERDIR . '/cache.php';
 
-// Check if upgrade is needed (bypassed if upgrading or installing)
-if ( !yourls_is_upgrading() && !yourls_is_installing() ) {
-	if ( yourls_upgrade_is_needed() ) {
-		yourls_redirect( yourls_admin_url( 'upgrade' ), 302 );
-	}
-}
+        // Read options right from start
+        yourls_get_all_options();
 
-// Init all plugins
-yourls_load_plugins();
-yourls_do_action( 'plugins_loaded' );
+        // Register shutdown function
+        register_shutdown_function( 'yourls_shutdown' );
 
-// Init themes if applicable
-if( yourls_has_interface() ) {
-	yourls_init_theme();
-	yourls_do_action( 'init_theme' );
-}
+        // Core now loaded
+        yourls_do_action( 'init' ); // plugins can't see this, not loaded yet
 
-// Is there a new version of YOURLS ?
-if( yourls_is_installed() && !yourls_is_upgrading() ) {
-    yourls_new_core_version_notice();
-}
+        // Check if need to redirect to install procedure
+        if( !yourls_is_installed() && !yourls_is_installing() ) {
+            yourls_redirect( YOURLS_SITE .'/yourls-install.php', 302 );
+        }
 
-if( yourls_is_admin() ) {
-	yourls_do_action( 'admin_init' );
+        // Check if upgrade is needed (bypassed if upgrading or installing)
+        if ( !yourls_is_upgrading() && !yourls_is_installing() ) {
+            if ( yourls_upgrade_is_needed() ) {
+                yourls_redirect( yourls_admin_url( 'upgrade' ), 302 );
+            }
+        }
+
+        // Init all plugins
+        yourls_load_plugins();
+        yourls_do_action( 'plugins_loaded' );
+
+        // Init themes if applicable
+        if( yourls_has_interface() ) {
+            yourls_init_theme();
+            yourls_do_action( 'init_theme' );
+        }
+
+        // Is there a new version of YOURLS ?
+        if( yourls_is_installed() && !yourls_is_upgrading() ) {
+            yourls_new_core_version_notice();
+        }
+
+        if( yourls_is_admin() ) {
+            yourls_do_action( 'admin_init' );
+        }
+    }
+    
+    public function run() {
+        // Get request in YOURLS base (eg in 'http://site.com/yourls/abcd' get 'abdc')
+        $request = yourls_get_request();
+
+        // Admin:
+        if( preg_match( "@^".YOURLS_ADMIN_LOCATION."/(([a-zA-Z\-]+)(\.php)?)?$@", $request, $matches ) ) {
+            $page = YOURLS_INC.'/admin/';
+            $page .= ( isset( $matches[2] ) && $matches[2] ) ? $matches[2].'.php' : 'index.php';
+            if ( file_exists( $page ) ) {
+                require_once( $page );
+                exit;
+            }
+        }
+
+        // Make valid regexp pattern from authorized charset in keywords
+        $pattern = yourls_make_regexp_pattern( yourls_get_shorturl_charset() );
+
+        // Now load required template and exit
+
+        yourls_do_action( 'pre_load_template', $request );
+
+        // At this point, $request is not sanitized. Sanitize in loaded template.
+
+        // Redirection:
+        if( preg_match( "@^([$pattern]+)/?$@", $request, $matches ) ) {
+            $keyword = isset( $matches[1] ) ? $matches[1] : '';
+            $keyword = yourls_sanitize_keyword( $keyword );
+            yourls_do_action( 'load_template_go', $keyword );
+            require_once( YOURLS_ABSPATH.'/yourls-go.php' );
+            exit;
+        }
+
+        // Stats:
+        if( preg_match( "@^([$pattern]+)\+(all)?/?$@", $request, $matches ) ) {
+            $keyword = isset( $matches[1] ) ? $matches[1] : '';
+            $keyword = yourls_sanitize_keyword( $keyword );
+            $aggregate = isset( $matches[2] ) ? (bool)$matches[2] && yourls_allow_duplicate_longurls() : false;
+            yourls_do_action( 'load_template_infos', $keyword );
+            require_once( YOURLS_ABSPATH.'/yourls-infos.php' );
+            exit;
+        }
+
+        // Prefix-n-Shorten sends to bookmarklet (doesn't work on Windows)
+        if( preg_match( "@^[a-zA-Z]+://.+@", $request, $matches ) ) {
+            $url = yourls_sanitize_url( $matches[0] );
+            if( $parse = yourls_get_protocol_slashes_and_rest( $url, array( 'up', 'us', 'ur' ) ) ) {
+                yourls_do_action( 'load_template_redirect_admin', $url );
+                $parse = array_map( 'rawurlencode', $parse );
+                // Redirect to /admin/index.php?up=<url protocol>&us=<url slashes>&ur=<url rest>
+                yourls_redirect( yourls_add_query_arg( $parse , yourls_admin_url( 'index.php' ) ), 302 );
+                exit;
+            }
+        }
+
+        // Past this point this is a request the loader could not understand
+        yourls_do_action( 'loader_failed', $request );
+        yourls_redirect( YOURLS_SITE, 302 );
+        exit;
+    }
+    
 }
