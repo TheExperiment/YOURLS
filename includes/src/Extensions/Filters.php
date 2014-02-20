@@ -206,7 +206,7 @@ class Filters {
         for ( $a = 2; $a < func_num_args(); $a++ )
             $args[] = func_get_arg( $a );
 
-        apply_filter( $hook, $args );
+        $this->apply_filter( $hook, $args );
     }
 
     /**

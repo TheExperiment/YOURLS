@@ -9,12 +9,21 @@
 
 namespace YOURLS;
 
+use YOURLS\Extensions\Filters;
+
 /**
  * Connection with database
  *
  * Load everything (driver and subclasses) to talk with MySQL.
  */
 class MySQL {
+    
+    private $filters;
+    
+    public function __construct() {
+        $this->filters = new Filters;
+    }
+    
 
     /**
      * Pick the right DB class and return an instance
@@ -54,9 +63,9 @@ class MySQL {
             );
         }
 
-        do_action( 'set_YOURLS_DB_driver', $driver );
+        $this->filters->do_action( 'set_YOURLS_DB_driver', $driver );
 
-        $ydb = new $class( YOURLS_DB_YOURLS_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
+        $ydb = new $class( YOURLS_DB_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
         $ydb->YOURLS_DB_driver = $driver;
 
         debug_log( "Database driver: $driver" );
@@ -88,7 +97,7 @@ class MySQL {
     public function connect() {
         global $ydb;
 
-        if (   !defined( 'YOURLS_DB_YOURLS_USER' )
+        if (   !defined( 'YOURLS_DB_USER' )
             or !defined( 'YOURLS_DB_PASS' )
             or !defined( 'YOURLS_DB_NAME' )
             or !defined( 'YOURLS_DB_HOST' )
@@ -97,7 +106,7 @@ class MySQL {
         // Are we standalone or in the WordPress environment?
         if ( class_exists( 'wpdb', false ) ) {
             /* TODO: should we deprecate this? Follow WP dev in that area */
-            $ydb =  new wpdb( YOURLS_DB_YOURLS_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
+            $ydb =  new wpdb( YOURLS_DB_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
         } else {
             $this->set_driver();
         }
