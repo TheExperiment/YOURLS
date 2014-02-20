@@ -23,7 +23,7 @@ class Install {
 
         // Attempt to get MySQL server version, check result and if error count increased
         $num_errors1 = count( $ydb->captured_errors );
-        $version     = get_database_version();
+        $version     = $this->get_database_version();
         $num_errors2 = count( $ydb->captured_errors );
 
         if( $version == NULL || ( $num_errors2 > $num_errors1 ) ) {
@@ -136,7 +136,7 @@ class Install {
 
         }
 
-        return ( insert_with_markers( $filename, $marker, $content ) );
+        return ( $this->insert_with_markers( $filename, $marker, $content ) );
     }
 
     /**
@@ -259,11 +259,11 @@ class Install {
         }
 
         // Initializes the option table
-        if( !initialize_options() )
+        if( !$this->initialize_options() )
             $error_msg[] = _( 'Could not initialize options' );
 
         // Insert sample links
-        if( !insert_sample_links() )
+        if( !$this->insert_sample_links() )
             $error_msg[] = _( 'Could not insert sample short URLs' );
 
         // Check results of operations
