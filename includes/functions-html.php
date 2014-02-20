@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * HTML Wrapper
+ * 
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+/**
+ * Here we prepare HTML output
+ */
 class HTML {
     
     /**
