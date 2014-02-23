@@ -7,4 +7,5 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'YOURLS\\' => array($baseDir . '/includes/src'),
+    'POMO\\' => array($vendorDir . '/pomo/pomo/src/POMO'),
 );
