@@ -73,7 +73,7 @@ Desktop.ini
 # Visual Studio
 *.sln
 *.suo
-*.phpproj
+*.phpproj*
 /W[eE]*.*s*
 
 # Temp
