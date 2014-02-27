@@ -17,13 +17,12 @@ use YOURLS\Extensions\Filters;
  * Load everything (driver and subclasses) to talk with MySQL.
  */
 class Database extends someThingLikeEzSQL {
-    
+
     private $filters;
-    
+
     public function __construct() {
         $this->filters = new Filters;
     }
-    
 
     /**
      * Pick the right DB class and return an instance

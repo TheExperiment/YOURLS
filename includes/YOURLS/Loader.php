@@ -170,7 +170,7 @@ class Loader {
                 $funct->redirect( $funct->admin_url( 'upgrade' ), 302 );
             }
         }
-        
+
         $plug = new Extensions\Plugins;
         // Init all plugins
         $plug->load_plugins();

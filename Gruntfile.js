@@ -30,7 +30,6 @@ module.exports = function (grunt) {
                 dir: 'includes/admin'
             },
             options: {
-                level: 'all',
                 fixers: [
                     'indentation', 'linefeed', 'trailing_spaces',
                     'unused_use', 'short_tag', 'return', 'visibility',
