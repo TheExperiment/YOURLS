@@ -9,6 +9,11 @@
 
 namespace YOURLS;
 
+/**
+ * YOURLS version
+ */
+const VERSION = '2.0-alpha';
+
 use YOURLS\Extensions\Filters;
 
 /**
