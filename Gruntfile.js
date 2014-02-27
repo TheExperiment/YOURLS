@@ -3,15 +3,6 @@ module.exports = function (grunt) {
 
     var path = require('path');
 
-    grunt.loadNpmTasks('grunt-php');
-    grunt.loadNpmTasks('grunt-composer');
-    grunt.loadNpmTasks('grunt-php-cs-fixer');
-    grunt.loadNpmTasks('grunt-phpunit');
-    grunt.loadNpmTasks('grunt-bower-task');
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-update-submodules');
-
     grunt.initConfig({
         php: {
             server: {
@@ -94,7 +85,16 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.registerTask('default', [/*'composer:update:no-dev', */'bower',
-        'less:dev', 'watch:less']);
-    grunt.registerTask('dist', ['update_submodules', 'less:dist']);
+    grunt.loadNpmTasks('grunt-php');
+    grunt.loadNpmTasks('grunt-composer');
+    grunt.loadNpmTasks('grunt-php-cs-fixer');
+    grunt.loadNpmTasks('grunt-phpunit');
+    grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-update-submodules');
+
+    grunt.registerTask('default', ['less:dev', 'watch:less']);
+    grunt.registerTask('update', ['composer:update:no-dev',
+        'bower', 'update_submodules']);
 };
