@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * MySQL Wrapper
+ *
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+namespace YOURLS\Database;
+
 class MySQLi extends ezSQL_mysqli {
 
 	/**
