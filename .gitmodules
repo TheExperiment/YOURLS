@@ -1,3 +1,6 @@
 [submodule "user/themes/full-bootstrap"]
 	path = user/themes/full-bootstrap
 	url = https://github.com/LeoColomb/full-bootstrap-yourls.git
+[submodule "user/plugins/geoip"]
+	path = user/plugins/geoip
+	url = https://github.com/YOURLS/geoip.git
