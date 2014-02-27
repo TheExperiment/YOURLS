@@ -1,9 +1,17 @@
 module.exports = function (grunt) {
     'use strict';
 
+    // Tools
     var path = require('path');
 
+    // Configuration & option
     grunt.initConfig({
+
+        // Variables
+        version: '2.0-alpha',
+        pkg: grunt.file.readJSON('composer.json'),
+
+        // PHP tasks
         php: {
             server: {
                 options: {
@@ -14,7 +22,7 @@ module.exports = function (grunt) {
             }
         },
         phpcsfixer: {
-            yourls: {
+            src: {
                 dir: 'includes/YOURLS'
             },
             admin: {
@@ -35,6 +43,8 @@ module.exports = function (grunt) {
                 configuration: '../phpunit.xml.dist'
             }
         },
+
+        // LESS and AJAX tasks
         bower: {
             install: {
                 options: {
@@ -73,6 +83,50 @@ module.exports = function (grunt) {
                 }
             }
         },
+
+        usebanner: {
+            dist: {
+                options: {
+                    position: 'top',
+                    linebreak: false,
+                    banner: '/*!\n' +
+                        ' * YOURLS v<%= version %>\n' +
+                        ' * <%= pkg.homepage %>\n' +
+                        ' * Copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
+                        ' * Licensed under <%= pkg.license %>\n' +
+                        ' */\n',
+                },
+                files: {
+                    src: [
+                      /*'assets/js/yourls*',*/
+                      'assets/css/yourls*'
+                    ]
+                }
+            }
+        },
+        replace: {
+            version: {
+                src: ['includes/YOURLS/Loader.php'],
+                overwrite: true,
+                replacements: [{
+                    from: /const VERSION = \'[0-9a-z\.-]+\';/,
+                    to: 'const VERSION = \'<%= version %>\';'
+                }]
+            },
+            banner: {
+                src: ['includes/+(YOURLS|admin)/**/*.php'],
+                overwrite: true,
+                replacements: [{
+                    from: / \* @version [0-9a-z\.-]+[\n\r]+ \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//, /**/
+                    to: ' * @version <%= version %>\n' +
+                        ' * @copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
+                        ' * @license <%= pkg.license %>\n' +
+                        ' */'
+                }]
+            }
+        },
+
+        // Development tasks
         watch: {
             less: {
                 files: 'assets/less/**/*.less',
@@ -80,11 +134,39 @@ module.exports = function (grunt) {
             },
             php: {
                 files: 'includes/YOURLS/**/*.php',
-                tasks: ['phpcsfixer:yourls', 'phpunit']
+                tasks: ['phpcsfixer:src', 'phpunit']
             }
+        },
+
+        // GeoIP tasks
+        curl: {
+            'user/plugins/geoip/database/temp/GeoLite2-Country.mmdb.gz': 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz'
+        },
+        gzip: {
+            'user/plugins/geoip/database/GeoLite2-Country.mmdb': 'user/plugins/geoip/database/temp/GeoLite2-Country.mmdb.gz'
         }
     });
 
+    // Create the gzip task engine
+    grunt.registerMultiTask('gzip', function () {
+        var zlib = require('zlib'),
+            done = this.async(),
+            file = this.file;
+
+        function process() {
+            grunt.verbose.writeln("Uncompressing " + file.src + "...");
+            var content = grunt.file.read(file.src, { encoding: null });
+
+            zlib.gunzip(content, function (err, compressed) {
+                grunt.file.write(file.dest, compressed);
+                grunt.log.ok("Uncompressed file written to " + file.dest);
+                done();
+            });
+        }
+        process();
+    });
+
+    // Load modules required
     grunt.loadNpmTasks('grunt-php');
     grunt.loadNpmTasks('grunt-composer');
     grunt.loadNpmTasks('grunt-php-cs-fixer');
@@ -93,8 +175,16 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-update-submodules');
+    grunt.loadNpmTasks('grunt-banner');
+    grunt.loadNpmTasks('grunt-text-replace');
+    grunt.loadNpmTasks('grunt-curl');
 
+    // Custom tasks
     grunt.registerTask('default', ['less:dev', 'watch:less']);
-    grunt.registerTask('update', ['composer:update:no-dev',
+    grunt.registerTask('css', ['less:dist', 'usebanner']);
+    grunt.registerTask('php', ['replace', 'phpcsfixer:src', 'phpunit']);
+    grunt.registerTask('geoip', ['composer:update:no-dev:optimize-autoloader:working-dir=user/plugins/geoip/',
+        'curl', 'gzip']);
+    grunt.registerTask('update', ['composer:update:no-dev:optimize-autoloader',
         'bower', 'update_submodules']);
 };
