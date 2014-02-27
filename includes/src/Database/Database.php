@@ -16,7 +16,7 @@ use YOURLS\Extensions\Filters;
  *
  * Load everything (driver and subclasses) to talk with MySQL.
  */
-class MySQL {
+class Database extends someThingLikeEzSQL {
     
     private $filters;
     

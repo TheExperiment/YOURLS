@@ -1,6 +1,6 @@
 <?php
 
-class ezSQL_mysqli_YOURLS extends ezSQL_mysqli {
+class MySQL extends ezSQL_mysql {
 
 	/**
 	 * Return MySQL server version
@@ -8,9 +8,9 @@ class ezSQL_mysqli_YOURLS extends ezSQL_mysqli {
 	 * @since 1.7
 	 */
 	function mysql_version() {
-		return  mysqli_get_server_info( $this->dbh ) ;
+		return mysql_get_server_info( $this->dbh ) ;
 	}
-    
+	
     /**
      * Comply to YOURLS debug mode
      *
@@ -18,7 +18,7 @@ class ezSQL_mysqli_YOURLS extends ezSQL_mysqli {
      */
     function __construct( $user, $pass, $name, $host ) {
         $this->show_errors = defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG;
-        parent::ezSQL_mysqli( $user, $pass, $name, $host );
+        parent::ezSQL_mysql( $user, $pass, $name, $host );
     }
 	
 	/**

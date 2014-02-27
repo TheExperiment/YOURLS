@@ -1,6 +1,6 @@
 <?php
 
-class ezSQL_pdo_YOURLS extends ezSQL_pdo {
+class PDO extends ezSQL_pdo {
 
 	/**
 	* Constructor - Overwrite original to use MySQL and handle custom port
