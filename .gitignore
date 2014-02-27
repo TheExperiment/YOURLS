@@ -15,6 +15,7 @@ user/*/*
 # Core plugins
 !user/plugins/hyphens-in-urls/
 !user/plugins/random-bg/
+!user/plugins/geoip/
 !user/plugins/sample-*/
 
 # Core themes

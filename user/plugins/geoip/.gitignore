@@ -1,0 +1,17 @@
+#############
+## Libraries
+#############
+
+# Vendor
+vendor/*/*/*
+!vendor/*/geoip2/src/
+!vendor/*/reader/src/
+
+# Common files
+!geoip2/README.md
+!geoip2/LICENSE*
+!reader/README.md
+!reader/LICENSE*
+
+# Temp
+/database/temp
