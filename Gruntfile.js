@@ -24,7 +24,7 @@ module.exports = function (grunt) {
         },
         phpcsfixer: {
             yourls: {
-                dir: 'includes/src'
+                dir: 'includes/YOURLS'
             },
             admin: {
                 dir: 'includes/admin'
@@ -89,7 +89,7 @@ module.exports = function (grunt) {
                 tasks: 'less:development'
             },
             php: {
-                files: 'includes/src/**/*.php',
+                files: 'includes/YOURLS/**/*.php',
                 tasks: ['phpcsfixer:yourls', 'phpunit']
             }
         }

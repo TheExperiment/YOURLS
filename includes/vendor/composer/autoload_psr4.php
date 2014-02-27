@@ -6,6 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
-    'YOURLS\\' => array($baseDir . '/includes/src'),
+    'YOURLS\\' => array($baseDir . '/includes/YOURLS'),
     'POMO\\' => array($vendorDir . '/pomo/pomo/src/POMO'),
 );

@@ -37,7 +37,7 @@
         "lib-openssl": "Allow HTTPS connexions"
     },
     "autoload": {
-        "psr-4": {"YOURLS\\": "includes/src"}
+        "psr-4": {"YOURLS\\": "includes/YOURLS"}
     },
     "config": {
         "vendor-dir": "includes/vendor"
