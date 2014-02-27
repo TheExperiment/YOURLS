@@ -1,13 +1,6 @@
 {
   "name": "YOURLS",
-  "version": "2.0.0",
-  "homepage": "http://yourls.org",
-  "authors": [
-    "Ozh Richard",
-    "Leo Colombaro"
-  ],
-  "description": "Your Own URL Shortener",
-  "license": "MIT",
+  "private": true,
   "dependencies": {
     "jquery": "*",
     "bootstrap": "*",
@@ -38,6 +31,5 @@
     "zeroclipboard": {
       "js": ["ZeroClipboard.min.js", "ZeroClipboard.swf"]
     }
-  },
-  "private": true
+  }
 }
