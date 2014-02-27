@@ -1,8 +1,0 @@
-{
-  "name": "geoip",
-  "license": "MIT",
-  "dependencies": {
-    "grunt": "~0.4.2",
-    "grunt-curl": "~1.4.0"
-  }
-}
