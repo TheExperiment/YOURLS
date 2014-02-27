@@ -25,7 +25,8 @@
         "php": ">=5.3.0",
         "pomo/pomo": "*",
         "rmccue/requests": "*",
-        "hautelook/phpass": "*"
+        "hautelook/phpass": "*",
+        "monolog/monolog": "*"
     },
     "require-dev": {
         "filp/whoops": "1.*",

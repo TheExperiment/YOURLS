@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * YOURLS Logger
+ *
+ * @since 2.0
+ * @copyright 2009-2014 YOURLS - MIT
+ */
+
+namespace YOURLS;
+
+use Monolog\Handler\StreamHandler;
+
+/**
+ * Construct a logger engine
+ */
+class Logger extends Monolog\Logger
+{
+    /**
+     * @param string $channel The name of the channel
+     */
+    public function __construct( $channel ) {
+        parent::__construct( 'YOURLS.' . $channel );
+        if ( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
+            $this->pushHandler( new StreamHandler( YOURLS_USERDIR . '/yourls.log' ) );
+        }
+    }
+}
