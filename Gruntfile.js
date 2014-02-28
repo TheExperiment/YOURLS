@@ -68,7 +68,7 @@ module.exports = function (grunt) {
             options: {
                 report: 'min'
             },
-            bootstrap: {
+            javascript: {
                 options: {
                     banner: '<%= banner %>'
                 },
