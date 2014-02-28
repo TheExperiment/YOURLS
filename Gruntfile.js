@@ -45,6 +45,12 @@ module.exports = function (grunt) {
         },
 
         // LESS and AJAX tasks
+        banner: '/*!\n' +
+            ' * YOURLS v<%= version %>\n' +
+            ' * <%= pkg.homepage %>\n' +
+            ' * Copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
+            ' * Licensed under <%= pkg.license %>\n' +
+            ' */\n',
         bower: {
             install: {
                 options: {
@@ -56,6 +62,18 @@ module.exports = function (grunt) {
                         return type;
                     }
                 }
+            }
+        },
+        uglify: {
+            options: {
+                report: 'min'
+            },
+            bootstrap: {
+                options: {
+                    banner: '<%= banner %>'
+                },
+                src: 'assets/js/yourls.js',
+                dest: 'assets/js/yourls.min.js'
             }
         },
         less: {
@@ -90,12 +108,7 @@ module.exports = function (grunt) {
                 options: {
                     position: 'top',
                     linebreak: false,
-                    banner: '/*!\n' +
-                        ' * YOURLS v<%= version %>\n' +
-                        ' * <%= pkg.homepage %>\n' +
-                        ' * Copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
-                        ' * Licensed under <%= pkg.license %>\n' +
-                        ' */\n',
+                    banner: '<%= banner %>',
                 },
                 files: {
                     src: [
@@ -180,6 +193,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-php-cs-fixer');
     grunt.loadNpmTasks('grunt-phpunit');
     grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-update-submodules');
@@ -189,8 +203,8 @@ module.exports = function (grunt) {
 
     // Custom tasks
     grunt.registerTask('default', ['less:dev', 'watch:less']);
-    grunt.registerTask('css', ['less:dist', 'usebanner']);
-    grunt.registerTask('php', ['replace', 'phpcsfixer:src', 'phpunit']);
+    grunt.registerTask('assets', ['uglify', 'less:dist', 'usebanner']);
+    grunt.registerTask('phpdist', ['replace', 'phpcsfixer:src', 'phpunit']);
     grunt.registerTask('geoip', ['composer:update:no-dev:optimize-autoloader:working-dir=user/plugins/geoip/',
         'curl', 'gzip']);
     grunt.registerTask('update', ['composer:update:no-dev:optimize-autoloader',
