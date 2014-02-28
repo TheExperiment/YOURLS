@@ -111,10 +111,7 @@ module.exports = function (grunt) {
                     banner: '<%= banner %>',
                 },
                 files: {
-                    src: [
-                      /*'assets/js/yourls*',*/
-                      'assets/css/yourls*'
-                    ]
+                    src: ['assets/css/yourls*']
                 }
             }
         },
