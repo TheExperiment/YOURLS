@@ -50,7 +50,7 @@ module.exports = function (grunt) {
             ' * <%= pkg.homepage %>\n' +
             ' * Copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
             ' * Licensed under <%= pkg.license %>\n' +
-            ' */\n',
+            ' */',
         bower: {
             install: {
                 options: {
