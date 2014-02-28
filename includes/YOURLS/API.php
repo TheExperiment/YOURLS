@@ -4,7 +4,9 @@
  * API Wrapper
  *
  * @since 2.0
- * @copyright 2009-2014 YOURLS - MIT
+ * @version 2.0-alpha
+ * @copyright 2009-2014 YOURLS
+ * @license MIT
  */
 
 namespace YOURLS;

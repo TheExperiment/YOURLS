@@ -4,7 +4,9 @@
  * Format Wrapper
  *
  * @since 2.0
- * @copyright 2009-2014 YOURLS - MIT
+ * @version 2.0-alpha
+ * @copyright 2009-2014 YOURLS
+ * @license MIT
  */
 
 namespace YOURLS\Utilities;
@@ -620,7 +622,7 @@ class Format {
             '%27' => '\'', '%28' => '(', '%29' => ')', '%23' => '#',
         ) );
         // @TODO:
-        // Known limit: this will most likely break IDN URLs such as http://www.académie-française.fr/
+        // Known limit: this will most likely break IDN URLs such as http://www.acadï¿½mie-franï¿½aise.fr/
         // To fully support IDN URLs, advocate use of a plugin.
         return apply_filter( 'encodeURI', $result, $url );
     }

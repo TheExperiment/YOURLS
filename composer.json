@@ -11,6 +11,10 @@
     "license": "MIT",
     "authors" : [
         {
+            "name": "YOURLS",
+            "role": "Community"
+        },
+        {
             "name": "Ozh Richard",
             "homepage": "http://ozh.org",
             "role": "Developer"

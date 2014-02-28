@@ -140,30 +140,37 @@ module.exports = function (grunt) {
 
         // GeoIP tasks
         curl: {
-            'user/plugins/geoip/database/temp/GeoLite2-Country.mmdb.gz': 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz'
+            geoip: {
+                src: 'http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz',
+                dest: 'user/plugins/geoip/database/temp/GeoLite2-Country.mmdb.gz'
+            }
         },
         gzip: {
-            'user/plugins/geoip/database/GeoLite2-Country.mmdb': 'user/plugins/geoip/database/temp/GeoLite2-Country.mmdb.gz'
+            geoip: {
+                src: 'user/plugins/geoip/database/temp/GeoLite2-Country.mmdb.gz',
+                dest: 'user/plugins/geoip/database/GeoLite2-Country.mmdb'
+            }
         }
     });
 
     // Create the gzip task engine
     grunt.registerMultiTask('gzip', function () {
         var zlib = require('zlib'),
-            done = this.async(),
-            file = this.file;
+            done = this.async();
 
-        function process() {
-            grunt.verbose.writeln("Uncompressing " + file.src + "...");
+        this.files.forEach(function (file) {
+            grunt.verbose.writeln("Uncompressing " + file.dest + "...");
             var content = grunt.file.read(file.src, { encoding: null });
 
-            zlib.gunzip(content, function (err, compressed) {
-                grunt.file.write(file.dest, compressed);
-                grunt.log.ok("Uncompressed file written to " + file.dest);
+            zlib.gunzip(content, function (error, result) {
                 done();
+                if (error) {
+                    grunt.fatal(error);
+                }
+                grunt.file.write(file.dest, result);
+                grunt.log.ok("Uncompressed file written to " + file.dest);
             });
-        }
-        process();
+        });
     });
 
     // Load modules required
