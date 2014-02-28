@@ -1,4 +1,13 @@
 <?php
+
+/**
+ * Upgrade page in admin panel
+ * 
+ * @version 2.0-alpha
+ * @copyright 2009-2014 YOURLS
+ * @license MIT
+ */
+
 define( 'YOURLS_ADMIN', true );
 define( 'YOURLS_UPGRADING', true );
 yourls_maybe_require_auth();

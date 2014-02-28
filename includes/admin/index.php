@@ -1,14 +1,11 @@
 <?php
 
 /**
- * YOURLS - Your Own URL Shortener
- * 
- * Plugins Page
- * Select, activate or desactivate a YOURLS plugin
+ * Index page in adin panel
  *
- * @package yourls
- * @link http://yourls.org
- * @license GPLv3
+ * @version 2.0-alpha
+ * @copyright 2009-2014 YOURLS
+ * @license MIT
  */
 
 define( 'YOURLS_ADMIN', true );

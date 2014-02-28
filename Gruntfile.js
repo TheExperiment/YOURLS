@@ -84,6 +84,7 @@ module.exports = function (grunt) {
             }
         },
 
+        // Banners Tasks
         usebanner: {
             dist: {
                 options: {
@@ -117,7 +118,7 @@ module.exports = function (grunt) {
                 src: ['includes/+(YOURLS|admin)/**/*.php'],
                 overwrite: true,
                 replacements: [{
-                    from: / \* @version [0-9a-z\.-]+[\n\r]+ \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//, /**/
+                    from: / \* @version [0-9a-z\.-]+[\n\r]+ \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//,
                     to: ' * @version <%= version %>\n' +
                         ' * @copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
                         ' * @license <%= pkg.license %>\n' +

@@ -1,4 +1,13 @@
 <?php
+
+/**
+ * Tools and Tweaks
+ * 
+ * @version 2.0-alpha
+ * @copyright 2009-2014 YOURLS
+ * @license MIT
+ */
+
 define( 'YOURLS_ADMIN', true );
 yourls_maybe_require_auth();
 

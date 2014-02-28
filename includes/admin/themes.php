@@ -1,4 +1,14 @@
 <?php
+
+/**
+ * Theme Page
+ * Select, activate or deactivate a YOURLS theme
+ *
+ * @version 2.0-alpha
+ * @copyright 2009-2014 YOURLS
+ * @license MIT
+ */
+
 define( 'YOURLS_ADMIN', true );
 yourls_maybe_require_auth();
 
