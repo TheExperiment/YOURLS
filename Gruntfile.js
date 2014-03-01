@@ -141,7 +141,7 @@ module.exports = function (grunt) {
         watch: {
             less: {
                 files: 'assets/less/**/*.less',
-                tasks: 'less:development'
+                tasks: 'less:dev'
             },
             php: {
                 files: 'includes/YOURLS/**/*.php',
