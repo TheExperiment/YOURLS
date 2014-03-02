@@ -11,6 +11,7 @@
 	/**********************************************************************
 	*  ezSQL error strings - PDO
 	*/
+require 'ez_sql_core.php';
     
     global $ezsql_pdo_str;
 

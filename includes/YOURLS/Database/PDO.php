@@ -8,15 +8,16 @@
  */
 
 namespace YOURLS\Database;
+require 'E:\WAMP\www\yourls\YOURLS\includes\ezSQL\ez_sql_pdo.php';
 
-class PDO extends ezSQL_pdo {
+class PDO extends \ezSQL_pdo {
 
 	/**
 	* Constructor - Overwrite original to use MySQL and handle custom port
 	* 
 	* @since 1.7
 	*/
-	function ezSQL_pdo_YOURLS( $dbuser='', $dbpassword='', $dbname='', $dbhost='localhost', $encoding='' ) {
+	function __construct( $dbuser='', $dbpassword='', $dbname='', $dbhost='localhost', $encoding='' ) {
         $this->show_errors = defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG; // comply to YOURLS debug mode
 		$this->dbuser = $dbuser;
 		$this->dbpassword = $dbpassword;
