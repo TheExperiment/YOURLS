@@ -44,6 +44,36 @@ module.exports = function (grunt) {
             }
         },
 
+        // POT generation task
+        pot: {
+            options: {
+                text_domain: '<%= pkg.authors[0].name %>',
+                dest: 'user/languages/YOURLS.pot/',
+                package_version: '<%= version %>',
+                encoding: 'UTF-8',
+                keywords: [
+                    '__',
+                    '_e',
+                    '_s',
+                    '_se',
+                    '_esc_attr__',
+                    '_esc_html__',
+                    '_x',
+                    '_ex',
+                    '_esc_attr_x',
+                    '_esc_html_x',
+                    '_n:1,2',
+                    '_nx:1,2',
+                    '_n_noop:1,2',
+                    '_nx_noop:1,2'
+                ]
+            },
+            files: {
+                src: ['includes/YOURLS/**/*.php'],
+                expand: true
+            },
+        },
+
         // LESS and AJAX tasks
         banner: '/*!\n' +
             ' * YOURLS v<%= version %>\n' +
@@ -197,6 +227,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-composer');
     grunt.loadNpmTasks('grunt-php-cs-fixer');
     grunt.loadNpmTasks('grunt-phpunit');
+    grunt.loadNpmTasks('grunt-pot');
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
