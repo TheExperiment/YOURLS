@@ -707,4 +707,177 @@ class Format {
         return $format;
     }
 
+    /**
+     * Generate random string of (int)$length length and type $type (see function for details)
+     *
+     */
+    public function rnd_string ( $length = 5, $type = 0, $charlist = '' ) {
+        $str = '';
+        $length = intval( $length );
+
+        // define possible characters
+        switch ( $type ) {
+
+            // custom char list, or comply to charset as defined in config
+            case '0':
+                $possible = $charlist ? $charlist : get_shorturl_charset() ;
+                break;
+
+            // no vowels to make no offending word, no 0/1/o/l to avoid confusion between letters & digits. Perfect for passwords.
+            case '1':
+                $possible = "23456789bcdfghjkmnpqrstvwxyz";
+                break;
+
+            // Same, with lower + upper
+            case '2':
+                $possible = "23456789bcdfghjkmnpqrstvwxyzBCDFGHJKMNPQRSTVWXYZ";
+                break;
+
+            // all letters, lowercase
+            case '3':
+                $possible = "abcdefghijklmnopqrstuvwxyz";
+                break;
+
+            // all letters, lowercase + uppercase
+            case '4':
+                $possible = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                break;
+
+            // all digits & letters lowercase
+            case '5':
+                $possible = "0123456789abcdefghijklmnopqrstuvwxyz";
+                break;
+
+            // all digits & letters lowercase + uppercase
+            case '6':
+                $possible = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                break;
+
+        }
+
+        $str = substr( str_shuffle( $possible ), 0, $length );
+
+        return apply_filter( 'rnd_string', $str, $length, $type, $charlist );
+    }
+
+
+    /**
+     * Navigates through an array and encodes the values to be used in a URL. Stolen from WP, used in add_query_arg()
+     *
+     */
+    public function urlencode_deep( $value ) {
+        $value = is_array( $value ) ? array_map( 'urlencode_deep', $value ) : urlencode( $value );
+
+        return $value;
+    }
+
+    /**
+     * Serialize data if needed. Stolen from WordPress
+     *
+     * @since 1.4
+     * @param mixed $data Data that might be serialized.
+     * @return mixed A scalar data
+     */
+    public function maybe_serialize( $data ) {
+        if ( is_array( $data ) || is_object( $data ) )
+            return serialize( $data );
+
+        if ( is_serialized( $data, false ) )
+            return serialize( $data );
+
+        return $data;
+    }
+
+    /**
+     * Check value to find if it was serialized. Stolen from WordPress
+     *
+     * @since 1.4
+     * @param mixed $data Value to check to see if was serialized.
+     * @param bool $strict Optional. Whether to be strict about the end of the string. Defaults true.
+     * @return bool False if not serialized and true if it was.
+     */
+    public function is_serialized( $data, $strict = true ) {
+        // if it isn't a string, it isn't serialized
+        if ( ! is_string( $data ) )
+            return false;
+        $data = trim( $data );
+        if ( 'N;' == $data )
+            return true;
+        $length = strlen( $data );
+        if ( $length < 4 )
+            return false;
+        if ( ':' !== $data[1] )
+            return false;
+        if ( $strict ) {
+            $lastc = $data[ $length - 1 ];
+            if ( ';' !== $lastc && '}' !== $lastc )
+                return false;
+        } else {
+            $semicolon = strpos( $data, ';' );
+            $brace	 = strpos( $data, '}' );
+            // Either ; or } must exist.
+            if ( false === $semicolon && false === $brace )
+                return false;
+            // But neither must be in the first X characters.
+            if ( false !== $semicolon && $semicolon < 3 )
+                return false;
+            if ( false !== $brace && $brace < 4 )
+                return false;
+        }
+        $token = $data[0];
+        switch ( $token ) {
+            case 's' :
+                if ( $strict ) {
+                    if ( '"' !== $data[ $length - 2 ] )
+                        return false;
+                } elseif ( false === strpos( $data, '"' ) ) {
+                    return false;
+                }
+            // or else fall through
+            case 'a' :
+            case 'O' :
+                return (bool) preg_match( "/^{$token}:[0-9]+:/s", $data );
+            case 'b' :
+            case 'i' :
+            case 'd' :
+                $end = $strict ? '$' : '';
+
+                return (bool) preg_match( "/^{$token}:[0-9.E-]+;$end/", $data );
+        }
+
+        return false;
+    }
+
+    /**
+     * Unserialize value only if it was serialized. Stolen from WP
+     *
+     * @since 1.4
+     * @param string $original Maybe unserialized original, if is needed.
+     * @return mixed Unserialized data can be any type.
+     */
+    public function maybe_unserialize( $original ) {
+        if ( is_serialized( $original ) ) // don't attempt to unserialize data that wasn't serialized going in
+            return @unserialize( $original );
+        return $original;
+    }
+
+    /**
+     * Make an optimized regexp pattern from a string of characters
+     *
+     */
+    public function make_regexp_pattern( $string ) {
+        $pattern = preg_quote( $string );
+        // TODO: replace char sequences by smart sequences such as 0-9, a-z, A-Z ... ?
+        return $pattern;
+    }
+
+    /**
+     * Return salted string
+     *
+     */
+    public function salt( $string ) {
+        $salt = defined('YOURLS_COOKIEKEY') ? YOURLS_COOKIEKEY : md5(__FILE__) ;
+
+        return apply_filter( 'salt', md5 ($string . $salt), $string );
+    }
 }
