@@ -18,12 +18,14 @@ use YOURLS\Extensions\Filters;
  *
  * Load everything (driver and subclasses) to talk with MySQL.
  */
-class Database extends someThingLikeEzSQL {
+class Database /*extends someThingLikeEzSQL*/ {
 
     private $filters;
+    private $logger;
 
     public function __construct() {
         $this->filters = new Filters;
+        $this->logger = new \YOURLS\Logger( 'DATABASE' );
     }
 
     /**
@@ -37,57 +39,33 @@ class Database extends someThingLikeEzSQL {
 
         // Auto-pick the driver. Priority: user defined, then PDO, then mysqli, then mysql
         if ( defined( 'YOURLS_DB_DRIVER' ) ) {
-            $driver = strtolower( YOURLS_DB_DRIVER ); // accept 'MySQL', 'mySQL', etc
+            $driver = YOURLS_DB_DRIVER;
         } elseif ( extension_loaded( 'pdo_mysql' ) ) {
-            $driver = 'pdo';
+            $driver = 'PDO';
         } elseif ( extension_loaded( 'mysqli' ) ) {
-            $driver = 'mysqli';
+            $driver = 'MySQLi';
         } elseif ( extension_loaded( 'mysql' ) ) {
-            $driver = 'mysql';
+            $driver = 'MySQL';
         } else {
             $driver = '';
         }
 
         // Set the new driver
-        if ( in_array( $driver, array( 'mysql', 'mysqli', 'pdo' ) ) ) {
-            $class = $this->require_files( $driver );
+        if ( !in_array( $driver, array( 'mysql', 'mysqli', 'pdo' ) ) ) {
+            throw new DatabaseException( _( 'YOURLS requires the mysql, mysqli or pdo_mysql PHP extension. No extension found. Check your server config, or contact your host.' ),
+            _( 'Fatal error' ),
+            503
+            );
         }
 
         global $ydb;
 
-        if ( !class_exists( $class, false ) ) {
-            $ydb = new stdClass();
-            die(
-                _( 'YOURLS requires the mysql, mysqli or pdo_mysql PHP extension. No extension found. Check your server config, or contact your host.' )/*,
-                _( 'Fatal error' ),
-                503*/
-            );
-        }
-
         $this->filters->do_action( 'set_YOURLS_DB_driver', $driver );
+        $driver = 'YOURLS\\Database\\'.$driver;
+        $ydb = new $driver( YOURLS_DB_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
+        $ydb->db_driver = $driver;
 
-        $ydb = new $class( YOURLS_DB_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
-        $ydb->YOURLS_DB_driver = $driver;
-
-        debug_log( "Database driver: $driver" );
-    }
-
-    /**
-     * Load required DB class files
-     *
-     * This goes in its own function to allow easier unit tests
-     *
-     * @since 1.7.1
-     * @param string $driver DB driver
-     * @return string name of the DB class to instantiate
-     */
-    public function require_files( $driver ) {
-        require_once( YOURLS_INC . '/ezSQL/ez_sql_core.php' );
-        require_once( YOURLS_INC . '/ezSQL/ez_sql_core_yourls.php' );
-        require_once( YOURLS_INC . '/ezSQL/ez_sql_' . $driver . '.php' );
-        require_once( YOURLS_INC . '/ezSQL/ez_sql_' . $driver . '_yourls.php' );
-
-        return 'ezSQL_' . $driver . '_yourls';
+        $this->logger->addDebug( "Database Initialized", array( 'dirver', $driver ) );
     }
 
     /**
@@ -102,7 +80,7 @@ class Database extends someThingLikeEzSQL {
             or !defined( 'YOURLS_DB_PASS' )
             or !defined( 'YOURLS_DB_NAME' )
             or !defined( 'YOURLS_DB_HOST' )
-        ) die ( _( 'Incorrect DB config, or could not connect to DB' )/*, _( 'Fatal error' ), 503 */);
+        ) throw new DatabaseException( _( 'Incorrect DB config, or could not connect to DB' ), _( 'Fatal error' ), 503 );
 
         // Are we standalone or in the WordPress environment?
         if ( class_exists( 'wpdb', false ) ) {
