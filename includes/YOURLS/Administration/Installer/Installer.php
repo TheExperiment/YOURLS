@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MySQL Wrapper
+ * Installer
  *
  * @since 2.0
  * @version 2.0-alpha
@@ -9,16 +9,19 @@
  * @license MIT
  */
 
-namespace YOURLS\Administration;
+namespace YOURLS\Administration\Installer;
 
 /**
  * Summary of Install
  */
-class Install {
+class Installer {
+
+    private $step;
 
     /**
      * Check if server has MySQL 5.0+
      *
+     * @todo Clean Up
      */
     public function check_database_version() {
         global $ydb;
@@ -33,56 +36,6 @@ class Install {
         }
 
         return ( version_compare( '5.0', $version ) <= 0 );
-    }
-
-    /**
-     * Get DB version
-     *
-     * The regex removes everything that's not a number at the start of the string, or remove anything that's not a number and what
-     * follows after that.
-     *   'omgmysql-5.5-ubuntu-4.20' => '5.5'
-     *   'mysql5.5-ubuntu-4.20'     => '5.5'
-     *   '5.5-ubuntu-4.20'          => '5.5'
-     *   '5.5-beta2'                => '5.5'
-     *   '5.5'                      => '5.5'
-     *
-     * @since 1.7
-     * @return string sanitized DB version
-     */
-    public function get_database_version() {
-        global $ydb;
-
-        return preg_replace( '/(^[^0-9]*)|[^0-9.].*/', '', $ydb->mysql_version() );
-    }
-
-    /**
-     * Check if PHP > 5.2
-     *
-     */
-    public function check_php_version() {
-        return ( version_compare( '5.2', phpversion() ) <= 0 );
-    }
-
-    /**
-     * Check if server is an Apache
-     *
-     */
-    public function is_apache() {
-        if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) )
-
-            return false;
-        return (
-           strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== false
-        || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== false
-        );
-    }
-
-    /**
-     * Check if server is running IIS
-     *
-     */
-    public function is_iis() {
-        return ( array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ? ( strpos( $_SERVER['SERVER_SOFTWARE'], 'IIS' ) !== false ) : false );
     }
 
     /**

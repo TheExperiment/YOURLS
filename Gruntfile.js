@@ -124,6 +124,14 @@ module.exports = function (grunt) {
                     to: 'const VERSION = \'<%= version %>\';'
                 }]
             },
+            requirements: {
+                src: ['includes/YOURLS/Administration/Installer/Requirements.php'],
+                overwrite: true,
+                replacements: [{
+                    from: /const PHP = \'[0-9a-z\.-]+\';/,
+                    to: 'const PHP = \'<%= pkg.require.php.split(">=").pop() %>\';'
+                }]
+            },
             banner: {
                 src: ['includes/+(YOURLS|admin)/**/*.php'],
                 overwrite: true,
