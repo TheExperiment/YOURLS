@@ -16,7 +16,7 @@ use Monolog\Handler\StreamHandler;
 /**
  * Construct a logger engine
  */
-class Logger extends Monolog\Logger {
+class Logger extends \Monolog\Logger {
 
     /**
      * @param string $channel The name of the channel
