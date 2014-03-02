@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML Wrapper
+ * Global Wrappers
  *
  * @since 2.0
  * @version 2.0-alpha

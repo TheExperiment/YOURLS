@@ -14,7 +14,7 @@ namespace YOURLS\HTML;
 /**
  * Here we prepare HTML output
  */
-class HTML {
+class Components {
 
     /**
      * Display HTML head and <body> tag
