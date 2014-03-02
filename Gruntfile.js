@@ -178,7 +178,7 @@ module.exports = function (grunt) {
             done = this.async();
 
         this.files.forEach(function (file) {
-            grunt.verbose.writeln("Uncompressing " + file.dest + "...");
+            grunt.verbose.writeln("Uncompressing " + file.dest.cyan + "...");
             var content = grunt.file.read(file.src, { encoding: null });
 
             zlib.gunzip(content, function (error, result) {
@@ -187,7 +187,7 @@ module.exports = function (grunt) {
                     grunt.fatal(error);
                 }
                 grunt.file.write(file.dest, result);
-                grunt.log.ok("Uncompressed file written to " + file.dest);
+                grunt.log.ok("Uncompressed file written to " + file.dest.cyan);
             });
         });
     });
