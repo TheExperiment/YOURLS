@@ -2,12 +2,12 @@
   "name": "YOURLS",
   "private": true,
   "dependencies": {
-    "jquery": "*",
-    "bootstrap": "*",
-    "font-awesome": "*",
-    "flag-sprites": "*",
-    "bootstrap-social": "*",
-    "zeroclipboard": "*"
+    "jquery": "~2.1.0",
+    "bootstrap": "~3.1.1",
+    "font-awesome": "~4.0.3",
+    "flag-sprites": "~1.1.0",
+    "bootstrap-social": "~4.2.0",
+    "zeroclipboard": "~1.3.2"
   },
   "exportsOverride": {
     "jquery": {

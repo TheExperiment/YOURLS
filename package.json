@@ -2,19 +2,20 @@
   "name": "YOURLS",
   "private": true,
   "dependencies": {
-    "bower": "*",
+    "bower": "~1.2.8",
     "grunt": "~0.4.1",
     "grunt-php": "~0.3.0",
-    "grunt-composer": "*",
-    "grunt-php-cs-fixer": "*",
-    "grunt-phpunit": "*",
-    "grunt-bower-task": "*",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-less": "~0.9.0",
+    "grunt-composer": "~0.2.0",
+    "grunt-php-cs-fixer": "~0.0.4",
+    "grunt-phpunit": "~0.3.3",
+    "grunt-pot": "~0.1.2",
+    "grunt-bower-task": "~0.3.4",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-less": "~0.10.0",
     "grunt-contrib-watch": "~0.5.0",
-    "grunt-update-submodules": "*",
-    "grunt-banner": "*",
-    "grunt-text-replace": "*", 
-    "grunt-curl": "*"
+    "grunt-update-submodules": "~0.3.0",
+    "grunt-banner": "~0.2.1",
+    "grunt-text-replace": "~0.3.0",
+    "grunt-curl": "~1.4.0"
   }
 }
