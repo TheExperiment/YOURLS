@@ -240,7 +240,7 @@ module.exports = function (grunt) {
     // Custom tasks
     grunt.registerTask('default', ['less:dev', 'watch:less']);
     grunt.registerTask('assets', ['uglify', 'less:dist', 'usebanner']);
-    grunt.registerTask('phpdist', ['replace', 'phpcsfixer:src', 'phpunit']);
+    grunt.registerTask('phpdist', ['replace', 'phpcsfixer:src', 'phpunit', 'pot']);
     grunt.registerTask('geoip', ['composer:update:no-dev:optimize-autoloader:working-dir=user/plugins/geoip/',
         'curl', 'gzip']);
     grunt.registerTask('update', ['composer:update:no-dev:optimize-autoloader',
