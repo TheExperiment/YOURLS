@@ -35,6 +35,7 @@ user/*/*
 
 # Composer
 composer.lock
+installed.json
 
 # Dev libs
 phpunit/
@@ -44,7 +45,7 @@ whoops/
 includes/vendor/*/*/*
 includes/vendor/bin/
 !includes/vendor/*/*/src/
-!includes/vendor/rmccue/requests/library/
+!includes/vendor/*/*/library/
 !includes/vendor/psr/log/Psr/
 
 # Useful files
