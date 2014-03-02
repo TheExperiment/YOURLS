@@ -30,7 +30,8 @@
         "pomo/pomo": "*",
         "rmccue/requests": "*",
         "hautelook/phpass": "*",
-        "monolog/monolog": "*"
+        "monolog/monolog": "*",
+        "nesbot/carbon": "*"
     },
     "require-dev": {
         "filp/whoops": "1.*",

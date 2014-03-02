@@ -10,4 +10,5 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log'),
     'Monolog' => array($vendorDir . '/monolog/monolog/src'),
     'Hautelook' => array($vendorDir . '/hautelook/phpass/src'),
+    'Carbon' => array($vendorDir . '/nesbot/carbon/src'),
 );
