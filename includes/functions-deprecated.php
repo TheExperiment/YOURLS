@@ -47,3 +47,6 @@ function yourls_get_remote_content( $url,  $maxlen = 4096, $timeout = 5 ) {
 	return yourls_http_get_body( $url );
 }
 
+debug_log
+is_mobile_device
+return_if_not_empty_string -> is_not_empty_string
