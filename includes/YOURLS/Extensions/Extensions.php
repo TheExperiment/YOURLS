@@ -17,7 +17,7 @@ namespace YOURLS\Extensions;
  * @author Ozh
  * @since 1.5
  */
-class Extensions {
+abstract class Extensions {
 
     /**
      * Category of extensions
@@ -114,7 +114,7 @@ class Extensions {
         if( $this->$category == 'themes' )
             $extensiondir = sanitize_filename( YOURLS_THEMEDIR );
         else
-        $extensiondir = sanitize_filename( YOURLS_PLUGINDIR );
+            $extensiondir = sanitize_filename( YOURLS_PLUGINDIR );
         $file = str_replace( $extensiondir, '', $file );
 
         return trim( $file, '/' );
