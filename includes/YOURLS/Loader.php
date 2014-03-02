@@ -16,6 +16,9 @@ namespace YOURLS;
  */
 const VERSION = '2.0-alpha';
 
+use YOURLS\Configuration\Configuration;
+use YOURLS\Configuration\Options;
+use YOURLS\HTTP\Redirect;
 use YOURLS\Extensions\Filters;
 
 /**
@@ -38,14 +41,15 @@ class Loader {
             define( 'YOURLS_CONFIGFILE', str_replace( '\\', '/', dirname( __DIR__ ) ) . '/config.php' );
         } else {
             // config.php not found :(
-            die( '<p class="error">Cannot find <code>config.php</code>.</p><p>Please read the <a href="../docs/#install">documentation</a> to learn how to install YOURLS</p>' );
+            throw new YOURLS_Exception( '<p class="error">Cannot find <code>config.php</code>.</p><p>Please read the <a href="../docs/#install">documentation</a> to learn how to install YOURLS</p>' );
         }
-
         require_once YOURLS_CONFIGFILE;
+
+        $config = new Configuration();
 
         // Check if config.php was properly updated for 1.4
         if( !defined( 'YOURLS_DB_PREFIX' ) )
-            die( '<p class="error">Your <code>config.php</code> does not contain all the required constant definitions.</p><p>Please check <code>config-sample.php</code> and update your config accordingly, there are new stuffs!</p>' );
+            throw new YOURLS_Exception( '<p class="error">Your <code>config.php</code> does not contain all the required constant definitions.</p><p>Please check <code>config-sample.php</code> and update your config accordingly, there are new stuffs!</p>' );
 
         // Define core constants that have not been user defined in config.php
         $yourls_definitions = array(
@@ -115,23 +119,19 @@ class Loader {
             error_reporting( E_ERROR | E_PARSE );
         }
 
-        // Include all functions
-        require_once YOURLS_INC . '/version.php';
-
-        $funct = new Functions;
         // Check if we are in maintenance mode - if yes, it will die here.
-        $funct->check_maintenance_mode();
+        $config->check_maintenance_mode();
 
         // Fix REQUEST_URI for IIS
-        $funct->fix_request_uri();
+        //$funct->fix_request_uri();
 
         // If request for an admin page is http:// and SSL is required, redirect
-        if( $funct->is_admin() && $funct->needs_ssl() && !$funct->is_ssl() ) {
+        if( $config->is_admin() && $config->needs_ssl() && !$config->is_ssl() ) {
             if ( 0 === strpos( $_SERVER['REQUEST_URI'], 'http' ) ) {
-                $funct->redirect( preg_replace( '|^http://|', 'https://', $_SERVER['REQUEST_URI'] ) );
+                Redirect::redirect( preg_replace( '|^http://|', 'https://', $_SERVER['REQUEST_URI'] ) );
                 exit();
             } else {
-                $funct->redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+                Redirect::redirect( 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
                 exit();
             }
         }
@@ -143,7 +143,7 @@ class Loader {
         if( file_exists( YOURLS_USERDIR . '/db.php' ) ) {
             require_once YOURLS_USERDIR . '/db.php';
         } else {
-            $db = new MySQL;
+            $db = new Database\Database;
             $db->connect();
         }
 
@@ -152,24 +152,21 @@ class Loader {
             require_once YOURLS_USERDIR . '/cache.php';
 
         // Read options right from start
-        $funct->get_all_options();
-
-        // Register shutdown function
-        register_shutdown_function( 'yourls_shutdown' );
+        $options = new Options;
 
         $filters = new Filters;
         // Core now loaded
         $filters->do_action( 'init' ); // plugins can't see this, not loaded yet
 
         // Check if need to redirect to install procedure
-        if( !$funct->is_installed() && !$funct->is_installing() ) {
-            $funct->redirect( YOURLS_SITE .'/yourls-install.php', 302 );
+        if( !$config->is_installed() && !$config->is_installing() ) {
+            Redirect::redirect( YOURLS_SITE .'/yourls-install.php', 302 );
         }
 
         // Check if upgrade is needed (bypassed if upgrading or installing)
-        if ( !$funct->is_upgrading() && !$funct->is_installing() ) {
-            if ( $funct->upgrade_is_needed() ) {
-                $funct->redirect( $funct->admin_url( 'upgrade' ), 302 );
+        if ( !$config->is_upgrading() && !$config->is_installing() ) {
+            if ( $config->upgrade_is_needed() ) {
+                Redirect::redirect( new HTTP\URL( admin_url( 'upgrade' ), 302 ));
             }
         }
 
@@ -193,7 +190,7 @@ class Loader {
             yourls_do_action( 'admin_init' );
         }
     }
-
+    
     /**
      * Summary of run
      */
@@ -222,6 +219,7 @@ class Loader {
 
         // Redirection:
         if( preg_match( "@^([$pattern]+)/?$@", $request, $matches ) ) {
+            $go = new HTTP\Redirect;
             $keyword = isset( $matches[1] ) ? $matches[1] : '';
             $keyword = yourls_sanitize_keyword( $keyword );
             yourls_do_action( 'load_template_go', $keyword );
@@ -258,11 +256,11 @@ class Loader {
     }
 
     /**
-     * Shutdown function, runs just before PHP shuts down execution. Stolen from WP
+     * Shutdown function, runs just before PHP shuts down execution.
      *
      */
-    public function shutdown() {
-        do_action( 'shutdown' );
+    public function __destruct() {
+        //do_action( 'shutdown' );
     }
 
 }
