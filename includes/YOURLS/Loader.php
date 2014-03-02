@@ -257,4 +257,12 @@ class Loader {
         exit;
     }
 
+    /**
+     * Shutdown function, runs just before PHP shuts down execution. Stolen from WP
+     *
+     */
+    public function shutdown() {
+        do_action( 'shutdown' );
+    }
+
 }
