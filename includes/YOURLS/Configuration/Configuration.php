@@ -12,7 +12,7 @@
 namespace YOURLS\Configuration;
 
 class Configuration {
-
+    
     /**
      * Check if an upgrade is needed
      *
@@ -81,7 +81,7 @@ class Configuration {
     public function is_installing() {
         $installing = defined( 'INSTALLING' ) && INSTALLING == true;
 
-        return apply_filter( 'is_installing', $installing );
+        return $installing;
     }
 
     /**
@@ -100,21 +100,14 @@ class Configuration {
      * Check if YOURLS is installed
      *
      * Checks property $ydb->installed that is created by get_all_options()
-     *
-     * See inline comment for updating from 1.3 or prior.
-     *
      */
     public function is_installed() {
         global $ydb;
         $is_installed = ( property_exists( $ydb, 'installed' ) && $ydb->installed == true );
 
-        return apply_filter( 'is_installed', $is_installed );
-
-        /* Note: this test won't work on YOURLS 1.3 or older (Aug 2009...)
-        Should someone complain that they cannot upgrade directly from
-        1.3 to 1.7: first, laugh at them, then ask them to install 1.6 first.
-         */
+        return $is_installed;
     }
+
     /**
      * Check if we're in API mode. Returns bool
      *
@@ -192,7 +185,7 @@ class Configuration {
      *
      */
     public function needs_ssl() {
-        if ( defined('YOURLS_ADMIN_SSL') && YOURLS_ADMIN_SSL == true )
+        if ( defined( 'YOURLS_ADMIN_SSL' ) && YOURLS_ADMIN_SSL == true )
             return true;
         return false;
     }
