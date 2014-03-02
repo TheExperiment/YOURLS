@@ -17,6 +17,7 @@ use Carbon\Carbon;
  * Class that loads the calendar locale.
  *
  * @since 1.6
+ * @todo https://github.com/briannesbitt/Carbon/issues/32
  */
 class Calendar extends Carbon {
     
