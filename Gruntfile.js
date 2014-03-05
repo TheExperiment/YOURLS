@@ -223,19 +223,7 @@ module.exports = function (grunt) {
     });
 
     // Load modules required
-    grunt.loadNpmTasks('grunt-php');
-    grunt.loadNpmTasks('grunt-composer');
-    grunt.loadNpmTasks('grunt-php-cs-fixer');
-    grunt.loadNpmTasks('grunt-phpunit');
-    grunt.loadNpmTasks('grunt-pot');
-    grunt.loadNpmTasks('grunt-bower-task');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-update-submodules');
-    grunt.loadNpmTasks('grunt-banner');
-    grunt.loadNpmTasks('grunt-text-replace');
-    grunt.loadNpmTasks('grunt-curl');
+    require('load-grunt-tasks')(grunt);
 
     // Custom tasks
     grunt.registerTask('default', ['less:dev', 'watch:less']);
