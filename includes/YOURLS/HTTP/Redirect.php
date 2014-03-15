@@ -22,12 +22,11 @@ class Redirect {
         $location = Filters::apply_filter( 'redirect_location', $location, $code );
         $code     = Filters::apply_filter( 'redirect_code', $code, $location );
         // Redirect, either properly if possible, or via Javascript otherwise
-        if( !headers_sent() ) {
-            $headers = new Headers( $code );
-            //$headers->location($location);
-            header( "Location: $location" );
+        if( Headers::sent() ) {
+            $this->javascript( $location );
         } else {
-            redirect_javascript( $location );
+            $headers = new Headers( $code );
+            $headers->location($location);
         }
         die();
     }
@@ -35,7 +34,7 @@ class Redirect {
      * Redirect to another page using Javascript. Set optional (bool)$dontwait to false to force manual redirection (make sure a message has been read by user)
      *
      */
-    public function redirect_javascript( $location, $dontwait = true ) {
+    public function javascript( $location, $dontwait = true ) {
         Filters::do_action( 'pre_redirect_javascript', $location, $dontwait );
         $location = Filters::apply_filter( 'redirect_javascript', $location, $dontwait );
         if( $dontwait ) {
