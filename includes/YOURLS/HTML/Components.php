@@ -24,7 +24,7 @@ class Components {
      */
     public function head( $context = 'index', $title = '' ) {
 
-        do_action( 'pre_html_head', $context, $title );
+        Filters::do_action( 'pre_html_head', $context, $title );
 
         // Force no cache for all admin pages
         if( is_admin() && !headers_sent() ) {
@@ -32,8 +32,8 @@ class Components {
             header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
             header( 'Cache-Control: no-cache, must-revalidate, max-age=0' );
             header( 'Pragma: no-cache' );
-            content_type_header( apply_filters( 'html_head_content-type', 'text/html' ) );
-            do_action( 'admin_headers', $context, $title );
+            content_type_header( Filters::apply_filters( 'html_head_content-type', 'text/html' ) );
+            Filters::do_action( 'admin_headers', $context, $title );
         }
 
         // Store page context in global object
@@ -41,12 +41,12 @@ class Components {
         $ydb->context = $context;
 
         // Body class
-        $bodyclass = apply_filter( 'bodyclass', '' );
+        $bodyclass = Filters::apply_filter( 'bodyclass', '' );
 
         // Page title
         $_title = 'YOURLS &middot; Your Own URL Shortener';
         $title = $title ? $title . " &mdash; " . $_title : $_title;
-        $title = apply_filter( 'html_title', $title, $context );
+        $title = Filters::apply_filter( 'html_title', $title, $context );
 
         ?>
 <!DOCTYPE html>
@@ -75,7 +75,7 @@ class Components {
 
         //]]>
     </script>
-    <?php do_action( 'html_head', $context ); ?>
+    <?php Filters::do_action( 'html_head', $context ); ?>
 </head>
 <body class="<?php echo $context . ( $bodyclass ? ' ' . $bodyclass : '' ); ?>">
     <div class="container">
@@ -89,7 +89,7 @@ class Components {
      * @param bool $linked true if a link is wanted
      */
     public function logo( $linked = true ) {
-        do_action( 'pre_html_logo' );
+        Filters::do_action( 'pre_html_logo' );
         $logo = '<img class="yourls-logo-img" src="' . site_url( false, YOURLS_ASSETURL . '/img/yourls-logo.png' ) . '" alt="YOURLS" title="YOURLS"/>';
         if ( $linked )
             $logo = $this->link( admin_url( 'index' ), $logo, 'YOURLS', false, false );
@@ -98,7 +98,7 @@ class Components {
                 <?php echo $logo; ?>
             </div>
             <?php
-        do_action( 'html_logo' );
+        Filters::do_action( 'html_logo' );
     }
 
     /**
@@ -108,7 +108,7 @@ class Components {
      */
     public function menu( $current_page = null ) {
         // Build menu links
-        $help_link   = apply_filter( 'help-link', '<a href="' . site_url( false ) .'/docs/"><i class="fa fa-question-circle fa-fw"></i> ' . _( 'Help' ) . '</a>' );
+        $help_link   = Filters::apply_filter( 'help-link', '<a href="' . site_url( false ) .'/docs/"><i class="fa fa-question-circle fa-fw"></i> ' . _( 'Help' ) . '</a>' );
 
         $admin_links    = array();
         $admin_sublinks = array();
@@ -139,15 +139,15 @@ class Components {
             $admin_sublinks['plugins'] = list_plugin_admin_pages();
         }
 
-        $admin_links    = apply_filter( 'admin-links',    $admin_links );
-        $admin_sublinks = apply_filter( 'admin-sublinks', $admin_sublinks );
+        $admin_links    = Filters::apply_filter( 'admin-links',    $admin_links );
+        $admin_sublinks = Filters::apply_filter( 'admin-sublinks', $admin_sublinks );
 
         // Build menu HTML
-        $menu = apply_filter( 'admin_menu_start', '<nav class="sidebar-responsive-collapse"><ul class="admin-menu">' );
+        $menu = Filters::apply_filter( 'admin_menu_start', '<nav class="sidebar-responsive-collapse"><ul class="admin-menu">' );
         if( defined( 'YOURLS_USER' ) && is_private() ) {
-            $menu .= apply_filter( 'logout_link', '<div class="nav-header">' . sprintf( _( 'Hello <strong>%s</strong>' ), YOURLS_USER ) . '<a href="?action=logout" title="' . esc_attr__( 'Logout' ) . '" class="pull-right"><i class="fa fa-sign-out fa-fw"></i></a></div>' );
+            $menu .= Filters::apply_filter( 'logout_link', '<div class="nav-header">' . sprintf( _( 'Hello <strong>%s</strong>' ), YOURLS_USER ) . '<a href="?action=logout" title="' . esc_attr__( 'Logout' ) . '" class="pull-right"><i class="fa fa-sign-out fa-fw"></i></a></div>' );
         } else {
-            $menu .= apply_filter( 'logout_link', '' );
+            $menu .= Filters::apply_filter( 'logout_link', '' );
         }
 
         foreach( (array)$admin_links as $link => $ar ) {
@@ -167,7 +167,7 @@ class Components {
                     'anchor' => $anchor,
                 );
 
-                $menu .= apply_filter( 'admin-menu-link-' . $link, replace_string_tokens( $format, $data ), $format, $data );
+                $menu .= Filters::apply_filter( 'admin-menu-link-' . $link, replace_string_tokens( $format, $data ), $format, $data );
             }
 
             // Submenu if any. TODO: clean up, too many code duplicated here
@@ -189,7 +189,7 @@ class Components {
                             'anchor' => $anchor,
                         );
 
-                        $menu .= apply_filter( 'admin_menu_sublink_' . $link, replace_string_tokens( $format, $data ), $format, $data );
+                        $menu .= Filters::apply_filter( 'admin_menu_sublink_' . $link, replace_string_tokens( $format, $data ), $format, $data );
                     }
                 }
                 $menu .=  '</ul>';
@@ -199,11 +199,11 @@ class Components {
         if ( isset( $help_link ) )
             $menu .=  '<li id="admin-menu-help-link">' . $help_link .'</li>';
 
-        $menu .=  apply_filter( 'admin_menu_end', '</ul></nav>' );
+        $menu .=  Filters::apply_filter( 'admin_menu_end', '</ul></nav>' );
 
-        do_action( 'pre_admin_menu' );
-        echo apply_filter( 'html_admin_menu', $menu );
-        do_action( 'post_admin_menu' );
+        Filters::do_action( 'pre_admin_menu' );
+        echo Filters::apply_filter( 'html_admin_menu', $menu );
+        Filters::do_action( 'post_admin_menu' );
     }
 
     /**
@@ -218,7 +218,7 @@ class Components {
         $html .= '<strong class="status-number increment">' . number_format_i18n( $total_urls ) . '</strong><p>' . _( 'Links' );
         $html .= '</p></div><div class="global-stats-data">';
         $html .= '<strong class="status-number">' . number_format_i18n( $total_clicks ) . '</strong><p>' . _( 'Clicks' ) . '</p></div></div>';
-        echo apply_filters( 'html_global_stats', $html );
+        echo Filters::apply_filters( 'html_global_stats', $html );
     }
 
     /**
@@ -228,7 +228,7 @@ class Components {
     public function footer() {
         echo '<hr /><div class="footer" role="contentinfo"><p>';
         $footer  = s( 'Powered by %s', $this->link( 'http://yourls.org/', 'YOURLS', 'YOURLS', false, false ) );
-            echo apply_filters( 'html_footer_text', $footer );
+            echo Filters::apply_filters( 'html_footer_text', $footer );
         echo '</p></div>';
     }
 
@@ -254,7 +254,7 @@ class Components {
                     <button name="add-button" class="add-button"><?php e( 'Shorten The URL' ); ?></button>
                 </div>
                 <div class="feedback"></div>
-                <?php do_action( 'html_addnew' ); ?>
+                <?php Filters::do_action( 'html_addnew' ); ?>
             </div>
             <?php
     }
@@ -352,7 +352,7 @@ class Components {
                     $params['search'] = $search_text;
                     unset( $params['search_text'] );
                 }
-                do_action( 'html_search' );
+                Filters::do_action( 'html_search' );
     }
 
 

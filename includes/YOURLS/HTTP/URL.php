@@ -20,7 +20,7 @@ class URL {
     public function link( $keyword = '' ) {
         $link = SITE . '/' . sanitize_keyword( $keyword );
 
-        return apply_filter( 'link', $link, $keyword );
+        return Filters::apply_filter( 'link', $link, $keyword );
     }
 
     /**
@@ -32,7 +32,7 @@ class URL {
         if( is_ssl() )
             $link = set_url_scheme( $link, 'https' );
 
-        return apply_filter( 'statlink', $link, $keyword );
+        return Filters::apply_filter( 'statlink', $link, $keyword );
     }
 
     /**
@@ -44,7 +44,7 @@ class URL {
         if( is_ssl() or needs_ssl() )
             $admin = set_url_scheme( $admin, 'https' );
 
-        return apply_filter( 'admin_url', $admin, $page );
+        return Filters::apply_filter( 'admin_url', $admin, $page );
     }
 
     /**
@@ -58,7 +58,7 @@ class URL {
         // Do not enforce (checking need_ssl() ) but check current usage so it won't force SSL on non-admin pages
         if( is_ssl() )
             $url = set_url_scheme( $url, 'https' );
-        $url = apply_filter( 'site_url', $url );
+        $url = Filters::apply_filter( 'site_url', $url );
         if( $echo )
             echo $url;
 
@@ -88,7 +88,7 @@ class URL {
         if( $_url == $noproto_url )
             $_url = ( $strict ? '' : $url );
 
-        return apply_filter( 'get_relative_url', $_url, $url );
+        return Filters::apply_filter( 'get_relative_url', $_url, $url );
     }
 
     /**

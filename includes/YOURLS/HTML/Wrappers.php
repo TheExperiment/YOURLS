@@ -76,7 +76,7 @@ class Wrappers {
 
         $attributes[] = ( is_rtl() ? 'dir="rtl"' : 'dir="ltr"' );
 
-        $doctype = apply_filters( 'html_language_attributes_doctype', 'html' );
+        $doctype = Filters::apply_filters( 'html_language_attributes_doctype', 'html' );
         // Experimental: get HTML lang from locale. Should work. Convert fr_FR -> fr-FR
         if ( $lang = str_replace( '_', '-', get_locale() ) ) {
             if( $doctype == 'xhtml' ) {
@@ -87,7 +87,7 @@ class Wrappers {
         }
 
         $output = implode( ' ', $attributes );
-        $output = apply_filters( 'html_language_attributes', $output );
+        $output = Filters::apply_filters( 'html_language_attributes', $output );
         echo $output;
     }
 
@@ -128,7 +128,7 @@ class Wrappers {
                 </ul>
             </div>
             <?php }
-        do_action( 'html_pagination' );
+        Filters::do_action( 'html_pagination' );
     }
 
     /**
@@ -167,7 +167,7 @@ class Wrappers {
             $html .= ">$text</option>";
         }
         $html .= "</select>";
-        $html  = apply_filters( 'html_select', $html, $name, $options, $selected, $display );
+        $html  = Filters::apply_filters( 'html_select', $html, $name, $options, $selected, $display );
         if( $display )
             echo $html;
 
@@ -182,7 +182,7 @@ class Wrappers {
      * @param bool $echo true to print, false to return
      */
     public function zeroclipboard( $clipboard_target, $echo = true ) {
-        $html = apply_filter( 'html_zeroclipboard',
+        $html = Filters::apply_filter( 'html_zeroclipboard',
         '<button class="btn-clipboard" data-copied-hint="' . _( 'Copied!' ) . '" data-clipboard-target="' . $clipboard_target . '" data-placement="bottom" data-trigger="manual" data-original-title="' . _( 'Copy to clipboard' ) . '"><i class="fa fa-copy"></i></button>',
         $clipboard_target );
         if( $echo )
@@ -197,8 +197,8 @@ class Wrappers {
      * @since 2.0
      */
     public function wrapper_start() {
-        do_action( 'admin_notice' );
-        echo apply_filter( 'wrapper_start', '<div class="content" role="main">' );
+        Filters::do_action( 'admin_notice' );
+        echo Filters::apply_filter( 'wrapper_start', '<div class="content" role="main">' );
     }
 
     /**
@@ -207,7 +207,7 @@ class Wrappers {
      * @since 2.0
      */
     public function wrapper_end() {
-        echo apply_filter( 'wrapper_end', '</div></div>' );
+        echo Filters::apply_filter( 'wrapper_end', '</div></div>' );
         if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
             $this->debug();
         }
@@ -219,7 +219,7 @@ class Wrappers {
      * @since 2.0
      */
     public function sidebar_start() {
-        echo apply_filter( 'sidebar_start', '<div class="sidebar-container"><div class="sidebar">
+        echo Filters::apply_filter( 'sidebar_start', '<div class="sidebar-container"><div class="sidebar">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-responsive-collapse">
           <i class="fa fa-bars"></i>
         </button>' );
@@ -231,7 +231,7 @@ class Wrappers {
      * @since 2.0
      */
     public function sidebar_end() {
-        echo apply_filter( 'sidebar_end', '</div></div>' );
+        echo Filters::apply_filter( 'sidebar_end', '</div></div>' );
     }
 
     /**
@@ -254,9 +254,9 @@ class Wrappers {
         }
         $link = sprintf( '<a href="%s"%s%s>%s</a>', esc_url( $href ), $class, $title, $content );
         if ( $echo )
-            echo apply_filter( 'html_link', $link );
+            echo Filters::apply_filter( 'html_link', $link );
         else
-            return apply_filter( 'html_link', $link );
+            return Filters::apply_filter( 'html_link', $link );
     }
 
     /**
@@ -265,7 +265,7 @@ class Wrappers {
      * @since 2.0
      */
     public function ending() {
-        do_action( 'html_ending' );
+        Filters::do_action( 'html_ending' );
         echo '</div></body></html>';
     }
 

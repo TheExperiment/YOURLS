@@ -21,7 +21,7 @@ class Protocol {
         if( is_ssl() )
             $url = str_replace( $normal, $ssl, $url );
 
-        return apply_filter( 'match_current_protocol', $url );
+        return Filters::apply_filter( 'match_current_protocol', $url );
     }
 
     /**
@@ -45,7 +45,7 @@ class Protocol {
 
         $protocol = get_protocol( $url );
 
-        return apply_filter( 'is_allowed_protocol', in_array( $protocol, $protocols ), $url, $protocols );
+        return Filters::apply_filter( 'is_allowed_protocol', in_array( $protocol, $protocols ), $url, $protocols );
     }
 
     /**
@@ -67,7 +67,7 @@ class Protocol {
          */
         $protocol = ( isset( $matches[0] ) ? $matches[0] : '' );
 
-        return apply_filter( 'get_protocol', $protocol, $url );
+        return Filters::apply_filter( 'get_protocol', $protocol, $url );
     }
 
     /**

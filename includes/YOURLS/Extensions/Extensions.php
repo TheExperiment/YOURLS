@@ -133,7 +133,7 @@ abstract class Extensions {
         }
 
         // Draw the page itself
-        do_action( 'load-' . $extension_page);
+        Filters::do_action( 'load-' . $extension_page);
         html_head( $this->category . '_page_' . $extension_page, $ydb->extension_pages[$extension_page]['title'] );
         template_content( 'before', $this->category );
 
@@ -153,8 +153,8 @@ abstract class Extensions {
      * @return int 0, 1 or -1, see uasort()
      */
     public function sort_callback( $extension_a, $extension_b ) {
-        $orderby = apply_filters( 'extensions_sort_callback', 'Plugin Name' );
-        $order   = apply_filters( 'extensions_sort_callback', 'ASC' );
+        $orderby = Filters::apply_filters( 'extensions_sort_callback', 'Plugin Name' );
+        $order   = Filters::apply_filters( 'extensions_sort_callback', 'ASC' );
 
         $a = $extension_a[$orderby];
         $b = $extension_b[$orderby];

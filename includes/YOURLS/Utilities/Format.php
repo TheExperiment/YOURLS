@@ -55,7 +55,7 @@ class Format {
         }
         $string = $chars[ intval( $num ) ] . $string;
 
-        return apply_filter( 'int2string', $string, $num, $chars );
+        return Filters::apply_filter( 'int2string', $string, $num, $chars );
     }
 
     /**
@@ -74,7 +74,7 @@ class Format {
             $integer = bcadd( $integer, bcmul( $index, bcpow( $baselen, $i ) ) );
         }
 
-        return apply_filter( 'string2int', $integer, $string, $chars );
+        return Filters::apply_filter( 'string2int', $integer, $string, $chars );
     }
 
     /**
@@ -82,7 +82,7 @@ class Format {
      *
      */
     public function string2htmlid( $string ) {
-        return apply_filter( 'string2htmlid', 'y'.abs( crc32( $string ) ) );
+        return Filters::apply_filter( 'string2htmlid', 'y'.abs( crc32( $string ) ) );
     }
 
     /**
@@ -94,7 +94,7 @@ class Format {
         $pattern = make_regexp_pattern( get_shorturl_charset() );
         $valid = substr( preg_replace( '![^'.$pattern.']!', '', $string ), 0, 199 );
 
-        return apply_filter( 'sanitize_string', $valid, $string );
+        return Filters::apply_filter( 'sanitize_string', $valid, $string );
     }
 
     /**
@@ -114,7 +114,7 @@ class Format {
         $title = strip_tags( $title );
         $title = preg_replace( "/\s+/", ' ', trim( $title ) );
 
-        return apply_filter( 'sanitize_title', $title, $unsafe_title );
+        return Filters::apply_filter( 'sanitize_title', $title, $unsafe_title );
     }
 
     /**
@@ -127,7 +127,7 @@ class Format {
     public function sanitize_url( $unsafe_url, $protocols = array() ) {
         $url = $this->esc_url( $unsafe_url, 'redirection', $protocols );
 
-        return apply_filter( 'sanitize_url', $url, $unsafe_url );
+        return Filters::apply_filter( 'sanitize_url', $url, $unsafe_url );
     }
 
     /**
@@ -200,7 +200,7 @@ class Format {
             return $ydb->escape( $string );
 
         // YOURLS DB classes have been bypassed by a custom DB engine or a custom cache layer
-        return apply_filters( 'custom_escape_real', addslashes( $string ), $string );
+        return Filters::apply_filters( 'custom_escape_real', addslashes( $string ), $string );
     }
 
     /**
@@ -250,7 +250,7 @@ class Format {
             }
         }
 
-        return apply_filter( 'trim_long_string', $newstring, $string, $length, $append );
+        return Filters::apply_filter( 'trim_long_string', $newstring, $string, $length, $append );
     }
 
     /**
@@ -478,7 +478,7 @@ class Format {
         $safe_text = $this->check_invalid_utf8( $text );
         $safe_text = $this->specialchars( $safe_text, ENT_QUOTES );
 
-        return apply_filters( 'esc_html', $safe_text, $text );
+        return Filters::apply_filters( 'esc_html', $safe_text, $text );
     }
 
     /**
@@ -493,7 +493,7 @@ class Format {
         $safe_text = $this->check_invalid_utf8( $text );
         $safe_text = $this->specialchars( $safe_text, ENT_QUOTES );
 
-        return apply_filters( 'esc_attr', $safe_text, $text );
+        return Filters::apply_filters( 'esc_attr', $safe_text, $text );
     }
 
     /**
@@ -554,7 +554,7 @@ class Format {
 
         if ( ! is_array( $protocols ) or ! $protocols ) {
             global $allowedprotocols;
-            $protocols = apply_filter( 'esc_url_protocols', $allowedprotocols );
+            $protocols = Filters::apply_filter( 'esc_url_protocols', $allowedprotocols );
             // Note: $allowedprotocols is also globally filterable in functions-kses.php/kses_init()
         }
 
@@ -565,7 +565,7 @@ class Format {
 
         $url = substr( $url, 0, 1999 );
 
-        return apply_filter( 'esc_url', $url, $original_url, $context );
+        return Filters::apply_filter( 'esc_url', $url, $original_url, $context );
     }
 
     /**
@@ -587,7 +587,7 @@ class Format {
         $safe_text = str_replace( "\r", '', $safe_text );
         $safe_text = str_replace( "\n", '\\n', addslashes( $safe_text ) );
 
-        return apply_filters( 'esc_js', $safe_text, $text );
+        return Filters::apply_filters( 'esc_js', $safe_text, $text );
     }
 
     /**
@@ -601,7 +601,7 @@ class Format {
     public function esc_textarea( $text ) {
         $safe_text = $this->htmlspecialchars( $text, ENT_QUOTES );
 
-        return apply_filters( 'esc_textarea', $safe_text, $text );
+        return Filters::apply_filters( 'esc_textarea', $safe_text, $text );
     }
 
 
@@ -624,7 +624,7 @@ class Format {
         // @TODO:
         // Known limit: this will most likely break IDN URLs such as http://www.acad�mie-fran�aise.fr/
         // To fully support IDN URLs, advocate use of a plugin.
-        return apply_filter( 'encodeURI', $result, $url );
+        return Filters::apply_filter( 'encodeURI', $result, $url );
     }
 
     /**
@@ -757,7 +757,7 @@ class Format {
 
         $str = substr( str_shuffle( $possible ), 0, $length );
 
-        return apply_filter( 'rnd_string', $str, $length, $type, $charlist );
+        return Filters::apply_filter( 'rnd_string', $str, $length, $type, $charlist );
     }
 
 
@@ -878,6 +878,6 @@ class Format {
     public function salt( $string ) {
         $salt = defined('YOURLS_COOKIEKEY') ? YOURLS_COOKIEKEY : md5(__FILE__) ;
 
-        return apply_filter( 'salt', md5 ($string . $salt), $string );
+        return Filters::apply_filter( 'salt', md5 ($string . $salt), $string );
     }
 }

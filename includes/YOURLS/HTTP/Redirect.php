@@ -17,13 +17,14 @@ class Redirect {
      * Redirect to another page
      *
      */
-    public function redirect( $location, $code = 301 ) {
-        do_action( 'pre_redirect', $location, $code );
-        $location = apply_filter( 'redirect_location', $location, $code );
-        $code     = apply_filter( 'redirect_code', $code, $location );
+    public static function redirect( $location, $code = 301 ) {
+        Filters::do_action( 'pre_redirect', $location, $code );
+        $location = Filters::apply_filter( 'redirect_location', $location, $code );
+        $code     = Filters::apply_filter( 'redirect_code', $code, $location );
         // Redirect, either properly if possible, or via Javascript otherwise
         if( !headers_sent() ) {
-            status_header( $code );
+            $headers = new Headers( $code );
+            //$headers->location($location);
             header( "Location: $location" );
         } else {
             redirect_javascript( $location );
@@ -35,8 +36,8 @@ class Redirect {
      *
      */
     public function redirect_javascript( $location, $dontwait = true ) {
-        do_action( 'pre_redirect_javascript', $location, $dontwait );
-        $location = apply_filter( 'redirect_javascript', $location, $dontwait );
+        Filters::do_action( 'pre_redirect_javascript', $location, $dontwait );
+        $location = Filters::apply_filter( 'redirect_javascript', $location, $dontwait );
         if( $dontwait ) {
             $message = s( 'if you are not redirected after 10 seconds, please <a href="%s">click here</a>', $location );
             echo <<<REDIR
@@ -48,7 +49,7 @@ REDIR;
         } else {
             echo '<p>' . s( 'Please <a href="%s">click here</a>', $location ) . '</p>';
         }
-        do_action( 'post_redirect_javascript', $location );
+        Filters::do_action( 'post_redirect_javascript', $location );
     }
 
 }

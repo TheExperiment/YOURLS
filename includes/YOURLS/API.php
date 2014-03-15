@@ -33,7 +33,7 @@ class API {
         $return['simple'] = ( isset( $return['shorturl'] ) ? $return['shorturl'] : '' ); // This one will be used in case output mode is 'simple'
         unset( $return['html'] ); // in API mode, no need for our internal HTML output
 
-        return apply_filter( 'api_result_shorturl', $return );
+        return Filters::apply_filter( 'api_result_shorturl', $return );
     }
 
     /**
@@ -47,7 +47,7 @@ class API {
         $limit = ( isset( $_REQUEST['limit'] ) ? $_REQUEST['limit'] : '' );
         $start = ( isset( $_REQUEST['start'] ) ? $_REQUEST['start'] : '' );
 
-        return apply_filter( 'api_result_stats', $this->stats( $filter, $limit, $start ) );
+        return Filters::apply_filter( 'api_result_stats', $this->stats( $filter, $limit, $start ) );
     }
 
     /**
@@ -57,7 +57,7 @@ class API {
      * @return array Result of API call
      */
     public function action_db_stats() {
-        return apply_filter( 'api_result_db_stats', $this->db_stats() );
+        return Filters::apply_filter( 'api_result_db_stats', $this->db_stats() );
     }
 
     /**
@@ -69,7 +69,7 @@ class API {
     public function action_url_stats() {
         $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
 
-        return apply_filter( 'api_result_url_stats', $this->url_stats( $shorturl ) );
+        return Filters::apply_filter( 'api_result_url_stats', $this->url_stats( $shorturl ) );
     }
 
     /**
@@ -81,7 +81,7 @@ class API {
     public function action_expand() {
         $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
 
-        return apply_filter( 'api_result_expand', $this->expand( $shorturl ) );
+        return Filters::apply_filter( 'api_result_expand', $this->expand( $shorturl ) );
     }
 
     /**
@@ -95,7 +95,7 @@ class API {
         if( isset( $_REQUEST['db'] ) && $_REQUEST['db'] == 1 )
             $return['db_version'] = YOURLS_DB_VERSION;
 
-        return apply_filter( 'api_result_version', $return );
+        return Filters::apply_filter( 'api_result_version', $return );
     }
 
     /**
@@ -108,7 +108,7 @@ class API {
             unset( $return['simple'] );
         }
 
-        do_action( 'pre_api_output', $mode, $return );
+        Filters::do_action( 'pre_api_output', $mode, $return );
 
         if( isset( $return['statusCode'] ) ) {
             $code = $return['statusCode'];
@@ -143,7 +143,7 @@ class API {
                 break;
         }
 
-        do_action( 'api_output', $mode, $return );
+        Filters::do_action( 'api_output', $mode, $return );
 
         die();
     }
@@ -157,7 +157,7 @@ class API {
         $return['simple']  = 'Need either XML or JSON format for stats';
         $return['message'] = 'success';
 
-        return apply_filter( 'api_stats', $return, $filter, $limit, $start );
+        return Filters::apply_filter( 'api_stats', $return, $filter, $limit, $start );
     }
 
     /**
@@ -172,7 +172,7 @@ class API {
             'message'    => 'success',
         );
 
-        return apply_filter( 'api_db_stats', $return );
+        return Filters::apply_filter( 'api_db_stats', $return );
     }
 
     /**
@@ -186,7 +186,7 @@ class API {
         $return = get_link_stats( $keyword );
         $return['simple']  = 'Need either XML or JSON format for stats';
 
-        return apply_filter( 'api_url_stats', $return, $shorturl );
+        return Filters::apply_filter( 'api_url_stats', $return, $shorturl );
     }
 
     /**
@@ -217,7 +217,7 @@ class API {
             );
         }
 
-        return apply_filter( 'api_expand', $return, $shorturl );
+        return Filters::apply_filter( 'api_expand', $return, $shorturl );
     }
 
 }

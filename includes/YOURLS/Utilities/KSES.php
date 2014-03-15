@@ -62,11 +62,11 @@ class KSES {
         global $allowedentitynames, $allowedprotocols;
 
         if( ! $allowedentitynames ) {
-            $allowedentitynames = apply_filter( 'kses_allowed_entities', $this->allowed_entities() );
+            $allowedentitynames = Filters::apply_filter( 'kses_allowed_entities', $this->allowed_entities() );
         }
 
         if( ! $allowedprotocols ) {
-            $allowedprotocols   = apply_filter( 'kses_allowed_protocols', $this->allowed_protocols() );
+            $allowedprotocols   = Filters::apply_filter( 'kses_allowed_protocols', $this->allowed_protocols() );
         }
 
         /** See NOTE ABOUT GLOBALS **
@@ -74,7 +74,7 @@ class KSES {
         if( ! $allowedtags_all ) {
         $allowedtags_all = $this->allowed_tags_all();
         $allowedtags_all = array_map( '_add_global_attributes', $allowedtags_all );
-        $allowedtags_all = apply_filter( 'kses_allowed_tags_all', $allowedtags_all );
+        $allowedtags_all = Filters::apply_filter( 'kses_allowed_tags_all', $allowedtags_all );
         } else {
         // User defined: let's sanitize
         $allowedtags_all = $this->array_lc( $allowedtags_all );
@@ -83,7 +83,7 @@ class KSES {
         if( ! $allowedtags ) {
         $allowedtags = $this->allowed_tags();
         $allowedtags = array_map( '_add_global_attributes', $allowedtags );
-        $allowedtags = apply_filter( 'kses_allowed_tags', $allowedtags );
+        $allowedtags = Filters::apply_filter( 'kses_allowed_tags', $allowedtags );
         } else {
         // User defined: let's sanitize
         $allowedtags = $this->array_lc( $allowedtags );

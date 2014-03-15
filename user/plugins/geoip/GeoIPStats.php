@@ -20,7 +20,7 @@ class GeoIPStats {
      */
     public function geo_ip_to_countrycode( $ip = '', $default = '' ) {
         // Allow plugins to short-circuit the Geo IP API
-        $location = apply_filter( 'shunt_geo_ip_to_countrycode', false, $ip, $default ); // at this point $ip can be '', check if your plugin hooks in here
+        $location = Filters::apply_filter( 'shunt_geo_ip_to_countrycode', false, $ip, $default ); // at this point $ip can be '', check if your plugin hooks in here
         if ( false !== $location )
             return $location;
 
@@ -52,7 +52,7 @@ class GeoIPStats {
         if( '' == $location )
             $location = $default;
 
-        return apply_filter( 'geo_ip_to_countrycode', $location, $ip, $default );
+        return Filters::apply_filter( 'geo_ip_to_countrycode', $location, $ip, $default );
     }
 
     /**
@@ -61,7 +61,7 @@ class GeoIPStats {
      */
     public function geo_countrycode_to_countryname( $code ) {
         // Allow plugins to short-circuit the Geo IP API
-        $country = apply_filter( 'shunt_geo_countrycode_to_countryname', false, $code );
+        $country = Filters::apply_filter( 'shunt_geo_countrycode_to_countryname', false, $code );
         if ( false !== $country )
             return $country;
 
@@ -86,7 +86,7 @@ class GeoIPStats {
      *
      */
     public function geo_get_flag( $code ) {
-        return apply_filter( 'geo_get_flag', 'flag-' . strtolower( $code ), $code );
+        return Filters::apply_filter( 'geo_get_flag', 'flag-' . strtolower( $code ), $code );
     }
 
 

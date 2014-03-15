@@ -58,7 +58,7 @@ class Themes extends Extensions {
             )
         );
 
-        $ydb->template = apply_filter( 'set_template_content', $elements );
+        $ydb->template = Filters::apply_filter( 'set_template_content', $elements );
     }
 
     /**
@@ -117,7 +117,7 @@ class Themes extends Extensions {
         array_shift( $args ); // remove first element which is $template_part
 
         // Allow theming!
-        $elements = apply_filter( 'template_content', $ydb->template, $template_part, $args );
+        $elements = Filters::apply_filter( 'template_content', $ydb->template, $template_part, $args );
 
         // 'Draw' page. Each template function is passed all arguments passed to template_content()
         foreach( (array) $elements[ $template_part ] as $element ) {
@@ -166,7 +166,7 @@ class Themes extends Extensions {
         global $ydb;
 
         // Filter the asset list before echoing links
-        $assets = apply_filter( 'html_assets_queue', $ydb->assets );
+        $assets = Filters::apply_filter( 'html_assets_queue', $ydb->assets );
 
         $core = $this->core_assets();
 
@@ -367,7 +367,7 @@ class Themes extends Extensions {
      * @since 1.7
      */
     public function init_theme() {
-        do_action( 'pre_init_theme' );
+        Filters::do_action( 'pre_init_theme' );
 
         // Enqueue default asset files - $ydb->assets will keep a list of needed CSS and JS
         // Asset src are defined in core_assets()
@@ -398,7 +398,7 @@ class Themes extends Extensions {
      */
     public function load_active_theme() {
 
-        do_action( 'pre_load_active_theme' );
+        Filters::do_action( 'pre_load_active_theme' );
 
         // is there an active theme ?
         $active_theme = $this->get_active_theme();
@@ -407,7 +407,7 @@ class Themes extends Extensions {
             $ydb->debug_log[] = 'Theme: ' . $active_theme;
         }
         if( !$active_theme ) {
-            do_action( 'load_active_theme_empty' );
+            Filters::do_action( 'load_active_theme_empty' );
 
             return false;
         }
@@ -415,7 +415,7 @@ class Themes extends Extensions {
         // Try to load the active theme
         $load = $this->load_theme( $active_theme );
         if( $load === true ) {
-            do_action( 'load_active_theme' );
+            Filters::do_action( 'load_active_theme' );
 
             return true;
         }
@@ -461,7 +461,7 @@ class Themes extends Extensions {
         $this->enqueue_style( $theme, $theme_css_url );
 
         // Success !
-        do_action( 'theme_loaded' );
+        Filters::do_action( 'theme_loaded' );
 
         return true;
     }
@@ -476,8 +476,8 @@ class Themes extends Extensions {
     public function activate_theme( $theme ) {
         if ( $theme == 'default' ) {
             update_option( 'active_theme', '' );
-            do_action( 'activated_theme', $theme );
-            do_action( 'activated_' . $theme );
+            Filters::do_action( 'activated_theme', $theme );
+            Filters::do_action( 'activated_' . $theme );
 
             return true;
         }
@@ -506,8 +506,8 @@ class Themes extends Extensions {
         if( $load === true ) {
             // so far, so good
             update_option( 'active_theme', $theme );
-            do_action( 'activated_theme', $theme );
-            do_action( 'activated_' . $theme );
+            Filters::do_action( 'activated_theme', $theme );
+            Filters::do_action( 'activated_' . $theme );
 
             return true;
         } else {
@@ -532,7 +532,7 @@ class Themes extends Extensions {
             update_option( 'active_theme', $ydb->theme );
         }
 
-        return apply_filter( 'get_active_theme', $ydb->theme );
+        return Filters::apply_filter( 'get_active_theme', $ydb->theme );
     }
 
     /**

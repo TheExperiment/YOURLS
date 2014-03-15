@@ -70,7 +70,7 @@ class Table {
             $return = '<tr class="edit-row notfound"><td class="edit-row notfound">' . _( 'Error, URL not found' ) . '</td></tr>';
         }
 
-        $return = apply_filter( 'table_edit_row', $return, $format, $data );
+        $return = Filters::apply_filter( 'table_edit_row', $return, $format, $data );
         // Compat note : up to YOURLS 1.6 the values passed to this filter where: $return, $keyword, $url, $title
         return $return;
     }
@@ -129,7 +129,7 @@ class Table {
                 'onclick' => "remove_link('$id');return false;",
             )
         );
-        $actions = apply_filter( 'table_add_row_action_array', $actions );
+        $actions = Filters::apply_filter( 'table_add_row_action_array', $actions );
 
         // @TODO: HTML Clean up
         // Action link buttons: the HTML
@@ -141,14 +141,14 @@ class Table {
             );
         }
         $action_links .= '</div>';
-        $action_links  = apply_filter( 'action_links', $action_links, $keyword, $url, $ip, $clicks, $timestamp );
+        $action_links  = Filters::apply_filter( 'action_links', $action_links, $keyword, $url, $ip, $clicks, $timestamp );
 
         if( ! $title )
             $title = $url;
 
         $protocol_warning = '';
         if( ! in_array( get_protocol( $url ) , array( 'http://', 'https://' ) ) )
-            $protocol_warning = apply_filters( 'add_row_protocol_warning', '<i class="warning protocol_warning fa fa-exclamation-circle" title="' . _( 'Not a common link' ) . '"></i> ' );
+            $protocol_warning = Filters::apply_filters( 'add_row_protocol_warning', '<i class="warning protocol_warning fa fa-exclamation-circle" title="' . _( 'Not a common link' ) . '"></i> ' );
 
         // Row template that you can filter before it's parsed (don't remove HTML classes & id attributes)
         $format = '<tr id="id-%id%">
@@ -196,7 +196,7 @@ class Table {
         );
 
         $row = replace_string_tokens( $format, $data );
-        $row = apply_filter( 'table_add_row', $row, $format, $data );
+        $row = Filters::apply_filter( 'table_add_row', $row, $format, $data );
         // Compat note : up to YOURLS 1.6 the values passed to this filter where: $keyword, $url, $title, $ip, $clicks, $timestamp
         return $row;
     }
@@ -206,7 +206,7 @@ class Table {
      *
      */
     public function table_head( $data = null ) {
-        echo apply_filter( 'table_head_start', '<thead><tr>' );
+        echo Filters::apply_filter( 'table_head_start', '<thead><tr>' );
 
         if( $data === null )  {
             $data = array(
@@ -220,8 +220,8 @@ class Table {
         foreach( $data as $id => $name ) {
             $cells .= '<th id="table-head-' . $id . '">' . $name . '</th>';
         }
-        echo apply_filter( 'table_head_cells', $cells, $data );
-        echo apply_filter( 'table_head_end', '</tr></thead>' );
+        echo Filters::apply_filter( 'table_head_cells', $cells, $data );
+        echo Filters::apply_filter( 'table_head_end', '</tr></thead>' );
     }
 
     /**
@@ -229,7 +229,7 @@ class Table {
      *
      */
     public function table_tbody_start() {
-        echo apply_filter( 'table_tbody_start', '<tbody class="list">' );
+        echo Filters::apply_filter( 'table_tbody_start', '<tbody class="list">' );
     }
 
     /**
@@ -237,7 +237,7 @@ class Table {
      *
      */
     public function table_tbody_end() {
-        echo apply_filter( 'table_tbody_end', '</tbody>' );
+        echo Filters::apply_filter( 'table_tbody_end', '</tbody>' );
     }
 
     /**
@@ -245,7 +245,7 @@ class Table {
      *
      */
     public function table_start( $div_id = '', $table_class = '' ) {
-        echo apply_filter( 'table_start', '<div id="' . $div_id . '"><table class="' . $table_class . '">', $table_class );
+        echo Filters::apply_filter( 'table_start', '<div id="' . $div_id . '"><table class="' . $table_class . '">', $table_class );
     }
 
     /**
@@ -253,7 +253,7 @@ class Table {
      *
      */
     public function table_end() {
-        echo apply_filter( 'table_end', '</table></div>' );
+        echo Filters::apply_filter( 'table_end', '</table></div>' );
     }
 
 }

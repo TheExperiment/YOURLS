@@ -128,8 +128,8 @@ class Plugins extends Extensions {
         // so far, so good: update active plugin list
         $ydb->plugins[] = $plugin;
         update_option( 'active_plugins', $ydb->plugins );
-        do_action( 'activated_plugin', $plugin );
-        do_action( 'activated_' . $plugin );
+        Filters::do_action( 'activated_plugin', $plugin );
+        Filters::do_action( 'activated_' . $plugin );
 
         return true;
     }
@@ -156,8 +156,8 @@ class Plugins extends Extensions {
         }
 
         update_option( 'active_plugins', $ydb->plugins );
-        do_action( 'deactivated_plugin', $plugin );
-        do_action( 'deactivated_' . $plugin );
+        Filters::do_action( 'deactivated_plugin', $plugin );
+        Filters::do_action( 'deactivated_' . $plugin );
 
         return true;
     }
@@ -184,7 +184,7 @@ class Plugins extends Extensions {
         if( is_ssl() or needs_ssl() )
             $url = str_replace( 'http://', 'https://', $url );
 
-        return apply_filter( 'plugin_url', $url, $file );
+        return Filters::apply_filter( 'plugin_url', $url, $file );
     }
 
     /**

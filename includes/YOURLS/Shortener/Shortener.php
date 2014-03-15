@@ -30,7 +30,7 @@ class Shortener {
             $charset = '0123456789abcdefghijklmnopqrstuvwxyz';
         }
 
-        $charset = apply_filter( 'get_shorturl_charset', $charset );
+        $charset = Filters::apply_filter( 'get_shorturl_charset', $charset );
 
         return $charset;
     }
@@ -51,7 +51,7 @@ class Shortener {
         )
             $reserved = true;
 
-        return apply_filter( 'keyword_is_reserved', $reserved, $keyword );
+        return Filters::apply_filter( 'keyword_is_reserved', $reserved, $keyword );
     }
 
     /**
@@ -59,7 +59,7 @@ class Shortener {
      *
      */
     public function get_next_decimal() {
-        return apply_filter( 'get_next_decimal', (int)get_option( 'next_id' ) );
+        return Filters::apply_filter( 'get_next_decimal', (int)get_option( 'next_id' ) );
     }
 
     /**
@@ -69,7 +69,7 @@ class Shortener {
     public function update_next_decimal( $int = '' ) {
         $int = ( $int == '' ) ? get_next_decimal() + 1 : (int)$int ;
         $update = update_option( 'next_id', $int );
-        do_action( 'update_next_decimal', $int, $update );
+        Filters::do_action( 'update_next_decimal', $int, $update );
 
         return $update;
     }
@@ -90,7 +90,7 @@ class Shortener {
         $ip = get_IP();
         $insert = $ydb->query("INSERT INTO `$table` (`keyword`, `url`, `title`, `timestamp`, `ip`, `clicks`) VALUES('$keyword', '$url', '$title', '$timestamp', '$ip', 0);");
 
-        do_action( 'insert_link', (bool)$insert, $url, $keyword, $title, $timestamp, $ip );
+        Filters::do_action( 'insert_link', (bool)$insert, $url, $keyword, $title, $timestamp, $ip );
 
         return (bool)$insert;
     }
@@ -101,7 +101,7 @@ class Shortener {
      */
     public function url_exists( $url ) {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_url_exists', false, $url );
+        $pre = Filters::apply_filter( 'shunt_url_exists', false, $url );
         if ( false !== $pre )
             return $pre;
 
@@ -110,7 +110,7 @@ class Shortener {
         $url   = escape( sanitize_url( $url) );
         $url_exists = $ydb->get_row( "SELECT * FROM `$table` WHERE `url` = '".$url."';" );
 
-        return apply_filter( 'url_exists', $url_exists, $url );
+        return Filters::apply_filter( 'url_exists', $url_exists, $url );
     }
 
     /**
@@ -119,7 +119,7 @@ class Shortener {
      */
     public function add_new_link( $url, $keyword = '', $title = '' ) {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_add_new_link', false, $url, $keyword, $title );
+        $pre = Filters::apply_filter( 'shunt_add_new_link', false, $url, $keyword, $title );
         if ( false !== $pre )
             return $pre;
 
@@ -131,7 +131,7 @@ class Shortener {
             $return['message']   = _( 'Missing or malformed URL' );
             $return['errorCode'] = '400';
 
-            return apply_filter( 'add_new_link_fail_nourl', $return, $url, $keyword, $title );
+            return Filters::apply_filter( 'add_new_link_fail_nourl', $return, $url, $keyword, $title );
         }
 
         // Prevent DB flood
@@ -146,11 +146,11 @@ class Shortener {
                 $return['message']   = _( 'URL is a short URL' );
                 $return['errorCode'] = '400';
 
-                return apply_filter( 'add_new_link_fail_noloop', $return, $url, $keyword, $title );
+                return Filters::apply_filter( 'add_new_link_fail_noloop', $return, $url, $keyword, $title );
             }
         }
 
-        do_action( 'pre_add_new_link', $url, $keyword, $title );
+        Filters::do_action( 'pre_add_new_link', $url, $keyword, $title );
 
         $strip_url = stripslashes( $url );
         $return = array();
@@ -163,15 +163,15 @@ class Shortener {
             } else {
                 $title = get_remote_title( $url );
             }
-            $title = apply_filter( 'add_new_title', $title, $url, $keyword );
+            $title = Filters::apply_filter( 'add_new_title', $title, $url, $keyword );
 
             // Custom keyword provided
             if ( $keyword ) {
 
-                do_action( 'add_new_link_custom_keyword', $url, $keyword, $title );
+                Filters::do_action( 'add_new_link_custom_keyword', $url, $keyword, $title );
 
                 $keyword = escape( sanitize_string( $keyword ) );
-                $keyword = apply_filter( 'custom_keyword', $keyword, $url, $title );
+                $keyword = Filters::apply_filter( 'custom_keyword', $keyword, $url, $title );
                 if ( !keyword_is_free( $keyword ) ) {
                     // This shorturl either reserved or taken already
                     $return['status']  = 'fail';
@@ -191,14 +191,14 @@ class Shortener {
                 // Create random keyword
             } else {
 
-                do_action( 'add_new_link_create_keyword', $url, $keyword, $title );
+                Filters::do_action( 'add_new_link_create_keyword', $url, $keyword, $title );
 
                 $timestamp = date( 'Y-m-d H:i:s' );
                 $id = get_next_decimal();
                 $ok = false;
                 do {
                     $keyword = int2string( $id );
-                    $keyword = apply_filter( 'random_keyword', $keyword, $url, $title );
+                    $keyword = Filters::apply_filter( 'random_keyword', $keyword, $url, $title );
                     if ( keyword_is_free($keyword) ) {
                         if( @insert_link_in_db( $url, $keyword, $title ) ){
                             // everything ok, populate needed vars
@@ -224,7 +224,7 @@ class Shortener {
             // URL was already stored
         } else {
 
-            do_action( 'add_new_link_already_stored', $url, $keyword, $title );
+            Filters::do_action( 'add_new_link_already_stored', $url, $keyword, $title );
 
             $return['status']   = 'fail';
             $return['code']     = 'error:url';
@@ -234,11 +234,11 @@ class Shortener {
             $return['shorturl'] = SITE .'/'. $url_exists->keyword;
         }
 
-        do_action( 'post_add_new_link', $url, $keyword, $title );
+        Filters::do_action( 'post_add_new_link', $url, $keyword, $title );
 
         $return['statusCode'] = 200; // regardless of result, this is still a valid request
 
-        return apply_filter( 'add_new_link', $return, $url, $keyword, $title );
+        return Filters::apply_filter( 'add_new_link', $return, $url, $keyword, $title );
     }
 
     /**
@@ -250,7 +250,7 @@ class Shortener {
         if ( keyword_is_reserved( $keyword ) or keyword_is_taken( $keyword ) )
             $free = false;
 
-        return apply_filter( 'keyword_is_free', $free, $keyword );
+        return Filters::apply_filter( 'keyword_is_free', $free, $keyword );
     }
 
     /**
@@ -260,7 +260,7 @@ class Shortener {
     public function keyword_is_taken( $keyword ) {
 
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_keyword_is_taken', false, $keyword );
+        $pre = Filters::apply_filter( 'shunt_keyword_is_taken', false, $keyword );
         if ( false !== $pre )
             return $pre;
 
@@ -272,7 +272,7 @@ class Shortener {
         if ( $already_exists )
             $taken = true;
 
-        return apply_filter( 'keyword_is_taken', $taken, $keyword );
+        return Filters::apply_filter( 'keyword_is_taken', $taken, $keyword );
     }
 
     /**
@@ -282,11 +282,11 @@ class Shortener {
     public function check_IP_flood( $ip = '' ) {
 
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_check_IP_flood', false, $ip );
+        $pre = Filters::apply_filter( 'shunt_check_IP_flood', false, $ip );
         if ( false !== $pre )
             return $pre;
 
-        do_action( 'pre_check_ip_flood', $ip ); // at this point $ip can be '', check it if your plugin hooks in here
+        Filters::do_action( 'pre_check_ip_flood', $ip ); // at this point $ip can be '', check it if your plugin hooks in here
 
         // Raise white flag if installing or if no flood delay defined
         if(
@@ -317,7 +317,7 @@ class Shortener {
         $ip = ( $ip ? sanitize_ip( $ip ) : get_IP() );
         $ip = escape( $ip );
 
-        do_action( 'check_ip_flood', $ip );
+        Filters::do_action( 'check_ip_flood', $ip );
 
         global $ydb;
         $table = YOURLS_DB_TABLE_URL;
@@ -328,7 +328,7 @@ class Shortener {
             $then = date( 'U', strtotime( $lasttime ) );
             if( ( $now - $then ) <= YOURLS_FLOOD_DELAY_SECONDS ) {
                 // Flood!
-                do_action( 'ip_flood', $ip, $now - $then );
+                Filters::do_action( 'ip_flood', $ip, $now - $then );
                 die( _( 'Too many URLs added too fast. Slow down please.' )/*, _( 'Forbidden' ), 403 */);
             }
         }
@@ -348,7 +348,7 @@ class Shortener {
      */
     public function get_remote_title( $url ) {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_get_remote_title', false, $url );
+        $pre = Filters::apply_filter( 'shunt_get_remote_title', false, $url );
         if ( false !== $pre )
             return $pre;
 
@@ -414,7 +414,7 @@ class Shortener {
         // Strip out evil things
         $title = sanitize_title( $title );
 
-        return apply_filter( 'get_remote_title', $title, $url );
+        return Filters::apply_filter( 'get_remote_title', $title, $url );
     }
 
 }

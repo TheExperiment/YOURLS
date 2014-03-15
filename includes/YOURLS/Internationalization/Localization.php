@@ -36,7 +36,7 @@ class Localization {
      * always be filtered using the 'get_locale' hook.
      *
      * @since 1.6
-     * @uses apply_filters() Calls 'get_locale' hook on locale value.
+     * @uses Filters::apply_filters() Calls 'get_locale' hook on locale value.
      * @uses $locale Gets the locale stored in the global.
      *
      * @return string The locale of the blog or from the 'get_locale' hook.
@@ -53,7 +53,7 @@ class Localization {
         if ( !$locale )
             $locale = '';
 
-        return apply_filters( 'get_locale', $locale );
+        return Filters::apply_filters( 'get_locale', $locale );
     }
 
     /**
@@ -62,7 +62,7 @@ class Localization {
      *
      * @see _() Don't use translate() directly, use _()
      * @since 1.6
-     * @uses apply_filters() Calls 'translate' on domain translated text
+     * @uses Filters::apply_filters() Calls 'translate' on domain translated text
      *		with the untranslated text as second parameter.
      *
      * @param string $text Text to translate.
@@ -72,7 +72,7 @@ class Localization {
     public function translate( $text, $domain = 'default' ) {
         $translations = $this->get_translations_for_domain( $domain );
 
-        return apply_filters( 'translate', $translations->translate( $text ), $text, $domain );
+        return Filters::apply_filters( 'translate', $translations->translate( $text ), $text, $domain );
     }
 
     /**
@@ -94,7 +94,7 @@ class Localization {
     public function translate_with_context( $text, $context, $domain = 'default' ) {
         $translations = $this->get_translations_for_domain( $domain );
 
-        return apply_filters( 'translate_with_context', $translations->translate( $text, $context ), $text, $context, $domain );
+        return Filters::apply_filters( 'translate_with_context', $translations->translate( $text, $context ), $text, $context, $domain );
     }
 
     /**
@@ -335,7 +335,7 @@ class Localization {
      *
      * @since 1.6
      * @uses $l10n Gets list of domain translated string (gettext_reader) objects
-     * @uses apply_filters() Calls 'translate_n' hook on domains text returned,
+     * @uses Filters::apply_filters() Calls 'translate_n' hook on domains text returned,
      *		along with $single, $plural, and $number parameters. Expected to return string.
      *
      * @param string $single The text that will be used if $number is 1
@@ -348,7 +348,7 @@ class Localization {
         $translations = $this->get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number );
 
-        return apply_filters( 'translate_n', $translation, $single, $plural, $number, $domain );
+        return Filters::apply_filters( 'translate_n', $translation, $single, $plural, $number, $domain );
     }
 
     /**
@@ -363,7 +363,7 @@ class Localization {
         $translations = $this->get_translations_for_domain( $domain );
         $translation = $translations->translate_plural( $single, $plural, $number, $context );
 
-        return apply_filters( 'translate_nx', $translation, $single, $plural, $number, $context, $domain );
+        return Filters::apply_filters( 'translate_nx', $translation, $single, $plural, $number, $context, $domain );
     }
 
     /**
@@ -455,15 +455,15 @@ class Localization {
     public function load_textdomain( $domain, $mofile ) {
         global $l10n;
 
-        $plugin_override = apply_filters( 'override_load_textdomain', false, $domain, $mofile );
+        $plugin_override = Filters::apply_filters( 'override_load_textdomain', false, $domain, $mofile );
 
         if ( true == $plugin_override ) {
             return true;
         }
 
-        do_action( 'load_textdomain', $domain, $mofile );
+        Filters::do_action( 'load_textdomain', $domain, $mofile );
 
-        $mofile = apply_filters( 'load_textdomain_mofile', $mofile, $domain );
+        $mofile = Filters::apply_filters( 'load_textdomain_mofile', $mofile, $domain );
 
         if ( !is_readable( $mofile ) ) {
             trigger_error( 'Cannot read file ' . str_replace( YOURLS_ABSPATH.'/', '', $mofile ) . '.'
@@ -494,12 +494,12 @@ class Localization {
     public function unload_textdomain( $domain ) {
         global $l10n;
 
-        $plugin_override = apply_filters( 'override_unload_textdomain', false, $domain );
+        $plugin_override = Filters::apply_filters( 'override_unload_textdomain', false, $domain );
 
         if ( $plugin_override )
             return true;
 
-        do_action( 'unload_textdomain', $domain );
+        Filters::do_action( 'unload_textdomain', $domain );
 
         if ( isset( $l10n[$domain] ) ) {
             unset( $l10n[$domain] );
@@ -587,7 +587,7 @@ class Localization {
             $languages[] = basename( $lang_file, '.mo' );
         }
 
-        return apply_filters( 'get_available_languages', $languages );
+        return Filters::apply_filters( 'get_available_languages', $languages );
     }
 
     /**
@@ -606,7 +606,7 @@ class Localization {
 
         $formatted = number_format( $number, abs( intval( $decimals ) ), $locale_formats->number_format['decimal_point'], $locale_formats->number_format['thousands_sep'] );
 
-        return apply_filters( 'number_format_i18n', $formatted );
+        return Filters::apply_filters( 'number_format_i18n', $formatted );
     }
 
     /**
@@ -685,7 +685,7 @@ class Localization {
         }
         $j = @$datefunc( $dateformatstring, $i );
         // allow plugins to redo this entirely for languages with untypical grammars
-        $j = apply_filters('date_i18n', $j, $req_format, $i, $gmt);
+        $j = Filters::apply_filters('date_i18n', $j, $req_format, $i, $gmt);
 
         return $j;
     }
@@ -730,7 +730,7 @@ class Localization {
      * @return bool True on success, false on failure
      */
     public function load_custom_textdomain( $domain, $path ) {
-        $locale = apply_filters( 'load_custom_textdomain', $this->get_locale(), $domain );
+        $locale = Filters::apply_filters( 'load_custom_textdomain', $this->get_locale(), $domain );
         $mofile = trim( $path, '/' ) . '/'. $domain . '-' . $locale . '.mo';
 
         return $this->load_textdomain( $domain, $mofile );

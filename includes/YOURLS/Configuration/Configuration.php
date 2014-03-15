@@ -55,7 +55,7 @@ class Configuration {
 
         }
 
-        return apply_filter( 'is_private', $private );
+        return Filters::apply_filter( 'is_private', $private );
     }
 
     /**
@@ -93,7 +93,7 @@ class Configuration {
     public function is_upgrading() {
         $upgrading = defined( 'UPGRADING' ) && UPGRADING == true;
 
-        return apply_filter( 'is_upgrading', $upgrading );
+        return Filters::apply_filter( 'is_upgrading', $upgrading );
     }
 
     /**

@@ -40,7 +40,7 @@ class Functions {
             $is_short = true;
         }
 
-        return apply_filter( 'is_shorturl', $is_short, $shorturl );
+        return Filters::apply_filter( 'is_shorturl', $is_short, $shorturl );
     }
 
 
@@ -166,7 +166,7 @@ class Functions {
             $is_ssl = true;
         }
 
-        return apply_filter( 'is_ssl', $is_ssl );
+        return Filters::apply_filter( 'is_ssl', $is_ssl );
     }
 
 
@@ -272,9 +272,9 @@ class Functions {
      * This function is to be used in every function that is deprecated.
      *
      * @since 1.6
-     * @uses do_action() Calls 'deprecated_function' and passes the function name, what to use instead,
+     * @uses Filters::do_action() Calls 'deprecated_function' and passes the function name, what to use instead,
      *   and the version the function was deprecated in.
-     * @uses apply_filters() Calls 'deprecated_function_trigger_error' and expects boolean value of true to do
+     * @uses Filters::apply_filters() Calls 'deprecated_function_trigger_error' and expects boolean value of true to do
      *   trigger or false to not trigger error.
      *
      * @param string $function The function that was called
@@ -283,10 +283,10 @@ class Functions {
      */
     public function deprecated_function( $function, $version, $replacement = null ) {
 
-        do_action( 'deprecated_function', $function, $replacement, $version );
+        Filters::do_action( 'deprecated_function', $function, $replacement, $version );
 
         // Allow plugin to filter the output error trigger
-        if ( YOURLS_DEBUG && apply_filters( 'deprecated_function_trigger_error', true ) ) {
+        if ( YOURLS_DEBUG && Filters::apply_filters( 'deprecated_function_trigger_error', true ) ) {
             if ( ! is_null( $replacement ) )
                 trigger_error( sprintf( _( '%1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.' ), $function, $version, $replacement ) );
             else

@@ -120,11 +120,11 @@ class Filters {
      *
      * 		1) Modify a variable if a function is attached to hook 'hook'
      *		$var = "default value";
-     *		$var = apply_filter( 'hook', $var );
+     *		$var = Filters::apply_filter( 'hook', $var );
      *
      *		2) Trigger functions is attached to event 'event'
      *		apply_filter( 'event' );
-     *      (see do_action() )
+     *      (see Filters::do_action() )
      *
      * Returns an element which may have been filtered by a filter.
      *
@@ -133,7 +133,7 @@ class Filters {
      * @param mixed $value the value of the element before filtering
      * @return mixed
      */
-    public function apply_filter( $hook, $value = '' ) {
+    public function Filters::apply_filter( $hook, $value = '' ) {
         global $filters;
         if ( !isset( $filters[ $hook ] ) )
             return $value;
@@ -168,7 +168,7 @@ class Filters {
     }
 
     /**
-     * Alias for apply_filter because I never remember if it's _filter or _filters
+     * Alias for Filters::apply_filter because I never remember if it's _filter or _filters
      *
      * Plus, semantically, it makes more sense. There can be several filters. I should have named it
      * like this from the very start. Duh.
@@ -179,7 +179,7 @@ class Filters {
      * @param mixed $value the value of the element before filtering
      * @return mixed
      */
-    public function apply_filters( $hook, $value = '' ) {
+    public static function Filters::apply_filters( $hook, $value = '' ) {
         return $this->apply_filter( $hook, $value );
     }
 
@@ -189,7 +189,7 @@ class Filters {
      * @param string $hook the name of the YOURLS action
      * @param mixed $arg action arguments
      */
-    public function do_action( $hook, $arg = '' ) {
+    public static function Filters::do_action( $hook, $arg = '' ) {
         global $actions;
 
         // Keep track of actions that are "done"

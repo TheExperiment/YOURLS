@@ -21,9 +21,9 @@ class Authentication {
      */
     public function __construct() {
         if( !is_private() ) {
-            do_action( 'require_no_auth' );
+            Filters::do_action( 'require_no_auth' );
         } else {
-            do_action( 'require_auth' );
+            Filters::do_action( 'require_auth' );
 
         $auth = yourls_is_valid_user();
         if( $auth !== true ) {
@@ -47,7 +47,7 @@ class Authentication {
             die();
         }
 
-        yourls_do_action( 'auth_successful' );
+        Filters::do_action( 'auth_successful' );
         }
     }
 
@@ -63,7 +63,7 @@ class Authentication {
             return true;
 
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_is_valid_user', null );
+        $pre = Filters::apply_filter( 'shunt_is_valid_user', null );
         if ( null !== $pre ) {
             $valid = ( $pre === true ) ;
 
@@ -75,7 +75,7 @@ class Authentication {
 
         // Logout request
         if( isset( $_GET['action'] ) && $_GET['action'] == 'logout' ) {
-            do_action( 'logout' );
+            Filters::do_action( 'logout' );
             $this->store_cookie( null );
 
             return array( _( 'Logged out successfully' ), 'success' );
@@ -83,7 +83,7 @@ class Authentication {
 
         // Check cookies or login request. Login form has precedence.
 
-        do_action( 'pre_login' );
+        Filters::do_action( 'pre_login' );
 
         // Determine auth method and check credentials
         if
@@ -94,7 +94,7 @@ class Authentication {
               isset( $_REQUEST['signature'] ) && !empty($_REQUEST['signature'] )
             )
         {
-            do_action( 'pre_login_signature_timestamp' );
+            Filters::do_action( 'pre_login_signature_timestamp' );
             $unfiltered_valid = $this->check_signature_timestamp();
         }
 
@@ -106,7 +106,7 @@ class Authentication {
               isset( $_REQUEST['signature'] ) && !empty( $_REQUEST['signature'] )
             )
         {
-            do_action( 'pre_login_signature' );
+            Filters::do_action( 'pre_login_signature' );
             $unfiltered_valid = $this->check_signature();
         }
 
@@ -115,7 +115,7 @@ class Authentication {
             ( isset( $_REQUEST['username'] ) && isset( $_REQUEST['password'] )
               && !empty( $_REQUEST['username'] ) && !empty( $_REQUEST['password']  ) )
         {
-            do_action( 'pre_login_username_password' );
+            Filters::do_action( 'pre_login_username_password' );
             $unfiltered_valid = $this->check_username_password();
         }
 
@@ -124,16 +124,16 @@ class Authentication {
             ( !is_API() &&
               isset( $_YOURLS_COOKIE['username'] ) )
         {
-            do_action( 'pre_login_cookie' );
+            Filters::do_action( 'pre_login_cookie' );
             $unfiltered_valid = $this->check_auth_cookie();
         }
 
         // Regardless of validity, allow plugins to filter the boolean and have final word
-        $valid = apply_filter( 'is_valid_user', $unfiltered_valid );
+        $valid = Filters::apply_filter( 'is_valid_user', $unfiltered_valid );
 
         // Login for the win!
         if ( $valid ) {
-            do_action( 'login' );
+            Filters::do_action( 'login' );
 
             // (Re)store encrypted cookie if needed
             if ( !is_API() ) {
@@ -151,7 +151,7 @@ class Authentication {
         }
 
         // Login failed
-        do_action( 'login_failed' );
+        Filters::do_action( 'login_failed' );
 
         if ( isset( $_REQUEST['username'] ) || isset( $_REQUEST['password'] ) ) {
             return array( _( 'Invalid username or password' ), 'error' );
@@ -302,8 +302,8 @@ class Authentication {
      * @return object a PasswordHash instance
      */
     public function phpass_instance( $iteration = 8, $portable = false ) {
-        $iteration = apply_filter( 'phpass_new_instance_iteration', $iteration );
-        $portable  = apply_filter( 'phpass_new_instance_portable', $portable );
+        $iteration = Filters::apply_filter( 'phpass_new_instance_iteration', $iteration );
+        $portable  = Filters::apply_filter( 'phpass_new_instance_portable', $portable );
 
         static $instance = false;
         if( $instance == false ) {
@@ -448,7 +448,7 @@ class Authentication {
     public function check_timestamp( $time ) {
         $now = time();
         // Allow timestamp to be a little in the future or the past -- see Issue 766
-        return apply_filter( 'check_timestamp', abs( $now - $time ) < YOURLS_NONCE_LIFE, $time );
+        return Filters::apply_filter( 'check_timestamp', abs( $now - $time ) < YOURLS_NONCE_LIFE, $time );
     }
 
     /**
@@ -469,9 +469,9 @@ class Authentication {
             $time = time() + YOURLS_COOKIE_LIFE;
         }
 
-        $domain   = apply_filter( 'setcookie_domain',   parse_url( SITE, 1 ) );
-        $secure   = apply_filter( 'setcookie_secure',   is_ssl() );
-        $httponly = apply_filter( 'setcookie_httponly', true );
+        $domain   = Filters::apply_filter( 'setcookie_domain',   parse_url( SITE, 1 ) );
+        $secure   = Filters::apply_filter( 'setcookie_secure',   is_ssl() );
+        $httponly = Filters::apply_filter( 'setcookie_httponly', true );
 
         // Some browser refuse to store localhost cookie
         if ( $domain == 'localhost' )
@@ -481,7 +481,7 @@ class Authentication {
             setcookie('username', salt( $user ), $time, '/', $domain, $secure, $httponly );
         } else {
             // For some reason cookies were not stored: action to be able to debug that
-            do_action( 'setcookie_failed', $user );
+            Filters::do_action( 'setcookie_failed', $user );
         }
     }
 

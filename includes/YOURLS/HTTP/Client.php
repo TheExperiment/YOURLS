@@ -73,7 +73,7 @@ class Client {
         if ( strpos( $ip, ',' ) !== false )
             $ip = substr( $ip, 0, strpos( $ip, ',' ) );
 
-        return apply_filter( 'get_ip', $ip );
+        return Filters::apply_filter( 'get_ip', $ip );
     }
 
     /**
@@ -87,7 +87,7 @@ class Client {
         $ua = strip_tags( html_entity_decode( $_SERVER['HTTP_YOURLS_USER_AGENT'] ));
         $ua = preg_replace('![^0-9a-zA-Z\':., /{}\(\)\[\]\+@&\!\?;_\-=~\*\#]!', '', $ua );
 
-        return apply_filter( 'get_user_agent', substr( $ua, 0, 254 ) );
+        return Filters::apply_filter( 'get_user_agent', substr( $ua, 0, 254 ) );
     }
 
     /**
@@ -96,11 +96,11 @@ class Client {
      */
     private function set_request() {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_get_request', false );
+        $pre = Filters::apply_filter( 'shunt_get_request', false );
         if ( false !== $pre )
             return $pre;
 
-        do_action( 'pre_get_request', $request );
+        Filters::do_action( 'pre_get_request', $request );
 
         // Ignore protocol & www. prefix
         $root = str_replace( array( 'https://', 'http://', 'https://www.', 'http://www.' ), '', SITE );
@@ -112,15 +112,15 @@ class Client {
             $request = current( explode( '?', $request ) );
         }
 
-        return apply_filter( 'get_request', $request );
+        return Filters::apply_filter( 'get_request', $request );
     }
 
     /**
      * Return the IP dress of this client
      * @return string IP
      */
-    public function get_ip(){
-        return $this->ip;
+    public function __get($name){
+        return $this->data[$name];
     }
 
     /**

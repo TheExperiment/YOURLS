@@ -27,7 +27,7 @@ class Options {
         global $ydb;
 
         // Allow plugins to short-circuit options
-        $pre = apply_filter( 'shunt_option_'.$option_name, false );
+        $pre = Filters::apply_filter( 'shunt_option_'.$option_name, false );
         if ( false !== $pre )
             return $pre;
 
@@ -44,7 +44,7 @@ class Options {
             $ydb->option[ $option_name ] = maybe_unserialize( $value );
         }
 
-        return apply_filter( 'get_option_'.$option_name, $ydb->option[$option_name] );
+        return Filters::apply_filter( 'get_option_'.$option_name, $ydb->option[$option_name] );
     }
 
     /**
@@ -61,7 +61,7 @@ class Options {
         global $ydb;
 
         // Allow plugins to short-circuit all options. (Note: regular plugins are loaded after all options)
-        $pre = apply_filter( 'shunt_all_options', false );
+        $pre = Filters::apply_filter( 'shunt_all_options', false );
         if ( false !== $pre )
             return $pre;
 
@@ -74,7 +74,7 @@ class Options {
         }
 
         if( property_exists( $ydb, 'option' ) ) {
-            $ydb->option = apply_filter( 'get_all_options', $ydb->option );
+            $ydb->option = Filters::apply_filter( 'get_all_options', $ydb->option );
             $ydb->installed = true;
         } else {
             // Zero option found: either YOURLS is not installed or DB server is dead
@@ -123,7 +123,7 @@ class Options {
 
         $_newvalue = escape( maybe_serialize( $newvalue ) );
 
-        do_action( 'update_option', $option_name, $oldvalue, $newvalue );
+        Filters::do_action( 'update_option', $option_name, $oldvalue, $newvalue );
 
         $ydb->query( "UPDATE `$table` SET `option_value` = '$_newvalue' WHERE `option_name` = '$option_name'" );
 
@@ -166,7 +166,7 @@ class Options {
 
         $_value = escape( maybe_serialize( $value ) );
 
-        do_action( 'add_option', $name, $_value );
+        Filters::do_action( 'add_option', $name, $_value );
 
         $ydb->query( "INSERT INTO `$table` (`option_name`, `option_value`) VALUES ('$name', '$_value')" );
         $ydb->option[ $name ] = $value;
@@ -193,7 +193,7 @@ class Options {
         if ( is_null( $option ) || !$option->option_id )
             return false;
 
-        do_action( 'delete_option', $name );
+        Filters::do_action( 'delete_option', $name );
 
         $ydb->query( "DELETE FROM `$table` WHERE `option_name` = '$name'" );
         unset( $ydb->option[ $name ] );

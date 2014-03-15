@@ -101,7 +101,7 @@ class Headers {
 
             return false;
 
-        $charset = apply_filters( 'content_type_header_charset', 'utf-8' );
+        $charset = Filters::apply_filters( 'content_type_header_charset', 'utf-8' );
         header( "Content-Type: $type; charset=$charset" );
 
         return true;
@@ -124,7 +124,7 @@ class Headers {
         $desc = get_http_status( $code );
 
         @header ("$protocol $code $desc"); // This causes problems on IIS and some FastCGI setups
-        do_action( 'status_header', $code );
+        Filters::do_action( 'status_header', $code );
     }
 
 }

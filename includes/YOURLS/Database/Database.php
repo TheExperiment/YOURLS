@@ -73,7 +73,7 @@ class Database /*extends someThingLikeEzSQL*/ {
      *
      * @since 1.0
      */
-    public function connect() {
+    public static function connect() {
         global $ydb;
 
         if (   !defined( 'YOURLS_DB_USER' )
@@ -120,7 +120,7 @@ class Database /*extends someThingLikeEzSQL*/ {
 
             // Custom DB driver & class : delegate check
             default:
-                $alive = apply_filter( 'is_db_alive_custom', false );
+                $alive = Filters::apply_filter( 'is_db_alive_custom', false );
         }
 
         return $alive;

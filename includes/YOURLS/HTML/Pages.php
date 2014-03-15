@@ -25,9 +25,9 @@ class Pages {
         if( !file_exists( $include ) ) {
             die( "Page '$page' not found"/*, 'Not found', 404 */);
         }
-        do_action( 'pre_page', $page );
+        Filters::do_action( 'pre_page', $page );
         include_once( $include );
-        do_action( 'post_page', $page );
+        Filters::do_action( 'post_page', $page );
         die();
     }
 
@@ -43,9 +43,9 @@ class Pages {
             template_content( 'before', 'die' );
         }
 
-        echo apply_filter( 'die_title', "<h2>$title</h2>" );
-        echo apply_filter( 'die_message', "<p>$message</p>" );
-        do_action( 'die' );
+        echo Filters::apply_filter( 'die_title', "<h2>$title</h2>" );
+        echo Filters::apply_filter( 'die_message', "<p>$message</p>" );
+        Filters::do_action( 'die' );
 
         if( !$head ) {
             template_content( 'after', 'die' );

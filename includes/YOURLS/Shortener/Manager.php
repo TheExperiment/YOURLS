@@ -19,7 +19,7 @@ class Manager {
      */
     public function edit_link( $url, $keyword, $newkeyword='', $title='' ) {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_edit_link', null, $keyword, $url, $keyword, $newkeyword, $title );
+        $pre = Filters::apply_filter( 'shunt_edit_link', null, $keyword, $url, $keyword, $newkeyword, $title );
         if ( null !== $pre )
             return $pre;
 
@@ -48,7 +48,7 @@ class Manager {
             $keyword_is_ok = true;
         }
 
-        do_action( 'pre_edit_link', $url, $keyword, $newkeyword, $new_url_already_there, $keyword_is_ok );
+        Filters::do_action( 'pre_edit_link', $url, $keyword, $newkeyword, $new_url_already_there, $keyword_is_ok );
 
         // All clear, update
         if ( ( !$new_url_already_there || allow_duplicate_longurls() ) && $keyword_is_ok ) {
@@ -68,7 +68,7 @@ class Manager {
             $return['message'] = _( 'URL or keyword already exists in database' );
         }
 
-        return apply_filter( 'edit_link', $return, $url, $keyword, $newkeyword, $title, $new_url_already_there, $keyword_is_ok );
+        return Filters::apply_filter( 'edit_link', $return, $url, $keyword, $newkeyword, $title, $new_url_already_there, $keyword_is_ok );
     }
 
     /**
@@ -79,13 +79,13 @@ class Manager {
         global $ydb;
         $keyword = escape( sanitize_string( $keyword ) );
 
-        do_action( 'pre_get_keyword', $keyword, $use_cache );
+        Filters::do_action( 'pre_get_keyword', $keyword, $use_cache );
 
         if( isset( $ydb->infos[$keyword] ) && $use_cache == true ) {
-            return apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
+            return Filters::apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
         }
 
-        do_action( 'get_keyword_not_cached', $keyword );
+        Filters::do_action( 'get_keyword_not_cached', $keyword );
 
         $table = YOURLS_DB_TABLE_URL;
         $infos = $ydb->get_row( "SELECT * FROM `$table` WHERE `keyword` = '$keyword'" );
@@ -97,7 +97,7 @@ class Manager {
             $ydb->infos[ $keyword ] = false;
         }
 
-        return apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
+        return Filters::apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
     }
 
     /**
@@ -107,7 +107,7 @@ class Manager {
     public function get_keyword_info( $keyword, $field, $notfound = false ) {
 
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_get_keyword_info', false, $keyword, $field, $notfound );
+        $pre = Filters::apply_filter( 'shunt_get_keyword_info', false, $keyword, $field, $notfound );
         if ( false !== $pre )
             return $pre;
 
@@ -118,7 +118,7 @@ class Manager {
         if ( isset( $infos[ $field ] ) && $infos[ $field ] !== false )
             $return = $infos[ $field ];
 
-        return apply_filter( 'get_keyword_info', $return, $keyword, $field, $notfound );
+        return Filters::apply_filter( 'get_keyword_info', $return, $keyword, $field, $notfound );
     }
 
     /**
@@ -127,7 +127,7 @@ class Manager {
      */
     public function update_clicks( $keyword, $clicks = false ) {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_update_clicks', false, $keyword, $clicks );
+        $pre = Filters::apply_filter( 'shunt_update_clicks', false, $keyword, $clicks );
         if ( false !== $pre )
             return $pre;
 
@@ -139,7 +139,7 @@ class Manager {
         else
             $update = $ydb->query( "UPDATE `$table` SET `clicks` = clicks + 1 WHERE `keyword` = '$keyword'" );
 
-        do_action( 'update_clicks', $keyword, $update, $clicks );
+        Filters::do_action( 'update_clicks', $keyword, $update, $clicks );
 
         return $update;
     }
@@ -199,7 +199,7 @@ class Manager {
 
         $return['statusCode'] = 200;
 
-        return apply_filter( 'get_stats', $return, $filter, $limit, $start );
+        return Filters::apply_filter( 'get_stats', $return, $filter, $limit, $start );
     }
 
     /**
@@ -216,7 +216,7 @@ class Manager {
         $totals = $ydb->get_row( "SELECT COUNT(keyword) as count, SUM(clicks) as sum FROM `$table_url` WHERE 1=1 $where" );
         $return = array( 'total_links' => $totals->count, 'total_clicks' => $totals->sum );
 
-        return apply_filter( 'get_db_stats', $return, $where );
+        return Filters::apply_filter( 'get_db_stats', $return, $where );
     }
     /**
      * Get number of SQL queries performed
@@ -225,7 +225,7 @@ class Manager {
     public function get_num_queries() {
         global $ydb;
 
-        return apply_filter( 'get_num_queries', $ydb->num_queries );
+        return Filters::apply_filter( 'get_num_queries', $ydb->num_queries );
     }
 
     /**
@@ -240,7 +240,7 @@ class Manager {
      */
     public function log_redirect( $keyword ) {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_log_redirect', false, $keyword );
+        $pre = Filters::apply_filter( 'shunt_log_redirect', false, $keyword );
         if ( false !== $pre )
             return $pre;
 
@@ -290,7 +290,7 @@ class Manager {
             }
         }
 
-        return apply_filter( 'get_longurl_keywords', $ydb->get_col( $query ), $longurl );
+        return Filters::apply_filter( 'get_longurl_keywords', $ydb->get_col( $query ), $longurl );
     }
 
     /**
@@ -299,7 +299,7 @@ class Manager {
      */
     public function edit_link_title( $keyword, $title ) {
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_edit_link_title', null, $keyword, $title );
+        $pre = Filters::apply_filter( 'shunt_edit_link_title', null, $keyword, $title );
         if ( null !== $pre )
             return $pre;
 
@@ -348,7 +348,7 @@ class Manager {
             );
         }
 
-        return apply_filter( 'get_link_stats', $return, $shorturl );
+        return Filters::apply_filter( 'get_link_stats', $return, $shorturl );
     }
 
     /**

@@ -22,7 +22,7 @@ class Info {
      */
     public function countries_map( $countries, $id = null ) {
 
-        do_action( 'pre_stats_countries_map' );
+        Filters::do_action( 'pre_stats_countries_map' );
 
         // if $id is null then assign a random string
         if( $id === null )
@@ -38,11 +38,11 @@ class Info {
             'height'          => "400",
             'theme'           => 'maximized'
         );
-        $options = apply_filter( 'stats_countries_map_options', $options );
+        $options = Filters::apply_filter( 'stats_countries_map_options', $options );
 
         $map = google_viz_code( 'GeoChart', $data, $options, $id );
 
-        echo apply_filter( 'stats_countries_map', $map, $countries, $options, $id );
+        echo Filters::apply_filter( 'stats_countries_map', $map, $countries, $options, $id );
     }
 
     /**
@@ -51,7 +51,7 @@ class Info {
      */
     public function pie( $data, $limit = 10, $size = '340x220', $id = null ) {
 
-        do_action( 'pre_stats_pie' );
+        Filters::do_action( 'pre_stats_pie' );
 
         // if $id is null then assign a random string
         if( $id === null )
@@ -86,14 +86,14 @@ class Info {
             'chartArea'   => '{top: "5%", height: "90%"}',
             'pieSliceText' => 'label',
         );
-        $options = apply_filter( 'stats_pie_options', $options );
+        $options = Filters::apply_filter( 'stats_pie_options', $options );
 
         $script_data = array_merge( array( 'Country' => 'Value' ), $_data );
         $script_data = google_array_to_data_table( $script_data );
 
         $pie = google_viz_code( 'PieChart', $script_data, $options, $id );
 
-        echo apply_filter( 'stats_pie', $pie, $data, $limit, $size, $options, $id );
+        echo Filters::apply_filter( 'stats_pie', $pie, $data, $limit, $size, $options, $id );
     }
 
     /**
@@ -178,7 +178,7 @@ class Info {
      */
     public function line( $values, $id = null ) {
 
-        do_action( 'pre_stats_line' );
+        Filters::do_action( 'pre_stats_line' );
 
         // if $id is null then assign a random string
         if( $id === null )
@@ -205,11 +205,11 @@ class Info {
             "vAxis"       => "{minValue: -0.5, format: '#'}",
             "colors"	  => "['#2a85b3']",
         );
-        $options = apply_filter( 'stats_line_options', $options );
+        $options = Filters::apply_filter( 'stats_line_options', $options );
 
         $lineChart = google_viz_code( 'LineChart', $data, $options, $id );
 
-        echo apply_filter( 'stats_line', $lineChart, $values, $options, $id );
+        echo Filters::apply_filter( 'stats_line', $lineChart, $values, $options, $id );
     }
 
     /**

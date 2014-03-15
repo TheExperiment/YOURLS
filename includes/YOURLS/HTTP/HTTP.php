@@ -89,7 +89,7 @@ class HTTP {
      * @return bool true if a proxy is defined, false otherwise
      */
     public function proxy_is_defined() {
-        return apply_filter( 'http_proxy_is_defined', defined( 'PROXY' ) );
+        return Filters::apply_filter( 'http_proxy_is_defined', defined( 'PROXY' ) );
     }
 
     /**
@@ -105,7 +105,7 @@ class HTTP {
      */
     public function default_options() {
         $options = array(
-            'timeout'          => apply_filter( 'http_default_options_timeout', 3 ),
+            'timeout'          => Filters::apply_filter( 'http_default_options_timeout', 3 ),
             'useragent'        => $this->user_agent(),
             'follow_redirects' => true,
             'redirects'        => 3,
@@ -119,7 +119,7 @@ class HTTP {
             }
         }
 
-        return apply_filter( 'http_default_options', $options );
+        return Filters::apply_filter( 'http_default_options', $options );
     }
 
     /**
@@ -137,7 +137,7 @@ class HTTP {
     public function send_through_proxy( $url ) {
 
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_send_through_proxy', null, $url );
+        $pre = Filters::apply_filter( 'shunt_send_through_proxy', null, $url );
         if ( null !== $pre )
             return $pre;
 
@@ -212,7 +212,7 @@ class HTTP {
      * @return string UA string
      */
     public function user_agent() {
-        return apply_filter( 'http_user_agent', 'YOURLS v'.VERSION.' +http://yourls.org/ (running on '.SITE.')' );
+        return Filters::apply_filter( 'http_user_agent', 'YOURLS v'.VERSION.' +http://yourls.org/ (running on '.SITE.')' );
     }
 
     /**
@@ -284,7 +284,7 @@ class HTTP {
             'num_pages'          => defined( 'YOURLS_PAGEDIR' ) ? count( (array) glob( YOURLS_PAGEDIR .'/*.php') ) : 0,
         );
 
-        $stuff = apply_filter( 'version_check_stuff', $stuff );
+        $stuff = Filters::apply_filter( 'version_check_stuff', $stuff );
 
         // Send it in
         $url = 'http://api.yourls.org/core/version/1.0/';
@@ -331,7 +331,7 @@ class HTTP {
     public function maybe_check_core_version() {
 
         // Allow plugins to short-circuit the whole function
-        $pre = apply_filter( 'shunt_maybe_check_core_version', null );
+        $pre = Filters::apply_filter( 'shunt_maybe_check_core_version', null );
         if ( null !== $pre )
             return $pre;
 
