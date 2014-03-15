@@ -114,19 +114,17 @@ module.exports = function (grunt) {
                 report: 'min'
             },
             javascript: {
+                src: 'assets/js/yourls.js',
+                dest: 'assets/js/yourls.min.js',
                 options: {
                     banner: '<%= banner %>'
-                },
-                src: 'assets/js/yourls.js',
-                dest: 'assets/js/yourls.min.js'
+                }
             }
         },
         less: {
             dev: {
-                files: {
-                    src: "assets/less/yourls.less",
-                    dest: "assets/css/yourls.css"
-                },
+                src: "assets/less/yourls.less",
+                dest: "assets/css/yourls.css",
                 options: {
                     sourceMap: true,
                     sourceMapFilename: 'assets/css/yourls.css.map',
@@ -135,10 +133,8 @@ module.exports = function (grunt) {
                 }
             },
             dist: {
-                files: {
-                    src: "assets/less/yourls.less",
-                    dest: "assets/css/yourls.min.css"
-                },
+                src: "assets/less/yourls.less",
+                dest: "assets/css/yourls.min.css",
                 options: {
                     cleancss: true,
                     report: 'min',
@@ -152,19 +148,17 @@ module.exports = function (grunt) {
         // Banners Tasks
         usebanner: {
             dist: {
+                src: 'assets/css/yourls*',
                 options: {
                     position: 'top',
                     linebreak: false,
                     banner: '<%= banner %>',
                 },
-                files: {
-                    src: ['assets/css/yourls*']
-                }
             }
         },
         replace: {
             version: {
-                src: ['includes/YOURLS/Loader.php'],
+                src: 'includes/YOURLS/Loader.php',
                 overwrite: true,
                 replacements: [{
                     from: /const VERSION = \'[0-9a-z\.-]+\';/,
@@ -172,7 +166,7 @@ module.exports = function (grunt) {
                 }]
             },
             composer: {
-                src: ['composer.json'],
+                src: 'composer.json',
                 overwrite: true,
                 replacements: [{
                     from: /"dev-master": "[0-9\.]+x-dev"/,
@@ -180,7 +174,7 @@ module.exports = function (grunt) {
                 }]
             },
             requirements: {
-                src: ['includes/YOURLS/Administration/Installer/Requirements.php'],
+                src: 'includes/YOURLS/Administration/Installer/Requirements.php',
                 overwrite: true,
                 replacements: [{
                     from: /const PHP = \'[0-9a-z\.-]+\';/,
@@ -188,7 +182,7 @@ module.exports = function (grunt) {
                 }]
             },
             banner: {
-                src: ['includes/+(YOURLS|admin)/**/*.php'],
+                src: 'includes/+(YOURLS|admin)/**/*.php',
                 overwrite: true,
                 replacements: [{
                     from: / \* @version [0-9a-z\.-]+[\n\r]+ \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//,

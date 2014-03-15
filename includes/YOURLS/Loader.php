@@ -190,7 +190,7 @@ class Loader {
             yourls_do_action( 'admin_init' );
         }
     }
-    
+
     /**
      * Summary of run
      */

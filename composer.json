@@ -36,7 +36,7 @@
     },
     "require-dev": {
         "filp/whoops": "~1.0.10",
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": ">=4.0"
     },
     "suggest": {
         "lib-curl": "Allow API external transactions",
@@ -44,6 +44,11 @@
     },
     "autoload": {
         "psr-4": {"YOURLS\\": "includes/YOURLS"}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
     },
     "config": {
         "vendor-dir": "includes/vendor"

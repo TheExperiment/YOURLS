@@ -20,17 +20,16 @@ use Carbon\Carbon;
  * @todo https://github.com/briannesbitt/Carbon/issues/32
  */
 class Calendar extends Carbon {
-    
+
     /**
      * Translator helper.
      * @var Localization
      */
     private $l10n;
-    
+
     public function __construct() {
         $this->l10n = new Localization();
     }
-    
 
     /**
      * Names of days of the week, localized.

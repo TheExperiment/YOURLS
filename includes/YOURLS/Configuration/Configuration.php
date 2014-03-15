@@ -12,7 +12,7 @@
 namespace YOURLS\Configuration;
 
 class Configuration {
-    
+
     /**
      * Check if an upgrade is needed
      *
