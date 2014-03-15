@@ -1,10 +1,17 @@
+/*
+ * YOURLS Gruntfile
+ * http://yourls.org
+ */
+
 module.exports = function (grunt) {
     'use strict';
 
     // Tools
     var path = require('path');
 
-    // Configuration & option
+    // Configuration & Options
+    // -----------------------
+
     grunt.initConfig({
 
         // Variables
@@ -12,12 +19,11 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('composer.json'),
 
         // PHP tasks
-        php: {
-            server: {
+        server: {
+            php: {
                 options: {
                     keepalive: true,
-                    open: true,
-                    port: 8085
+                    open: true
                 }
             }
         },
@@ -30,10 +36,19 @@ module.exports = function (grunt) {
             },
             options: {
                 fixers: [
-                    'indentation', 'linefeed', 'trailing_spaces',
-                    'unused_use', 'short_tag', 'return', 'visibility',
-                    'php_closing_tag', 'extra_empty_lines', 'include',
-                    'psr0', 'elseif', 'eof_ending'
+                    'indentation',
+                    'linefeed',
+                    'trailing_spaces',
+                    'unused_use',
+                    'short_tag',
+                    'return',
+                    'visibility',
+                    'php_closing_tag',
+                    'extra_empty_lines',
+                    'include',
+                    'psr0',
+                    'elseif',
+                    'eof_ending'
                 ]
             }
         },
@@ -109,7 +124,8 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: {
-                    "assets/css/yourls.css": "assets/less/yourls.less"
+                    src: "assets/less/yourls.less",
+                    dest: "assets/css/yourls.css"
                 },
                 options: {
                     sourceMap: true,
@@ -120,7 +136,8 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    "assets/css/yourls.min.css": "assets/less/yourls.less"
+                    src: "assets/less/yourls.less",
+                    dest: "assets/css/yourls.min.css"
                 },
                 options: {
                     cleancss: true,
@@ -154,6 +171,14 @@ module.exports = function (grunt) {
                     to: 'const VERSION = \'<%= version %>\';'
                 }]
             },
+            composer: {
+                src: ['composer.json'],
+                overwrite: true,
+                replacements: [{
+                    from: /"dev-master": "[0-9\.]+x-dev"/,
+                    to: '"dev-master": "<%= version.substr(0,3) %>.x-dev"'
+                }]
+            },
             requirements: {
                 src: ['includes/YOURLS/Administration/Installer/Requirements.php'],
                 overwrite: true,
@@ -183,7 +208,10 @@ module.exports = function (grunt) {
             },
             php: {
                 files: 'includes/YOURLS/**/*.php',
-                tasks: ['phpcsfixer:src', 'phpunit']
+                tasks: [
+                    'phpcsfixer:src',
+                    'phpunit'
+                ]
             }
         },
 
@@ -202,7 +230,10 @@ module.exports = function (grunt) {
         }
     });
 
-    // Create the gzip task engine
+    // Register Tasks Engines
+    // ----------------------
+
+    // Create the Gzip task engine
     grunt.registerMultiTask('gzip', function () {
         var zlib = require('zlib'),
             done = this.async();
@@ -225,12 +256,58 @@ module.exports = function (grunt) {
     // Load modules required
     require('load-grunt-tasks')(grunt);
 
-    // Custom tasks
-    grunt.registerTask('default', ['less:dev', 'watch:less']);
-    grunt.registerTask('assets', ['uglify', 'less:dist', 'usebanner']);
-    grunt.registerTask('phpdist', ['replace', 'phpcsfixer:src', 'phpunit', 'pot']);
-    grunt.registerTask('geoip', ['composer:update:no-dev:optimize-autoloader:working-dir=user/plugins/geoip/',
-        'curl', 'gzip']);
-    grunt.registerTask('update', ['composer:update:no-dev:optimize-autoloader',
-        'bower', 'update_submodules']);
+    // Rename server task for understandability
+    grunt.renameTask('php', 'server');
+
+    // Development Tasks
+    // -----------------
+
+    // Default task
+    // -> LESS watch
+    grunt.registerTask('default', [
+        'less:dev',
+        'watch:less'
+    ]);
+    // PHP task
+    // -> Checks and fixes for PHP
+    // -> Make it distributable
+    // -> Generate translation file
+    grunt.registerTask('php', [
+        'replace',
+        'phpcsfixer:src',
+        'phpunit',
+        'pot'
+    ]);
+    // Assets task
+    // -> Compile JS/HTML
+    // -> Make it distributable
+    grunt.registerTask('assets', [
+        'uglify',
+        'less:dist',
+        'usebanner'
+    ]);
+    // Dist task
+    // -> Global distribution
+    // -> PHP & Assets
+    grunt.registerTask('dist', [
+        'assets',
+        'php'
+    ]);
+    // GeoIP task
+    // -> Update dependencies
+    // -> Update database
+    grunt.registerTask('geoip', [
+        'composer:update:no-dev:optimize-autoloader:working-dir=user/plugins/geoip/',
+        'curl',
+        'gzip'
+    ]);
+    // Up-Deps task
+    // -> Update PHP dependencies
+    // -> Update Assets dependencies
+    // -> Update Git submodules
+    grunt.registerTask('up-deps', [
+        'composer:update:no-dev:optimize-autoloader',
+        'bower',
+        'update_submodules'
+    ]);
 };
