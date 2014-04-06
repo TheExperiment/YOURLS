@@ -15,7 +15,9 @@ module.exports = function (grunt) {
     grunt.initConfig({
 
         // Variables
-        version: '2.0-alpha',
+        rel: {
+            version: '2.0-alpha'
+        },
         pkg: grunt.file.readJSON('composer.json'),
 
         // PHP tasks
@@ -64,7 +66,7 @@ module.exports = function (grunt) {
             options: {
                 text_domain: '<%= pkg.authors[0].name %>',
                 dest: 'user/languages/YOURLS.pot/',
-                package_version: '<%= version %>',
+                package_version: '<%= rel.version %>',
                 encoding: 'UTF-8',
                 keywords: [
                     '__',
@@ -91,7 +93,7 @@ module.exports = function (grunt) {
 
         // LESS and AJAX tasks
         banner: '/*!\n' +
-            ' * YOURLS v<%= version %>\n' +
+            ' * YOURLS v<%= rel.version %>\n' +
             ' * <%= pkg.homepage %>\n' +
             ' * Copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
             ' * Licensed under <%= pkg.license %>\n' +
@@ -162,7 +164,7 @@ module.exports = function (grunt) {
                 overwrite: true,
                 replacements: [{
                     from: /const VERSION = \'[0-9a-z\.-]+\';/,
-                    to: 'const VERSION = \'<%= version %>\';'
+                    to: 'const VERSION = \'<%= rel.version %>\';'
                 }]
             },
             composer: {
@@ -170,7 +172,7 @@ module.exports = function (grunt) {
                 overwrite: true,
                 replacements: [{
                     from: /"dev-master": "[0-9\.]+x-dev"/,
-                    to: '"dev-master": "<%= version.substr(0,3) %>.x-dev"'
+                    to: '"dev-master": "<%= rel.version.substr(0,3) %>.x-dev"'
                 }]
             },
             requirements: {
@@ -186,7 +188,7 @@ module.exports = function (grunt) {
                 overwrite: true,
                 replacements: [{
                     from: / \* @version [0-9a-z\.-]+[\n\r]+ \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//,
-                    to: ' * @version <%= version %>\n' +
+                    to: ' * @version <%= rel.version %>\n' +
                         ' * @copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
                         ' * @license <%= pkg.license %>\n' +
                         ' */'
