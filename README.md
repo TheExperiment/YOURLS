@@ -1,8 +1,13 @@
-![yourls](assets/img/yourls-logo.png)
-[YOURLS](http://yourls.org) — [![Build Status](https://travis-ci.org/YOURLS/YOURLS.png?branch=master)](https://travis-ci.org/YOURLS/YOURLS)
-========
+![YOURLS Logo](assets/img/yourls-logo.png)
 
-**YOURLS** is a set of PHP scripts that will allow you to run **Your Own URL Shortener**. You'll have full control over your data, detailed stats, analytics, plugins, and more. It's free.
+[YOURLS](http://yourls.org)
+========
+[![Build Status](https://travis-ci.org/YOURLS/YOURLS.png?branch=master)](https://travis-ci.org/YOURLS/YOURLS) [![Dependency Status](https://www.versioneye.com/user/projects/531375c4ec13752b0e0000f6/badge.png)](https://www.versioneye.com/user/projects/531375c4ec13752b0e0000f6) [![Code Climate](https://codeclimate.com/github/YOURLS/YOURLS.png)](https://codeclimate.com/github/YOURLS/YOURLS)
+
+**YOURLS** is a set of PHP scripts that will allow you to run **Your Own URL Shortener**.  
+
+You'll have full control over your data, detailed stats, analytics, plugins, and more.  
+It's free.
 
 
 Quick Start
@@ -44,6 +49,5 @@ For transparency, YOURLS will be maintained under the [Semantic Versioning](http
 
 License
 -------
-Free software. Do whatever the hell you want with it.
-YOURLS is released under the [MIT license](LICENSE.md)
-
+Free software. Do whatever the hell you want with it.  
+YOURLS is released under the [MIT License](LICENSE.md).
