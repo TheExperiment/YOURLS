@@ -193,6 +193,14 @@ module.exports = function (grunt) {
                         ' * @license <%= pkg.license %>\n' +
                         ' */'
                 }]
+            },
+            bootstrap: {
+                src: 'assets/less/bootstrap/bootstrap.less',
+                overwrite: true,
+                replacements: [{
+                    from: '@import "glyphicons.less";',
+                    to: '//@import "glyphicons.less";'
+                }]
             }
         },
 
@@ -269,7 +277,10 @@ module.exports = function (grunt) {
     // -> Make it distributable
     // -> Generate translation file
     grunt.registerTask('php', [
-        'replace',
+        'replace:version',
+        'replace:composer',
+        'replace:requirements',
+        'replace:banner',
         'phpcsfixer:src',
         'phpunit',
         'pot'
@@ -304,6 +315,7 @@ module.exports = function (grunt) {
     grunt.registerTask('up-deps', [
         'composer:update:no-dev:optimize-autoloader',
         'bower',
+        'replace:bootstrap',
         'update_submodules'
     ]);
 };
