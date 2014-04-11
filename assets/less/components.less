@@ -25,31 +25,36 @@ input, select {
     .border-bottom-radius(@border-radius-base);
 
     @media (max-width: @screen-sm-max) {
-        margin-bottom: 0; .border-bottom-radius(0);
+        margin-bottom: 0;
+        .border-bottom-radius(0);
     }
 
     @media (min-width: @screen-lg-min) {
-        padding-right: 6%; padding-left: 6%;
+        padding-right: 6%;
+        padding-left: 6%;
     }
 }
-    // Headings
-    .content > h1,
-    .docs h1 {
-        background-color: @yourls-color-dark;
-        color: @wrapper-bg;
-        font-family: 'Museo', @font-family-sans-serif;
-        margin: 0 -15px 20px;
-        padding: 40px 30px;
-        min-height: 115px;
+// Headings
+.content > h1,
+.docs h1 {
+    background-color: @yourls-color-dark;
+    color: @wrapper-bg;
+    font-family: 'Museo', @font-family-sans-serif;
+    margin: 0 -15px 20px;
+    padding: 40px 30px;
+    min-height: 115px;
 
-        > small {
-            color: @yourls-color-light;
-        }
-
-        @media (min-width: @screen-lg-min) {
-            margin-right: -9.55%; margin-left: -9.5%; padding-right: 9.55%; padding-left: 9.5%;
-        }
+    > small {
+        color: @yourls-color-light;
     }
+
+    @media (min-width: @screen-lg-min) {
+        margin-right: -9.55%;
+        margin-left: -9.5%;
+        padding-right: 9.55%;
+        padding-left: 9.5%;
+    }
+}
 
 
 .docs {
@@ -73,7 +78,10 @@ input, select {
         display: none;
 
         @media (max-width: @screen-sm-max) {
-            display: block; float: right; font-size: 50%; line-height: 200%;
+            display: block;
+            float: right;
+            font-size: 50%;
+            line-height: 200%;
         }
     }
 }
