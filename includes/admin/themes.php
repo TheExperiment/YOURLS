@@ -117,16 +117,16 @@ foreach( $themes as $file => $theme_data ) {
 	printf( '
 	<div class="theme">
 		<div class="thumbnail">
-			<div class="caption-hover">
+			<figure class="caption-hover">
 				%s
-				<p class="theme-desc">%s
+				<figcaption class="theme-desc">%s
 				<br />
 				<small>
 					%s
 					<span class="label label-default theme-version">%s</span>
 				</small>
-				</p>
-			</div>
+				</figcaption>
+			</figure>
 			<div class="caption">
 				<h4 class="theme-name"><a href="%s">%s</a></h4>
 				<p class="theme-actions actions">
