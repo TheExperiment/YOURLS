@@ -30,7 +30,7 @@
         "pomo/pomo": "~1.2.0",
         "rmccue/requests": "~1.6.0",
         "hautelook/phpass": "~0.3.0",
-        "monolog/monolog": "~1.7.0",
+        "monolog/monolog": "~1.8.0",
         "nesbot/carbon": "~1.8.0",
         "jwage/purl": "~0.0.3"
     },
