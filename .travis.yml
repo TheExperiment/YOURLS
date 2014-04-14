@@ -15,7 +15,7 @@ env:
   - DB=mysql
 
 before_script:
-  - wget https://raw.githubusercontent.com/ozh/YOURLS-fr_FR/master/fr_FR.mo ./user/languages/fr_FR.mo
+  - wget https://raw.githubusercontent.com/ozh/YOURLS-fr_FR/master/fr_FR.mo -O ./user/languages/fr_FR.mo
   - mysql -e 'create database IF NOT EXISTS yourls_tests;'
   - cp ./tests/data/yourls-tests-config-travis.php ./user/config.php
 
