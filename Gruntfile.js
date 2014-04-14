@@ -1,6 +1,7 @@
 /*
  * YOURLS Gruntfile
  * http://yourls.org
+ * Licensed under MIT
  */
 
 module.exports = function (grunt) {
@@ -33,6 +34,9 @@ module.exports = function (grunt) {
       src: {
         dir: 'includes/YOURLS'
       },
+      tests: {
+        dir: 'tests/'
+      },
       admin: {
         dir: 'includes/admin'
       },
@@ -55,10 +59,7 @@ module.exports = function (grunt) {
       }
     },
     phpunit: {
-      yourls: {},
-      options: {
-        configuration: 'phpunit.xml.dist'
-      }
+      yourls: {}
     },
 
     // POT generation task
@@ -190,6 +191,16 @@ module.exports = function (grunt) {
           from: / \* @version [0-9a-z\.-]+[\n\r]+ \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//,
           to: ' * @version <%= rel.version %>\n' +
               ' * @copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
+              ' * @license <%= pkg.license %>\n' +
+              ' */'
+        }]
+      },
+      tests: {
+        src: 'tests/**/*.php',
+        overwrite: true,
+        replacements: [{
+          from: / \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//,
+          to: ' * @copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
               ' * @license <%= pkg.license %>\n' +
               ' */'
         }]
