@@ -15,15 +15,11 @@ env:
   - DB=mysql
 
 before_script:
-  - git clone --depth=10 git://github.com/YOURLS/YOURLS-unit-tests.git tests
-  - git clone --depth=10 git://github.com/ozh/YOURLS-fr_FR.git user/languages/fr
-  - cp user/languages/fr/fr_FR.* user/languages
-  - mysql -e 'create database IF NOT EXISTS yourls_tests;'
-  - cp tests/yourls-tests-config-travis.php user/config.php
+  - wget https://raw.githubusercontent.com/ozh/YOURLS-fr_FR/master/fr_FR.mo ./user/languages/fr_FR.mo
+  - mysql -e 'create database IF NOT EXISTS yourls__tests;'
+  - cp ./tests/data/yourls-tests-config-travis.php ./user/config.php
 
-script: phpunit --configuration ./tests/phpunit-travis.xml.dist
-
-after_script: rm user/config.php
+script: phpunit
 
 notifications:
   email: false

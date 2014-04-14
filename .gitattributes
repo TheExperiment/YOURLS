@@ -5,9 +5,16 @@
 *.php diff=php
 
 # Exclude certain files or directories when generating an archive
+## Dependency Management
 composer.json export-ignore
 bower.json export-ignore
 package.json export-ignore
 Gruntfile.js export-ignore
+
+## Tests Scripts
+/tests export-ignore
+phpunit.xml.dist export-ignore
 .travis.yml export-ignore
+
+## Repository Config
 .git* export-ignore

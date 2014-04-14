@@ -53,12 +53,6 @@ includes/vendor/bin/
 !LICENSE*
 
 ############
-## Tests
-############
-
-tests/
-
-############
 ## Environnement
 ############
 
