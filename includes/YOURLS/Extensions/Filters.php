@@ -133,7 +133,7 @@ class Filters {
      * @param mixed $value the value of the element before filtering
      * @return mixed
      */
-    public function Filters::apply_filter( $hook, $value = '' ) {
+    public static function apply_filter( $hook, $value = '' ) {
         global $filters;
         if ( !isset( $filters[ $hook ] ) )
             return $value;
@@ -179,7 +179,7 @@ class Filters {
      * @param mixed $value the value of the element before filtering
      * @return mixed
      */
-    public static function Filters::apply_filters( $hook, $value = '' ) {
+    public static function apply_filters( $hook, $value = '' ) {
         return $this->apply_filter( $hook, $value );
     }
 
@@ -189,7 +189,7 @@ class Filters {
      * @param string $hook the name of the YOURLS action
      * @param mixed $arg action arguments
      */
-    public static function Filters::do_action( $hook, $arg = '' ) {
+    public static function do_action( $hook, $arg = '' ) {
         global $actions;
 
         // Keep track of actions that are "done"
