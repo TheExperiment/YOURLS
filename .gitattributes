@@ -17,4 +17,5 @@ phpunit.xml.dist export-ignore
 .travis.yml export-ignore
 
 ## Repository Config
+.editorconfig export-ignore
 .git* export-ignore
