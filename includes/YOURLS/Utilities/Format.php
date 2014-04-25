@@ -69,18 +69,10 @@ class Format {
      */
     public static function sanitize_string( $string ) {
         // make a regexp pattern with the shorturl charset, and remove everything but this
-        $pattern = make_regexp_pattern( get_shorturl_charset() );
+        $pattern = self::make_regexp_pattern( get_shorturl_charset() );
         $valid = substr( preg_replace( '![^'.$pattern.']!', '', $string ), 0, 199 );
 
         return Filters::apply_filter( 'sanitize_string', $valid, $string );
-    }
-
-    /**
-     * Alias function. I was always getting it wrong.
-     *
-     */
-    public static function sanitize_keyword( $keyword ) {
-        return $this->sanitize_string( $keyword );
     }
 
     /**
