@@ -31,7 +31,8 @@ class Filters {
      * This global var will collect filters with the following structure:
      * $filters['hook']['array of priorities']['serialized function names']['array of ['array (functions, accepted_args)]']
      */
-    private $filters = array();
+    private static $filters = array();
+    private static $action = array();
 
     /**
      * Registers a filtering function
@@ -46,10 +47,9 @@ class Filters {
      * @param int $accepted_args optional. The number of arguments the function accept (default is the number provided).
      * @param string $type
      */
-    public function add_filter( $hook, $function_name, $priority = 10, $accepted_args = NULL, $type = 'filter' ) {
-        global $filters;
+    public static function add_filter( $hook, $function_name, $priority = 10, $accepted_args = NULL, $type = 'filter' ) {
         // At this point, we cannot check if the function exists, as it may well be defined later (which is OK)
-        $id = $this->filter_unique_id( $hook, $function_name, $priority );
+        $id = self::unique_id( $hook, $function_name, $priority );
 
         $filters[ $hook ][ $priority ][ $id ] = array(
             'function'      => $function_name,
@@ -71,8 +71,8 @@ class Filters {
      * @param int $priority optional. Used to specify the order in which the functions associated with a particular action are executed (default: 10). Lower numbers correspond with earlier execution, and functions with the same priority are executed in the order in which they were added to the action.
      * @param int $accepted_args optional. The number of arguments the function accept (default 1).
      */
-    public function add_action( $hook, $function_name, $priority = 10, $accepted_args = 1 ) {
-        return $this->add_filter( $hook, $function_name, $priority, $accepted_args, 'action' );
+    public static function add_action( $hook, $function_name, $priority = 10, $accepted_args = 1 ) {
+        self::add_filter( $hook, $function_name, $priority, $accepted_args, 'action' );
     }
 
     /**
@@ -86,9 +86,7 @@ class Filters {
      * @param int|bool $priority used in counting how many hooks were applied.  If === false and $function is an object reference, we return the unique id only if it already has one, false otherwise.
      * @return string unique ID for usage as array key
      */
-    public function filter_unique_id( $hook, $function, $priority ) {
-        global $filters;
-
+    public static function unique_id( $hook, $function, $priority ) {
         // If function then just skip all of the tests and not overwrite the following.
         if ( is_string( $function ) )
             return $function;
@@ -134,7 +132,6 @@ class Filters {
      * @return mixed
      */
     public static function apply_filter( $hook, $value = '' ) {
-        global $filters;
         if ( !isset( $filters[ $hook ] ) )
             return $value;
 
@@ -180,7 +177,7 @@ class Filters {
      * @return mixed
      */
     public static function apply_filters( $hook, $value = '' ) {
-        return $this->apply_filter( $hook, $value );
+        return self::apply_filter( $hook, $value );
     }
 
     /**
@@ -190,11 +187,7 @@ class Filters {
      * @param mixed $arg action arguments
      */
     public static function do_action( $hook, $arg = '' ) {
-        global $actions;
-
         // Keep track of actions that are "done"
-        if ( !isset( $actions ) )
-            $actions = array();
         if ( !isset( $actions[ $hook ] ) )
             $actions[ $hook ] = 1;
         else
@@ -208,7 +201,7 @@ class Filters {
         for ( $a = 2; $a < func_num_args(); $a++ )
             $args[] = func_get_arg( $a );
 
-        $this->apply_filter( $hook, $args );
+        self::apply_filter( $hook, $args );
     }
 
     /**
@@ -217,8 +210,7 @@ class Filters {
     * @param string $hook Name of the action hook.
     * @return int The number of times action hook $hook is fired
     */
-    public function did_action( $hook ) {
-        global $actions;
+    public static function did_action( $hook ) {
         if ( !isset( $actions ) || !isset( $actions[ $hook ] ) )
             return 0;
         return $actions[ $hook ];
@@ -241,10 +233,10 @@ class Filters {
      * @param int $accepted_args optional. The number of arguments the function accepts (default: 1).
      * @return boolean Whether the function was registered as a filter before it was removed.
      */
-    public function remove_filter( $hook, $function_to_remove, $priority = 10, $accepted_args = 1 ) {
+    public function remove( $hook, $function_to_remove, $priority = 10, $accepted_args = 1 ) {
         global $filters;
 
-        $function_to_remove = $this->filter_unique_id( $hook, $function_to_remove, $priority );
+        $function_to_remove = $this->unique_id( $hook, $function_to_remove, $priority );
 
         $remove = isset( $filters[ $hook ][ $priority ][ $function_to_remove ] );
 
@@ -262,17 +254,17 @@ class Filters {
      *
      * @global array $filters storage for all of the filters
      * @param string $hook The name of the filter hook.
-     * @param callback $function_to_check optional.  If specified, return the priority of that function on this hook or false if not attached.
+     * @param callback $function_to_check optional. If specified, return the priority of that function on this hook or false if not attached.
      * @return int|boolean Optionally returns the priority on that hook for the specified function.
      */
-    public function has_filter( $hook, $function_to_check = false ) {
+    public static function has_filter( $hook, $function_to_check = false ) {
         global $filters;
 
         $has = !empty( $filters[ $hook ] );
         if ( false === $function_to_check || false == $has ) {
             return $has;
         }
-        if ( !$idx = $this->filter_unique_id( $hook, $function_to_check, false ) ) {
+        if ( !$idx = self::unique_id( $hook, $function_to_check, false ) ) {
             return false;
         }
 
@@ -285,14 +277,14 @@ class Filters {
     }
 
     /**
-     * Check if a funtion has a specific action
+     * Check if a function has a specific action
      *
      * @param string $hook The name of the filter hook.
      * @param string $function_to_check
      * @return bool
      */
-    public function has_action( $hook, $function_to_check = false ) {
-        return $this->has_filter( $hook, $function_to_check );
+    public static function has_action( $hook, $function_to_check = false ) {
+        return self::has_filter( $hook, $function_to_check );
     }
 
 }
