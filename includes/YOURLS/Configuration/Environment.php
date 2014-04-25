@@ -14,49 +14,45 @@ namespace YOURLS\Configuration;
 class Environment {
 
     /**
-     * Get current version & db version as stored in the options DB. Prior to 1.4 there's no option table.
+     * Get current version & db version as stored in the options DB.
      *
      */
-    public function current_version_from_sql() {
-        $currentver = get_option( 'version' );
-        $currentsql = get_option( 'db_version' );
+    public static function current_version() {
+        $current_ver = Option::version;
+        $current_sql = Option::db_version;
 
-        // Values if version is 1.3
-        if( !$currentver )
-            $currentver = '1.3';
-        if( !$currentsql )
-            $currentsql = '100';
-
-        return array( $currentver, $currentsql);
+        return array( $current_ver, $current_sql);
     }
 
     /**
-     * Check if the server seems to be running on Windows. Not exactly sure how reliable this is.
+     * Check if the server seems to be running on Windows
      *
+     * @return bool True if the server run Windows
      */
-    public function is_windows() {
-        return defined( 'DIRECTORY_SEPARATOR' ) && DIRECTORY_SEPARATOR == '\\';
+    public static function is_windows() {
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
     }
 
     /**
-     * Check if server is an Apache
+     * Check if server is running Apache
      *
+     * @return bool True if the server run Apache
      */
-    public function is_apache() {
-        if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) )
-
+    public static function is_apache() {
+        if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ) {
             return false;
-        return (
-           strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== false
-        || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== false
-        );
+        }
+
+        return strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== false
+            || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== false;
     }
 
     /**
      * Check if server is running IIS
      *
+     * @return bool True if the server run IIS
      */
-    public function is_iis() {
+    public static function is_iis() {
         return ( array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ? ( strpos( $_SERVER['SERVER_SOFTWARE'], 'IIS' ) !== false ) : false );
     }
 
@@ -73,8 +69,9 @@ class Environment {
      *
      * @since 1.7
      * @return string sanitized DB version
+     * @todo New databases model
      */
-    public function database_version() {
+    public static function database_version() {
         global $ydb;
 
         return preg_replace( '/(^[^0-9]*)|[^0-9.].*/', '', $ydb->mysql_version() );
@@ -84,18 +81,20 @@ class Environment {
      * Check an PHP version
      *
      * @param string $version PHP version wanted
+     * @return bool True if the current PHP version is correct
      */
-    public function check_php_version( $vesion ) {
-        return ( version_compare( $vesion, phpversion() ) <= 0 );
+    public static function check_php_version( $vesion ) {
+        return version_compare( $vesion, phpversion() ) <= 0;
     }
 
     /**
      * Check an Apache version
      *
      * @param string $version Apache version wanted
+     * @return bool True if the current Apache version is correct
      */
-    public function check_apache_version( $vesion ) {
-        return ( version_compare( $vesion, apache_get_version() ) <= 0 );
+    public static function check_apache_version( $vesion ) {
+        return version_compare( $vesion, apache_get_version() ) <= 0;
     }
 
 }
