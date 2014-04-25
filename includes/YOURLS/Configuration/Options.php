@@ -21,7 +21,7 @@ class Options {
      *
      * @since 2.0
      */
-    private $options = array();
+    private static $options = array();
 
     /**
      * Read all options from DB at once
