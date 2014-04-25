@@ -20,8 +20,6 @@ namespace YOURLS\Utilities;
  * The code for these vars is here and ready for any future use
  */
 global $allowedentitynames, $allowedprotocols;
-// Populate after plugins have loaded to allow user defined values
-add_action( 'plugins_loaded', 'kses_init' );
 
 /**
  * kses 0.2.2 - HTML/XHTML filter that only allows some elements and attributes
@@ -60,6 +58,9 @@ class KSES {
      */
     public function __construct() {
         global $allowedentitynames, $allowedprotocols;
+
+        // Populate after plugins have loaded to allow user defined values
+        Filters::add_action( 'plugins_loaded', 'kses_init' );
 
         if( ! $allowedentitynames ) {
             $allowedentitynames = Filters::apply_filter( 'kses_allowed_entities', $this->allowed_entities() );
