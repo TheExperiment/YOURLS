@@ -13,21 +13,24 @@ namespace YOURLS\Shortener;
 
 class Shortener {
 
+    const CHARSET_32 = '0123456789abcdefghijklmnopqrstuvwxyz';
+    const CHARSET_62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
     /**
      * Determine the allowed character set in short URLs
      *
      */
-    public function get_shorturl_charset() {
+    public static function get_charset() {
         static $charset = null;
         if( $charset !== null )
 
             return $charset;
 
-        if( defined('URL_CONVERT') && in_array( URL_CONVERT, array( 62, 64 ) ) ) {
-            $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if( defined( 'URL_CONVERT' ) && in_array( URL_CONVERT, array( 62, 64 ) ) ) {
+            $charset = CHARSET_62;
         } else {
             // defined to 36, or wrongly defined
-            $charset = '0123456789abcdefghijklmnopqrstuvwxyz';
+            $charset = CHARSET_32;
         }
 
         $charset = Filters::apply_filter( 'get_shorturl_charset', $charset );
@@ -59,7 +62,7 @@ class Shortener {
      *
      */
     public function get_next_decimal() {
-        return Filters::apply_filter( 'get_next_decimal', (int)get_option( 'next_id' ) );
+        return Filters::apply_filter( 'get_next_decimal', (int)Options::$next_id );
     }
 
     /**
@@ -68,10 +71,8 @@ class Shortener {
      */
     public function update_next_decimal( $int = '' ) {
         $int = ( $int == '' ) ? get_next_decimal() + 1 : (int)$int ;
-        $update = update_option( 'next_id', $int );
-        Filters::do_action( 'update_next_decimal', $int, $update );
-
-        return $update;
+        Options::$next_id = $int;
+        Filters::do_action( 'update_next_decimal', $int );
     }
 
     /**
@@ -279,7 +280,7 @@ class Shortener {
      * Check if an IP shortens URL too fast to prevent DB flood. Return true, or die.
      *
      */
-    public function check_IP_flood( $ip = '' ) {
+    public function check_ip_flood( $ip = '' ) {
 
         // Allow plugins to short-circuit the whole function
         $pre = Filters::apply_filter( 'shunt_check_IP_flood', false, $ip );
