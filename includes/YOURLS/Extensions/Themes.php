@@ -404,7 +404,7 @@ class Themes extends Extensions {
         }
 
         // Try to load the active theme
-        if( $this->load( $active_theme ); ) {
+        if( $this->load( $active_theme ) ) {
             Filters::do_action( 'load_active_theme' );
 
             return true;
