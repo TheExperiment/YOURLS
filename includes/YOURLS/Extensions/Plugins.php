@@ -31,7 +31,7 @@ class Plugins extends Extensions {
      *
      * @return integer Number of activated plugins
      */
-    public function has_active_plugins() {
+    public function has_active() {
         global $ydb;
 
         if( !property_exists( $ydb, 'plugins' ) || !$ydb->plugins )
@@ -46,13 +46,13 @@ class Plugins extends Extensions {
      * @param string $plugin Physical path to plugin file
      * @return bool
      */
-    public function is_active_plugin( $plugin ) {
-        if( !$this->has_active_plugins( ) )
+    public function is_active( $plugin ) {
+        if( !$this->has_active( ) )
 
             return false;
 
         global $ydb;
-        $plugin = $this->extension_basename( $plugin );
+        $plugin = $this->basename( $plugin );
 
         return in_array( $plugin, $ydb->plugins );
 
@@ -61,13 +61,13 @@ class Plugins extends Extensions {
     /**
      * Include active plugins
      */
-    public function load_plugins() {
+    public function load() {
         // Don't load plugins when installing or updating
-        if( is_installing() OR is_upgrading() )
+        if( Configuration::is( 'installing' ) OR Configuration::is( 'upgrading' ) )
 
             return;
 
-        $active_plugins = get_option( 'active_plugins' );
+        $active_plugins = Options::$active_plugins;
         if( false === $active_plugins )
 
             return;
@@ -75,7 +75,7 @@ class Plugins extends Extensions {
         global $ydb;
         $ydb->plugins = array();
 
-        if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true )
+        if( Configuration::is( 'debug' ) )
             $ydb->debug_log[] = 'Plugins: ' . count( $active_plugins );
 
         foreach( (array)$active_plugins as $key=>$plugin ) {
@@ -88,7 +88,7 @@ class Plugins extends Extensions {
 
         // $active_plugins should be empty now, if not, a plugin could not be find: remove it
         if( count( $active_plugins ) ) {
-            update_option( 'active_plugins', $ydb->plugins );
+            Options::$active_plugins = $ydb->plugins;
             $message = n( 'Could not find and deactivated plugin:', 'Could not find and deactivated plugins:', count( $active_plugins ) );
             $missing = '<strong>'.join( '</strong>, <strong>', $active_plugins ).'</strong>';
             add_notice( $message .' '. $missing );
@@ -101,17 +101,17 @@ class Plugins extends Extensions {
      * @param string $plugin Plugin filename (full or relative to plugins directory)
      * @return mixed string if error or true if success
      */
-    public function activate_plugin( $plugin ) {
+    public function activate( $plugin ) {
         // validate file
-        $plugin = $this->extension_basename( $plugin );
+        $plugin = $this->basename( $plugin );
         $plugindir = sanitize_filename( YOURLS_PLUGINDIR );
-        if( !$this->validate_extension_file( $plugindir.'/'.$plugin ) )
+        if( !$this->validate_file( $plugindir.'/'.$plugin ) )
 
             return _( 'Not a valid plugin file' );
 
         // check not activated already
         global $ydb;
-        if( $this->has_active_plugins() && in_array( $plugin, $ydb->plugins ) )
+        if( $this->has_active() && in_array( $plugin, $ydb->plugins ) )
 
             return _( 'Plugin already activated' );
 
@@ -127,7 +127,7 @@ class Plugins extends Extensions {
 
         // so far, so good: update active plugin list
         $ydb->plugins[] = $plugin;
-        update_option( 'active_plugins', $ydb->plugins );
+        Options::$active_plugins = $ydb->plugins;
         Filters::do_action( 'activated_plugin', $plugin );
         Filters::do_action( 'activated_' . $plugin );
 
@@ -140,8 +140,8 @@ class Plugins extends Extensions {
      * @param string $plugin Plugin filename (full relative to plugins directory)
      * @return mixed string if error or true if success
      */
-    public function deactivate_plugin( $plugin ) {
-        $plugin = $this->extension_basename( $plugin );
+    public function deactivate( $plugin ) {
+        $plugin = $this->basename( $plugin );
 
         // Check plugin is active
         if( !$this->is_active_plugin( $plugin ) )
@@ -155,7 +155,7 @@ class Plugins extends Extensions {
             array_splice( $ydb->plugins, $key, 1 );
         }
 
-        update_option( 'active_plugins', $ydb->plugins );
+        Options::$active_plugins = $ydb->plugins;
         Filters::do_action( 'deactivated_plugin', $plugin );
         Filters::do_action( 'deactivated_' . $plugin );
 
@@ -179,10 +179,8 @@ class Plugins extends Extensions {
     /**
      * Return the URL of the directory a plugin
      */
-    public function plugin_url( $file ) {
-        $url = YOURLS_PLUGINURL . '/' . $this->extension_basename( $file );
-        if( is_ssl() or needs_ssl() )
-            $url = str_replace( 'http://', 'https://', $url );
+    public function url( $file ) {
+        $url = new URL( YOURLS_PLUGINURL . '/' . $this->basename( $file ) );
 
         return Filters::apply_filter( 'plugin_url', $url, $file );
     }
@@ -190,7 +188,7 @@ class Plugins extends Extensions {
     /**
      * Display list of links to plugin admin pages, if any
      */
-    public function list_plugin_admin_pages() {
+    public function list_admin_pages() {
         global $ydb;
 
         if( !property_exists( $ydb, 'plugin_pages' ) || !$ydb->plugin_pages )
@@ -211,7 +209,7 @@ class Plugins extends Extensions {
     /**
      * Register a plugin administration page
      */
-    public function register_plugin_page( $slug, $title, $function ) {
+    public function register_page( $slug, $title, $function ) {
         global $ydb;
 
         if( !property_exists( $ydb, 'plugin_pages' ) || !$ydb->plugin_pages )

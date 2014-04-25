@@ -20,6 +20,9 @@ namespace YOURLS\Extensions;
  */
 class Themes extends Extensions {
 
+    private static $template;
+    private static $assets;
+
     /**
      * Summary of __construct
      */
@@ -40,8 +43,6 @@ class Themes extends Extensions {
      * @since 1.7
      */
     public function set_template_content() {
-        global $ydb;
-
         // Page structure
         $elements = array (
             'before' => array(
@@ -58,7 +59,7 @@ class Themes extends Extensions {
             )
         );
 
-        $ydb->template = Filters::apply_filter( 'set_template_content', $elements );
+        self::$template = Filters::apply_filter( 'set_template_content', $elements );
     }
 
     /**
@@ -70,12 +71,10 @@ class Themes extends Extensions {
      * @param string $where         Optional, only remove/replace $function in $where part ('before' or 'after')
      */
     public function remove_from_template( $function, $replace_with = null, $where = null ) {
-        global $ydb;
-
         if( $where ) {
-            $this->remove_from_array_deep( $ydb->template[ $where ], $function, $replace_with );
+            $this->remove_from_array_deep( self::$template[ $where ], $function, $replace_with );
         } else {
-            $this->remove_from_array_deep( $ydb->template, $function, $replace_with );
+            $this->remove_from_array_deep( self::$template, $function, $replace_with );
         }
     }
 
@@ -110,14 +109,12 @@ class Themes extends Extensions {
      * @param string $template_part what template part (eg 'before' or 'after' the page main content)
      */
     public function template_content( $template_part ) {
-        global $ydb;
-
         // Collect additional optional arguments, for instance the page context ('admin', 'plugins'...)
         $args = func_get_args();
         array_shift( $args ); // remove first element which is $template_part
 
         // Allow theming!
-        $elements = Filters::apply_filter( 'template_content', $ydb->template, $template_part, $args );
+        $elements = Filters::apply_filter( 'template_content', self::$template, $template_part, $args );
 
         // 'Draw' page. Each template function is passed all arguments passed to template_content()
         foreach( (array) $elements[ $template_part ] as $element ) {
@@ -163,10 +160,8 @@ class Themes extends Extensions {
      * @since 1.7
      */
     public function output_asset_queue() {
-        global $ydb;
-
         // Filter the asset list before echoing links
-        $assets = Filters::apply_filter( 'html_assets_queue', $ydb->assets );
+        $assets = Filters::apply_filter( 'html_assets_queue', self::$assets );
 
         $core = $this->core_assets();
 
@@ -215,9 +210,8 @@ class Themes extends Extensions {
             return false;
         }
 
-        global $ydb;
         if( $this->is_asset_queued( $name, $type ) ) {
-            unset( $ydb->assets[ $type ][ $name ] );
+            unset( self::$assets[ $type ][ $name ] );
 
             return true;
         }
@@ -255,8 +249,7 @@ class Themes extends Extensions {
             }
         }
 
-        global $ydb;
-        $ydb->assets[ $type ][ $name ] = $src;
+        self::$assets[ $type ][ $name ] = $src;
 
         return true;
     }
@@ -330,9 +323,7 @@ class Themes extends Extensions {
      * @return bool         true if the asset is in the queue, false otherwise
      */
     public function is_asset_queued( $name, $type ) {
-        global $ydb;
-
-        return( property_exists( $ydb, 'assets' ) && isset( $ydb->assets[ $type ][ $name ] ) );
+        return isset( self::$assets[ $type ][ $name ] );
     }
 
     /**
@@ -366,7 +357,7 @@ class Themes extends Extensions {
      *
      * @since 1.7
      */
-    public function init_theme() {
+    public function init() {
         Filters::do_action( 'pre_init_theme' );
 
         // Enqueue default asset files - $ydb->assets will keep a list of needed CSS and JS
@@ -382,12 +373,12 @@ class Themes extends Extensions {
         $this->set_template_content();
 
         // Don't load theme when installing or updating.
-        if( is_installing() OR is_upgrading() )
+        if( Configuration::is( 'installing' ) OR Configuration::is( 'upgrading' ) )
 
             return;
 
         // Load theme if applicable
-        $this->load_active_theme();
+        $this->load_active();
     }
 
     /**
@@ -396,13 +387,13 @@ class Themes extends Extensions {
      * @since 1.7
      * @return mixed  true if active theme loaded, false if no active theme, error message if problem
      */
-    public function load_active_theme() {
+    public function load_active() {
 
         Filters::do_action( 'pre_load_active_theme' );
 
         // is there an active theme ?
-        $active_theme = $this->get_active_theme();
-        if( defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
+        $active_theme = $this->get_active();
+        if( Configuration::is( 'debug' ) ) {
             global $ydb;
             $ydb->debug_log[] = 'Theme: ' . $active_theme;
         }
@@ -413,15 +404,14 @@ class Themes extends Extensions {
         }
 
         // Try to load the active theme
-        $load = $this->load_theme( $active_theme );
-        if( $load === true ) {
+        if( $this->load( $active_theme ); ) {
             Filters::do_action( 'load_active_theme' );
 
             return true;
         }
 
         // There was a problem : deactivate theme and report error
-        $this->activate_theme( 'default' );
+        $this->activate( 'default' );
         add_notice( $load );
         /*add_notice( s( 'Deactivated theme: %s' ), $active_theme );*/
 
@@ -435,10 +425,10 @@ class Themes extends Extensions {
      * @param string $theme   theme directory inside YOURLS_THEMEDIR
      * @return mixed          true, or an error message
      */
-    public function load_theme( $theme ) {
-        $theme_php     = $this->get_theme_dir( $theme ) . '/theme.php';
-        $theme_css     = $this->get_theme_dir( $theme ) . '/theme.css';
-        $theme_css_url = $this->get_theme_url( $theme ) . '/theme.css';
+    public function load( $theme ) {
+        $theme_php     = $this->get_dir( $theme ) . '/theme.php';
+        $theme_css     = $this->get_dir( $theme ) . '/theme.css';
+        $theme_css_url = $this->get_url( $theme ) . '/theme.css';
 
         if( !is_readable( $theme_css ) )
 
@@ -473,17 +463,17 @@ class Themes extends Extensions {
      * @param string $theme   theme directory inside YOURLS_THEMEDIR
      * @return mixed          true, or an error message
      */
-    public function activate_theme( $theme ) {
+    public function activate( $theme ) {
         if ( $theme == 'default' ) {
-            update_option( 'active_theme', '' );
+            Options::$active_theme = '';
             Filters::do_action( 'activated_theme', $theme );
             Filters::do_action( 'activated_' . $theme );
 
             return true;
         }
 
-        $theme_php = $this->get_theme_dir( $theme ) . '/theme.php';
-        $theme_css = $this->get_theme_dir( $theme ) . '/theme.css';
+        $theme_php = $this->get_dir( $theme ) . '/theme.php';
+        $theme_css = $this->get_dir( $theme ) . '/theme.css';
 
         // Check if the theme has a theme.css
         if( !is_readable( $theme_css ) )
@@ -496,12 +486,12 @@ class Themes extends Extensions {
             return s( 'Not a valid <code>theme.php</code> file in <code>%s</code>', $theme );
 
         // Check that it's not activated already
-        if( $theme == $this->get_active_theme() )
+        if( $theme == $this->get_active() )
 
             return _( 'Theme already activated' );
 
         // Attempt to load the theme
-        $load = $this->load_theme( $theme );
+        $load = $this->load( $theme );
 
         if( $load === true ) {
             // so far, so good
@@ -524,7 +514,7 @@ class Themes extends Extensions {
      * @since 1.7
      * @return string name of theme directory, or empty string if no theme
      */
-    public function get_active_theme() {
+    public function get_active() {
         global $ydb;
         if( !property_exists( $ydb, 'theme' ) || $ydb->theme == '' ) {
             $ydb->theme = ( get_option( 'active_theme' ) ) ? get_option( 'active_theme' ) : '';
@@ -542,7 +532,7 @@ class Themes extends Extensions {
      * @param string $theme  theme (its directory)
      * @return string        sanitized physical path
      */
-    public function get_theme_dir( $theme ) {
+    public function get_dir( $theme ) {
         return sanitize_filename( YOURLS_THEMEDIR . "/$theme" );
     }
 
@@ -553,7 +543,7 @@ class Themes extends Extensions {
      * @param string $theme  theme (its directory)
      * @return string        sanitized URL
      */
-    public function get_theme_url( $theme ) {
+    public function get_url( $theme ) {
         return sanitize_url( YOURLS_THEMEURL . "/$theme" );
     }
 
@@ -563,8 +553,8 @@ class Themes extends Extensions {
      * @since 1.7
      * @return string        sanitized physical path, or an empty string
      */
-    public function get_active_theme_dir( ) {
-        return ( $this->get_active_theme() ? $this->get_theme_dir( $this->get_active_theme() ) : '' );
+    public function get_active_dir() {
+        return ( $this->get_active() ? $this->get_dir( $this->get_active() ) : '' );
     }
 
     /**
@@ -573,8 +563,8 @@ class Themes extends Extensions {
      * @since 1.7
      * @return string        sanitized URL,  or an empty string
      */
-    public function get_active_theme_url( ) {
-        return ( $this->get_active_theme() ? $this->get_theme_url( $this->get_active_theme() ) : '' );
+    public function get_active_url() {
+        return ( $this->get_active() ? $this->get_url( $this->get_active() ) : '' );
     }
 
     /**
@@ -586,13 +576,13 @@ class Themes extends Extensions {
      * @param string $theme_dir Theme directory to search
      * @return string screenshot filename, empty string if not found
      */
-    public function get_theme_screenshot( $theme_dir ) {
+    public function get_screenshot( $theme_dir ) {
         $screenshot = '';
 
         // search for screenshot.(gif|jpg|png)
         foreach( array( 'png', 'jpg', 'gif' ) as $ext ) {
-            if( file_exists( $this->get_theme_dir( $theme_dir ) . '/screenshot.' . $ext ) ) {
-                $screenshot = $this->get_theme_url( $theme_dir ) . '/screenshot.' . $ext;
+            if( file_exists( $this->get_dir( $theme_dir ) . '/screenshot.' . $ext ) ) {
+                $screenshot = $this->get_url( $theme_dir ) . '/screenshot.' . $ext;
                 break;
             }
         }

@@ -32,19 +32,19 @@ abstract class Extensions {
      * @global object $ydb Storage of mostly everything YOURLS needs to know
      * @return array Array of [/extensiondir/extension.php]=>array('Name'=>'Ozh', 'Title'=>'Hello', )
      */
-    public function get_extensions() {
+    public function get() {
         if( $this->$category == 'themes' )
             $extensions = (array) glob( YOURLS_THEMEDIR .'/*/theme.css');
         else
-        $extensions = (array) glob( YOURLS_PLUGINDIR .'/*/extension.php');
+        $extensions = (array) glob( YOURLS_PLUGINDIR .'/*/plugin.php');
 
         if( !$extensions )
 
             return array();
 
         foreach( $extensions as $key => $extension ) {
-            $_extension = $this->extension_basename( $extension, $this->$category );
-            $extensions[ $_extension ] = $this->get_extension_data( $extension );
+            $_extension = $this->basename( $extension, $this->$category );
+            $extensions[ $_extension ] = $this->get_data( $extension );
             unset( $extensions[ $key ] );
         }
 
@@ -57,7 +57,7 @@ abstract class Extensions {
      * @param string $file Physical path to extension file
      * @return array Array of 'Field'=>'Value' from extension comment header lines of the form "Field: Value"
      */
-    public function get_extension_data( $file ) {
+    public function get_data( $file ) {
         $fp = fopen( $file, 'r' ); // assuming $file is readable, since load_extensions() filters this
         $data = fread( $fp, 8192 ); // get first 8kb
         fclose( $fp );
@@ -90,7 +90,7 @@ abstract class Extensions {
      * @param string $file Full pathname to a file
      * @return bool
      */
-    public function validate_extension_file( $file ) {
+    public function validate_file( $file ) {
         if (
             false !== strpos( $file, '..' )
             OR
@@ -109,7 +109,7 @@ abstract class Extensions {
     /**
      * Return the path of a extension file, relative to the extensions directory
      */
-    public function extension_basename( $file ) {
+    public function basename( $file ) {
         $file = sanitize_filename( $file );
         if( $this->$category == 'themes' )
             $extensiondir = sanitize_filename( YOURLS_THEMEDIR );
