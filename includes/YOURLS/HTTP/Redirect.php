@@ -17,7 +17,7 @@ class Redirect {
      * Redirect to another page
      *
      */
-    public static function redirect( $location, $code = 301 ) {
+    public function __construct( URL $location, $code = 301 ) {
         Filters::do_action( 'pre_redirect', $location, $code );
         $location = Filters::apply_filter( 'redirect_location', $location, $code );
         $code     = Filters::apply_filter( 'redirect_code', $code, $location );
@@ -25,11 +25,11 @@ class Redirect {
         if( Headers::sent() ) {
             $this->javascript( $location );
         } else {
-            $headers = new Headers( $code );
-            $headers->location($location);
+            Headers::location( $code );
         }
         die();
     }
+
     /**
      * Redirect to another page using Javascript. Set optional (bool)$dontwait to false to force manual redirection (make sure a message has been read by user)
      *
