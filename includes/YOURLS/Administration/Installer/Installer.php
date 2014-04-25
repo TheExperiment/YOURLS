@@ -43,7 +43,7 @@ class Installer {
      *
      * @todo Use SimpleXML to write this file
      */
-    public function create_htaccess() {
+    public function htaccess() {
         $host = parse_url( SITE );
         $path = ( isset( $host[ 'path' ] ) ? $host[ 'path' ] : '' );
         $file = ( isset( $host[ 'file' ] ) ? $host[ 'file' ] : 'yourls-loader.php' );
@@ -71,7 +71,8 @@ class Installer {
     }
 
     /**
-     * Inserts $insertion (text in an array of lines) into $filename (.htaccess) between BEGIN/END $marker block. Returns bool. Stolen from WP
+     * Inserts $insertion (text in an array of lines) into $filename
+     * between BEGIN/END $marker block. 
      *
      */
     public function insert_with_markers( $filename, $marker, $insertion ) {
@@ -134,13 +135,13 @@ class Installer {
                 ->rewrite
                 ->rules
                 ->rule
-                ->match['url'] = $path;
+                ->match[ 'url' ] = $path;
         $content->configuration
                 ->{'system.webServer'}
                 ->rewrite
                 ->rules
                 ->rule
-                ->action['url'] = $path . '/'.  $file;
+                ->action[ 'url' ] = $path . '/'.  $file;
         
         $filename = YOURLS_ABSPATH . '/web.config';
         if ( file_exists( $filename ) ) {
@@ -154,7 +155,7 @@ class Installer {
                     ->{'system.webServer'}
                     ->rewrite
                     ->rules
-                    ->rule;
+                    ->rule[ 1 ];
             $content = $current;
         }
 

@@ -1,15 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <system.webServer>
+    <staticContent>
+      <remove fileExtension=".css" />
+      <mimeMap fileExtension=".css" mimeType="text/css" />
+      <remove fileExtension=".js" />
+      <mimeMap fileExtension=".js" mimeType="text/javascript" />
+      <remove fileExtension=".json" />
+      <mimeMap fileExtension=".json" mimeType="application/json" />
+      <remove fileExtension=".rss" />
+      <mimeMap fileExtension=".rss" mimeType="application/rss+xml; charset=UTF-8" />
+      <remove fileExtension=".html" />
+      <mimeMap fileExtension=".html" mimeType="text/html; charset=UTF-8" />
+      <remove fileExtension=".xml" />
+      <mimeMap fileExtension=".xml" mimeType="application/xml; charset=UTF-8" />
+      <remove fileExtension=".svg" />
+      <mimeMap fileExtension=".svg" mimeType="image/svg+xml" />
+      <remove fileExtension=".svgz" />
+      <mimeMap fileExtension=".svgz" mimeType="image/svg+xml" />
+      <remove fileExtension=".otf" />
+      <mimeMap fileExtension=".otf" mimeType="font/opentype" />
+      <remove fileExtension=".woff" />
+      <mimeMap fileExtension=".woff" mimeType="application/font-woff" />
+      <remove fileExtension=".ico" />
+      <mimeMap fileExtension=".ico" mimeType="image/x-icon" />
+    </staticContent>
     <security>
       <requestFiltering allowDoubleEscaping="true" />
     </security>
     <rewrite>
       <rules>
+        <rule name="Remove WWW" stopProcessing="true">
+          <match url="^(.*)$" />
+          <conditions>
+            <add input="{HTTP_HOST}" pattern="^(www\.)(.*)$" />
+          </conditions>
+          <action type="Redirect" url="http://example.com{PATH_INFO}" redirectType="Permanent" />
+        </rule>
         <rule name="YOURLS" stopProcessing="true">
           <match url="" ignoreCase="false" />
-          <conditions>
-            <add input="{REQUEST_FILENAME}" matchType="IsFile" ignoreCase="false" negate="true" />',
+          <conditions logicalGrouping="MatchAll">
+            <add input="{REQUEST_FILENAME}" matchType="IsFile" ignoreCase="false" negate="true" />
             <add input="{REQUEST_FILENAME}" matchType="IsDirectory" ignoreCase="false" negate="true" />
           </conditions>
           <action type="Rewrite" url="" appendQueryString="true" />

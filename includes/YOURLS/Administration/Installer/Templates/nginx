@@ -1,0 +1,14 @@
+server {
+  location / {
+    try_files $uri $uri/ @site;
+  }
+
+  # YOURLS Rewrite
+  location @site {
+    fastcgi_pass unix:/var/run/php-fpm/www.sock;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root/%file%;
+    #uncomment when running via https
+    #fastcgi_param HTTPS on;
+  }
+}

@@ -1,0 +1,27 @@
+# BEGIN H5BP
+mimetype.assign = (
+    ".html"         =>      "text/html",
+    ".css"          =>      "text/css",
+    ".ico"          =>      "image/x-icon",
+    ".js"           =>      "application/javascript",
+    ".json"         =>      "application/json",
+    ".otf"          =>      "font/opentype",
+    ".woff"         =>      "application/font-woff",
+    ".jpg"          =>      "image/jpeg",
+    ".jpeg"         =>      "image/jpeg",
+    ".png"          =>      "image/png",
+    ".xml"          =>      "text/xml",
+    ""              =>      "application/octet-stream",
+)
+# END H5BP
+
+# BEGIN YOURLS
+server.document-root = "%path%"
+url.rewrite-once = (
+    # configure some static files
+    "^/assets/.+" => "$0",
+    "^/favicon\.ico$" => "$0",
+
+    "^(/[^\?]*)(\?.*)?" => "/%file%$1$2"
+)
+# END YOURLS

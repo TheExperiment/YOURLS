@@ -22,13 +22,6 @@ user/*/*
 !user/themes/sample-theme*/
 !user/themes/full-bootstrap/
 
-# Pages
-!user/pages/examplepage.php
-
-# Keep index.html
-!user/index.html
-!user/*/index.html
-
 ############
 ## Libraries
 ############
