@@ -78,31 +78,30 @@ class Headers {
      * Return a HTTP status code
      *
      */
-    public function get_http_status( $code ) {
+    public static function get_http_status( $code ) {
         $code = intval( $code );
 
         try {
             return $this->headers_desc[$code];
-        }
-        catch (OutOfRangeException $exception) {
-            throw new Unknown();
+        } catch (OutOfRangeException $exception) {
+            throw new UnknownStatus();
         }
     }
 
     /**
-     * Send a filerable content type header
+     * Send a filterable content type header
      *
      * @since 1.7
      * @param string $type content type ('text/html', 'application/json', ...)
      * @return bool whether header was sent
      */
-    public function content_type_header( $type ) {
+    public static function content_type( $type ) {
         if( headers_sent() )
 
             return false;
 
         $charset = Filters::apply_filters( 'content_type_header_charset', 'utf-8' );
-        header( "Content-Type: $type; charset=$charset" );
+        self::__set( 'Content-Type', "$type; charset=$charset" );
 
         return true;
     }
@@ -111,7 +110,7 @@ class Headers {
      * Set HTTP status header
      *
      */
-    public function status_header( $code = 200 ) {
+    public static function status( $code = 200 ) {
         if( headers_sent() )
 
             return;
@@ -125,6 +124,19 @@ class Headers {
 
         @header ("$protocol $code $desc"); // This causes problems on IIS and some FastCGI setups
         Filters::do_action( 'status_header', $code );
+    }
+
+    /**
+     * Set HTTP header
+     *
+     */
+    public static function __set( $name, $value ) {
+        if( headers_sent() )
+
+            return;
+
+        $value = Filters::apply_filters( $name . '_header', $value );
+        header( $name . ( $value ? ': ' . $value : '' ) );
     }
 
 }
