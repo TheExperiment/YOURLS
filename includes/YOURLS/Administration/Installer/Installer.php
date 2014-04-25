@@ -41,48 +41,24 @@ class Installer {
     /**
      * Create .htaccess or web.config. Returns boolean
      *
+     * @todo Use SimpleXML to write this file
      */
     public function create_htaccess() {
         $host = parse_url( SITE );
-        $path = ( isset( $host['path'] ) ? $host['path'] : '' );
+        $path = ( isset( $host[ 'path' ] ) ? $host[ 'path' ] : '' );
+        $file = ( isset( $host[ 'file' ] ) ? $host[ 'file' ] : 'yourls-loader.php' );
 
         if ( is_iis() ) {
-            // Prepare content for a web.config file
-            $content = array(
-                '<?'.'xml version="1.0" encoding="UTF-8"?>',
-                '<configuration>',
-                '    <system.webServer>',
-                '        <security>',
-                '            <requestFiltering allowDoubleEscaping="true" />',
-                '        </security>',
-                '        <rewrite>',
-                '            <rules>',
-                '                <rule name="YOURLS" stopProcessing="true">',
-                '                    <match url="^(.*)$" ignoreCase="false" />',
-                '                    <conditions>',
-                '                        <add input="{REQUEST_FILENAME}" matchType="IsFile" ignoreCase="false" negate="true" />',
-                '                        <add input="{REQUEST_FILENAME}" matchType="IsDirectory" ignoreCase="false" negate="true" />',
-                '                    </conditions>',
-                '                    <action type="Rewrite" url="'.$path.'/yourls-loader.php" appendQueryString="true" />',
-                '                </rule>',
-                '            </rules>',
-                '        </rewrite>',
-                '    </system.webServer>',
-                '</configuration>',
-            );
-
-            $filename = YOURLS_ABSPATH.'/web.config';
-            $marker = 'none';
 
         } else {
             // Prepare content for a .htaccess file
             $content = array(
                 '<IfModule mod_rewrite.c>',
                 'RewriteEngine On',
-                'RewriteBase '.$path.'/',
+                'RewriteBase ' . $path . '/',
                 'RewriteCond %{REQUEST_FILENAME} !-f',
                 'RewriteCond %{REQUEST_FILENAME} !-d',
-                'RewriteRule ^.*$ '.$path.'/yourls-loader.php [L]',
+                'RewriteRule ^.*$ ' . $path . '/'.  $file . ' [L]',
                 '</IfModule>',
             );
 
@@ -147,6 +123,44 @@ class Installer {
             return true;
         } else {
             return false;
+        }
+    }
+    
+    private function web_config() {
+        // Prepare content for a web.config file
+        $content = new SimpleXMLElement( __DIR__ . 'Templates/iis' );
+        $content->configuration
+                ->{'system.webServer'}
+                ->rewrite
+                ->rules
+                ->rule
+                ->match['url'] = $path;
+        $content->configuration
+                ->{'system.webServer'}
+                ->rewrite
+                ->rules
+                ->rule
+                ->action['url'] = $path . '/'.  $file;
+        
+        $filename = YOURLS_ABSPATH . '/web.config';
+        if ( file_exists( $filename ) ) {
+            $current = new SimpleXMLElement( $filename );
+            $rule = $current->configuration
+                    ->{'system.webServer'}
+                    ->rewrite
+                    ->rules
+                    ->addChild( 'rule' );
+            $rule = $content->configuration
+                    ->{'system.webServer'}
+                    ->rewrite
+                    ->rules
+                    ->rule;
+            $content = $current;
+        }
+
+        if ( $f = @fopen( $filename, 'w' ) ) {
+            fwrite( $f, $content->asXML() );
+            fclose( $f );
         }
     }
 
