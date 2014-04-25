@@ -13,7 +13,7 @@ function sample_theme_init() {
 
 // Add our custom script needed (it requires jQuery)
 function sample_theme_add_js() {
-	yourls_enqueue_script( 'sample_theme_transit', yourls_get_active_theme_url() . '/js/jquery.transit.js', 'jquery' );
+	yourls_enqueue_script( 'sample_theme_transit', yourls_get_active_theme_url() . '/js/jquery.transit..minjs', 'jquery' );
 }
 
 // Add our custom CSS
