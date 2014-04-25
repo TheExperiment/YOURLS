@@ -29,8 +29,6 @@ class ExpendPoint extends Answer implements EndPoint {
                 'shorturl'  => SITE . "/$shorturl",
                 'longurl'   => $longurl,
                 'simple'    => $longurl,
-                'message'   => 'success',
-                'status_code' => 200,
             ) );
         } else {
             parent::__construct( array(
@@ -41,7 +39,7 @@ class ExpendPoint extends Answer implements EndPoint {
             ) );
         }
 
-        return Filters::apply_filter( 'api_expand', $return, $shorturl );
+        return Filters::apply_filter( 'api_expand', $this->answer, $shorturl );
     }
 
 }

@@ -14,10 +14,9 @@ namespace YOURLS\API;
 class Answer {
 
     private $answer = array(
-        'keyword'     => null,
-        'simple'      => null,
-        'message'     => null,
-        'status_code' => null
+        'simple'      => 'Need either XML or JSON format for stats',
+        'message'     => 'OK',
+        'status_code' => 200
     );
 
     protected static $formats = array(
@@ -30,14 +29,22 @@ class Answer {
 
     public function __construct( array $answer ) {
         $this->answer = array_merge( $this->answer, $answer );
-
-        if ( in_array( null, $answer ) ) {
-            throw new APIExeption( 'Incomplete response' );
-        }
     }
 
     public function __set( $name, $value ) {
         $this->answer[ $name ] = $value;
+    }
+
+    private function __get( $name ) {
+        return $this->answer[ $name ];
+    }
+
+    public function __isset( $name ) {
+        isset( $this->answer[ $name ] );
+    }
+
+    public function __unset( $name ) {
+        unset( $this->answer[ $name ] );
     }
 
     public function __toString() {
@@ -46,6 +53,7 @@ class Answer {
     }
 
     public function xml() {
+        unset( $this->simple );
         $xml = new SimpleXMLElement('<response/>');
         self::array_to_xml( $answer, $xml );
         Header::type( 'application/xml' );
@@ -72,6 +80,7 @@ class Answer {
     }
 
     public function json() {
+        unset( $this->simple );
         Header::type( 'application/json' );
 
         return json_encode( $answer );
