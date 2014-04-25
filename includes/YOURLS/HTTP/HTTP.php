@@ -25,20 +25,7 @@ namespace YOURLS\HTTP;
  *
  * @since 1.7
  */
-class HTTP {
-
-    /**
-     * Perform a GET request, return response object or error string message
-     *
-     * Notable object properties: body, headers, status_code
-     *
-     * @since 1.7
-     * @see request
-     * @return mixed Response object, or error string
-     */
-    public function get( $url, $headers = array(), $data = array(), $options = array() ) {
-        return $this->request( 'GET', $url, $headers, $data, $options );
-    }
+class HTTP extends Request {
 
     /**
      * Perform a GET request, return body or null if there was an error
@@ -51,19 +38,6 @@ class HTTP {
         $return = $this->get( $url, $headers, $data, $options );
 
         return isset( $return->body ) ? $return->body : null;
-    }
-
-    /**
-     * Perform a POST request, return response object
-     *
-     * Notable object properties: body, headers, status_code
-     *
-     * @since 1.7
-     * @see request
-     * @return mixed Response object, or error string
-     */
-    public function post( $url, $headers = array(), $data = array(), $options = array() ) {
-        return $this->request( 'POST', $url, $headers, $data, $options );
     }
 
     /**
@@ -196,7 +170,7 @@ class HTTP {
             unset( $options['proxy'] );
 
         try {
-            $result = Requests::request( $url, $headers, $data, $type, $options );
+            $result = self::request( $url, $headers, $data, $type, $options );
         }
         catch( Requests_Exception $e ) {
             $result = debug_log( $e->getMessage() . ' (' . $type . ' on ' . $url . ')' );
