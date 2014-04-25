@@ -11,28 +11,14 @@
 
 namespace YOURLS\HTTP;
 
-class URL {
+class URL extends Purl\Url {
 
-    /**
-     * Converts keyword into short link (prepend with YOURLS base URL)
-     *
-     */
-    public function link( $keyword = '' ) {
-        $link = SITE . '/' . sanitize_keyword( $keyword );
-
-        return Filters::apply_filter( 'link', $link, $keyword );
-    }
-
-    /**
-     * Converts keyword into stat link (prepend with YOURLS base URL, append +)
-     *
-     */
-    public function statlink( $keyword = '' ) {
-        $link = SITE . '/' . sanitize_keyword( $keyword ) . '+';
-        if( is_ssl() )
-            $link = set_url_scheme( $link, 'https' );
-
-        return Filters::apply_filter( 'statlink', $link, $keyword );
+    public function __construct( $url = null ) {
+        if ( $url ) {
+            parent::__construct( $url );
+        } else {
+            $this->site();
+        }
     }
 
     /**
@@ -51,60 +37,73 @@ class URL {
      * Return SITE or URL under YOURLS setup, with SSL preference
      *
      */
-    public function site_url( $echo = true, $url = '' ) {
-        $url = get_relative_url( $url );
-        $url = trim( SITE . '/' . $url, '/' );
+    public function site() {
+        parent::__construct( SITE );
 
-        // Do not enforce (checking need_ssl() ) but check current usage so it won't force SSL on non-admin pages
-        if( is_ssl() )
-            $url = set_url_scheme( $url, 'https' );
-        $url = Filters::apply_filter( 'site_url', $url );
-        if( $echo )
-            echo $url;
-
-        return $url;
+        // Check current usage so it won't force SSL on non-admin pages
+        if( Configuration::is( 'ssl' ) )
+            $this->set( 'scheme', 'https' );
+        $this = Filters::apply_filter( 'site_url' );
     }
 
     /**
-     * Get relative URL (eg 'abc' from 'http://sho.rt/abc')
+     * Check if a URL protocol is allowed
      *
-     * Treat indifferently http & https. If a URL isn't relative to the YOURLS install, return it as is
-     * or return empty string if $strict is true
+     * Checks a URL against a list of whitelisted protocols. Protocols must be defined with
+     * their complete scheme name, ie 'stuff:' or 'stuff://' (for instance, 'mailto:' is a valid
+     * protocol, 'mailto://' isn't, and 'http:' with no double slashed isn't either
      *
      * @since 1.6
-     * @param string $url URL to relativize
-     * @param bool $strict if true and if URL isn't relative to YOURLS install, return empty string
-     * @return string URL
+     *
+     * @param string $url URL to be check
+     * @param array $protocols Optional. Array of protocols, defaults to global $allowedprotocols
+     * @return boolean true if protocol allowed, false otherwise
      */
-    public function get_relative_url( $url, $strict = true ) {
-        $url = sanitize_url( $url );
+    public function is_allowed_protocol( $protocols = array() ) {
+        if( ! $protocols ) {
+            global $allowedprotocols;
+            $protocols = $allowedprotocols;
+        }
 
-        // Remove protocols to make it easier
-        $noproto_url  = str_replace( 'https:', 'http:', $url );
-        $noproto_site = str_replace( 'https:', 'http:', SITE );
+        $protocol = $this->scheme;
 
-        // Trim URL from YOURLS root URL : if no modification made, URL wasn't relative
-        $_url = str_replace( $noproto_site . '/', '', $noproto_url );
-        if( $_url == $noproto_url )
-            $_url = ( $strict ? '' : $url );
-
-        return Filters::apply_filter( 'get_relative_url', $_url, $url );
+        return Filters::apply_filter( 'is_allowed_protocol', in_array( $protocol, $protocols ), $this->getUrl(), $protocols );
     }
 
     /**
-     * Set URL scheme (to HTTP or HTTPS)
+     * Explode a URL in an array of ( 'protocol' , 'slashes if any', 'rest of the URL' )
      *
-     * @since 1.7.1
-     * @param string $url URL
-     * @param string $scheme scheme, either 'http' or 'https'
-     * @return string URL with chosen scheme
+     * Some hosts trip up when a query string contains 'http://' - see http://git.io/j1FlJg
+     * The idea is that instead of passing the whole URL to a bookmarklet, eg index.php?u=http://blah.com,
+     * we pass it by pieces to fool the server, eg index.php?proto=http:&slashes=//&rest=blah.com
+     *
+     * Known limitation: this won't work if the rest of the URL itself contains 'http://', for example
+     * if rest = blah.com/file.php?url=http://foo.com
+     *
+     * Sample returns:
+     *
+     *   with 'mailto:jsmith@example.com?subject=hey' :
+     *   array( 'protocol' => 'mailto:', 'slashes' => '', 'rest' => 'jsmith@example.com?subject=hey' )
+     *
+     *   with 'http://example.com/blah.html' :
+     *   array( 'protocol' => 'http:', 'slashes' => '//', 'rest' => 'example.com/blah.html' )
+     *
+     * @since 1.7
+     * @param string $url URL to be parsed
+     * @param array $array Optional, array of key names to be used in returned array
+     * @return mixed false if no protocol found, array of ('protocol' , 'slashes', 'rest') otherwise
      */
-    public function set_url_scheme( $url, $scheme = false ) {
-        if( $scheme != 'http' && $scheme != 'https' ) {
-            return $url;
-        }
+    public function get_protocol_slashes_and_rest( $url, $array = array( 'protocol', 'slashes', 'rest' ) ) {
+        $proto = get_protocol( $url );
 
-        return preg_replace( '!^[a-zA-Z0-9\+\.-]+://!', $scheme . '://', $url );
+        if( !$proto or count( $array ) != 3 )
+
+            return false;
+
+        list( $null, $rest ) = explode( $proto, $url, 2 );
+        list( $proto, $slashes ) = explode( ':', $proto );
+
+        return array( $array[0] => $proto . ':', $array[1] => $slashes, $array[2] => $rest );
     }
 
 }
