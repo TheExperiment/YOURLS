@@ -15,6 +15,7 @@ class Answer {
 
     private $answer = array(
         'keyword'     => null,
+        'simple'      => null,
         'message'     => null,
         'status_code' => null
     );
@@ -27,13 +28,12 @@ class Answer {
 
     protected static $format;
 
-    public function __construct( array $return ) {
-        $this->answer = $return;
+    public function __construct( array $answer ) {
+        $this->answer = array_merge( $this->answer, $answer );
 
         if ( in_array( null, $answer ) ) {
             throw new APIExeption( 'Incomplete response' );
         }
-
     }
 
     public function __set( $name, $value ) {
@@ -80,7 +80,7 @@ class Answer {
     public function simple() {
         Header::type( 'text/plain' );
 
-        return $this->answer[ 'message' ];
+        return $this->answer[ 'simple' ];
     }
 
 }
