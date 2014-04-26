@@ -8,13 +8,13 @@
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */
- 
+
 namespace YOURLS\HTTP\Client;
 
 class IP implements Data {
 
     private $value;
-    
+
     public function set() {
         // Precedence: if set, X-Forwarded-For > HTTP_X_FORWARDED_FOR > HTTP_CLIENT_IP > HTTP_VIA > REMOTE_ADDR
         $headers = array( 'X-Forwarded-For', 'HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_VIA', 'REMOTE_ADDR' );
@@ -32,7 +32,7 @@ class IP implements Data {
         $this->value = Filters::apply_filter( 'get_ip', $this->value );
 
     }
-    
+
     /**
      * Sanitize an IP address
      *
@@ -41,5 +41,4 @@ class IP implements Data {
         $this->value = preg_replace( '/[^0-9a-fA-F:., ]/', '', $this->value );
     }
 
-    
 }

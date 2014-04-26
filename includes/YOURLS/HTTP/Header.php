@@ -119,7 +119,7 @@ class Header {
         if( headers_sent() )
 
             return;
-    
+
         try {
             http_response_code( $code ); // @TODO callback and check relevances
         } catch (Exception $e) {
@@ -133,5 +133,5 @@ class Header {
         }
         Filters::do_action( 'status_header', $code );
     }
-    
+
 }

@@ -102,7 +102,7 @@ class URL extends Purl\Url {
 
         return array( $array[0] => $proto . ':', $array[1] => $slashes, $array[2] => $rest );
     }
-    
+
     /**
      * Redirect to another page
      *
@@ -121,7 +121,7 @@ class URL extends Purl\Url {
    }
 
     /**
-     * Redirect to another page using Javascript. 
+     * Redirect to another page using Javascript.
      *
      * @param $dontwait bool False to force manual redirection
      */
@@ -200,7 +200,7 @@ REDIR;
 
         return Filters::apply_filter( 'esc_url', $url, $original_url, $context );
     }
-    
+
     /**
      * Checks and cleans a URL before printing it. Stolen from WP.
      *
@@ -216,6 +216,7 @@ REDIR;
         $url = $kses->normalize_entities( $url->getUrl() );
         $url = str_replace( '&amp;', '&#038;', $url->getUrl() );
         $url = str_replace( "'", '&#039;', $url->getUrl() );
+
         return $url;
     }
 

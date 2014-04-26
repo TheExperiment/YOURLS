@@ -72,7 +72,7 @@ class Installer {
 
     /**
      * Inserts $insertion (text in an array of lines) into $filename
-     * between BEGIN/END $marker block. 
+     * between BEGIN/END $marker block.
      *
      */
     public function insert_with_markers( $filename, $marker, $insertion ) {
@@ -126,7 +126,7 @@ class Installer {
             return false;
         }
     }
-    
+
     private function web_config() {
         // Prepare content for a web.config file
         $content = new SimpleXMLElement( __DIR__ . 'Templates/iis' );
@@ -142,7 +142,7 @@ class Installer {
                 ->rules
                 ->rule
                 ->action[ 'url' ] = $path . '/'.  $file;
-        
+
         $filename = YOURLS_ABSPATH . '/web.config';
         if ( file_exists( $filename ) ) {
             $current = new SimpleXMLElement( $filename );
