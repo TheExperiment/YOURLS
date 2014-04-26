@@ -14,90 +14,95 @@ namespace YOURLS\Shortener;
 class Manager {
 
     /**
-     * Edit a link
+     * Check if an IP shortens URL too fast to prevent DB flood. Return true, or die.
      *
      */
-    public function edit_link( $url, $keyword, $newkeyword='', $title='' ) {
+    public function check_ip_flood( $ip = '' ) {
+
         // Allow plugins to short-circuit the whole function
-        $pre = Filters::apply_filter( 'shunt_edit_link', null, $keyword, $url, $keyword, $newkeyword, $title );
-        if ( null !== $pre )
+        $pre = Filters::apply_filter( 'shunt_check_IP_flood', false, $ip );
+        if ( false !== $pre )
             return $pre;
 
-        global $ydb;
+        Filters::do_action( 'pre_check_ip_flood', $ip ); // at this point $ip can be '', check it if your plugin hooks in here
 
-        $table = YOURLS_DB_TABLE_URL;
-        $url = escape (sanitize_url( $url ) );
-        $keyword = escape( sanitize_string( $keyword ) );
-        $title = escape( sanitize_title( $title ) );
-        $newkeyword = escape( sanitize_string( $newkeyword ) );
-        $strip_url = stripslashes( $url );
-        $strip_title = stripslashes( $title );
-        $old_url = $ydb->get_var( "SELECT `url` FROM `$table` WHERE `keyword` = '$keyword';" );
+        // Raise white flag if installing or if no flood delay defined
+        if(
+            ( defined('YOURLS_FLOOD_DELAY_SECONDS') && YOURLS_FLOOD_DELAY_SECONDS === 0 ) ||
+            !defined('YOURLS_FLOOD_DELAY_SECONDS') ||
+            is_installing()
+        )
 
-        // Check if new URL is not here already
-        if ( $old_url != $url && !allow_duplicate_longurls() ) {
-            $new_url_already_there = intval($ydb->get_var("SELECT COUNT(keyword) FROM `$table` WHERE `url` = '$url';"));
-        } else {
-            $new_url_already_there = false;
+            return true;
+
+        // Don't throttle logged in users
+        if( is_private() ) {
+            if( is_valid_user() === true )
+
+                return true;
         }
 
-        // Check if the new keyword is not here already
-        if ( $newkeyword != $keyword ) {
-            $keyword_is_ok = keyword_is_free( $newkeyword );
-        } else {
-            $keyword_is_ok = true;
-        }
-
-        Filters::do_action( 'pre_edit_link', $url, $keyword, $newkeyword, $new_url_already_there, $keyword_is_ok );
-
-        // All clear, update
-        if ( ( !$new_url_already_there || allow_duplicate_longurls() ) && $keyword_is_ok ) {
-            $update_url = $ydb->query( "UPDATE `$table` SET `url` = '$url', `keyword` = '$newkeyword', `title` = '$title' WHERE `keyword` = '$keyword';" );
-            if( $update_url ) {
-                $return['url']     = array( 'keyword' => $newkeyword, 'shorturl' => SITE.'/'.$newkeyword, 'url' => $strip_url, 'display_url' => trim_long_string( $strip_url ), 'title' => $strip_title, 'display_title' => trim_long_string( $strip_title ) );
-                $return['status']  = 'success';
-                $return['message'] = _( 'Link updated in database' );
-            } else {
-                $return['status']  = 'fail';
-                $return['message'] = /* //translators: "Error updating http://someurl/ (Shorturl: http://sho.rt/blah)" */ s( 'Error updating %s (Short URL: %s)', trim_long_string( $strip_url ), $keyword ) ;
+        // Don't throttle whitelist IPs
+        if( defined( 'YOURLS_FLOOD_IP_WHITELIST' ) && YOURLS_FLOOD_IP_WHITELIST ) {
+            $whitelist_ips = explode( ',', YOURLS_FLOOD_IP_WHITELIST );
+            foreach( (array)$whitelist_ips as $whitelist_ip ) {
+                $whitelist_ip = trim( $whitelist_ip );
+                if ( $whitelist_ip == $ip )
+                    return true;
             }
-
-            // Nope
-        } else {
-            $return['status']  = 'fail';
-            $return['message'] = _( 'URL or keyword already exists in database' );
         }
 
-        return Filters::apply_filter( 'edit_link', $return, $url, $keyword, $newkeyword, $title, $new_url_already_there, $keyword_is_ok );
+        $ip = ( $ip ? sanitize_ip( $ip ) : get_IP() );
+        $ip = escape( $ip );
+
+        Filters::do_action( 'check_ip_flood', $ip );
+
+        global $ydb;
+        $table = YOURLS_DB_TABLE_URL;
+
+        $lasttime = $ydb->get_var( "SELECT `timestamp` FROM $table WHERE `ip` = '$ip' ORDER BY `timestamp` DESC LIMIT 1" );
+        if( $lasttime ) {
+            $now = date( 'U' );
+            $then = date( 'U', strtotime( $lasttime ) );
+            if( ( $now - $then ) <= YOURLS_FLOOD_DELAY_SECONDS ) {
+                // Flood!
+                Filters::do_action( 'ip_flood', $ip, $now - $then );
+                die( _( 'Too many URLs added too fast. Slow down please.' )/*, _( 'Forbidden' ), 403 */);
+            }
+        }
+
+        return true;
     }
 
     /**
-     * Return array of all information associated with keyword. Returns false if keyword not found. Set optional $use_cache to false to force fetching from DB
+     * Update id for next link with no custom keyword
      *
      */
-    public function get_keyword_infos( $keyword, $use_cache = true ) {
+    public function update_next_decimal( $int = '' ) {
+        $int = ( $int == '' ) ? (int)Options::$next_id + 1 : (int)$int ;
+        Options::$next_id = $int;
+        Filters::do_action( 'update_next_decimal', $int );
+    }
+
+    /**
+     * SQL query to insert a new link in the DB. Returns boolean for success or failure of the inserting
+     *
+     */
+    public function insert_link_in_db( $url, $keyword, $title = '' ) {
         global $ydb;
-        $keyword = escape( sanitize_string( $keyword ) );
 
-        Filters::do_action( 'pre_get_keyword', $keyword, $use_cache );
-
-        if( isset( $ydb->infos[$keyword] ) && $use_cache == true ) {
-            return Filters::apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
-        }
-
-        Filters::do_action( 'get_keyword_not_cached', $keyword );
+        $url     = escape( sanitize_url( $url ) );
+        $keyword = escape( sanitize_keyword( $keyword ) );
+        $title   = escape( sanitize_title( $title ) );
 
         $table = YOURLS_DB_TABLE_URL;
-        $infos = $ydb->get_row( "SELECT * FROM `$table` WHERE `keyword` = '$keyword'" );
+        $timestamp = date('Y-m-d H:i:s');
+        $ip = get_IP();
+        $insert = $ydb->query("INSERT INTO `$table` (`keyword`, `url`, `title`, `timestamp`, `ip`, `clicks`) VALUES('$keyword', '$url', '$title', '$timestamp', '$ip', 0);");
 
-        if( $infos ) {
-            $infos = (array)$infos;
-            $ydb->infos[ $keyword ] = $infos;
-        } else {
-            $ydb->infos[ $keyword ] = false;
-        }
+        Filters::do_action( 'insert_link', (bool)$insert, $url, $keyword, $title, $timestamp, $ip );
 
-        return Filters::apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
+        return (bool)$insert;
     }
 
     /**
@@ -253,7 +258,7 @@ class Manager {
         $keyword  = escape( sanitize_string( $keyword ) );
         $referrer = ( isset( $_SERVER['HTTP_REFERER'] ) ? escape( sanitize_url( $_SERVER['HTTP_REFERER'] ) ) : 'direct' );
         $ua       = escape( get_user_agent() );
-        $ip       = escape( get_IP() );
+        $ip       = escape( get_ip() );
         $location = escape( geo_ip_to_countrycode( $ip ) );
 
         return $ydb->query( "INSERT INTO `$table` (click_time, shorturl, referrer, user_agent, ip_address, country_code) VALUES (NOW(), '$keyword', '$referrer', '$ua', '$ip', '$location')" );
@@ -293,63 +298,6 @@ class Manager {
         return Filters::apply_filter( 'get_longurl_keywords', $ydb->get_col( $query ), $longurl );
     }
 
-    /**
-     * Update a title link (no checks for duplicates etc..)
-     *
-     */
-    public function edit_link_title( $keyword, $title ) {
-        // Allow plugins to short-circuit the whole function
-        $pre = Filters::apply_filter( 'shunt_edit_link_title', null, $keyword, $title );
-        if ( null !== $pre )
-            return $pre;
-
-        global $ydb;
-
-        $keyword = escape( sanitize_keyword( $keyword ) );
-        $title = escape( sanitize_title( $title ) );
-
-        $table = YOURLS_DB_TABLE_URL;
-        $update = $ydb->query("UPDATE `$table` SET `title` = '$title' WHERE `keyword` = '$keyword';");
-
-        return $update;
-    }
-
-    /**
-     * Return array of stats. (string)$filter is 'bottom', 'last', 'rand' or 'top'. (int)$limit is the number of links to return
-     *
-     */
-    public function get_link_stats( $shorturl ) {
-        global $ydb;
-
-        $table_url = YOURLS_DB_TABLE_URL;
-        $shorturl  = escape( sanitize_keyword( $shorturl ) );
-
-        $res = $ydb->get_row( "SELECT * FROM `$table_url` WHERE keyword = '$shorturl';" );
-        $return = array();
-
-        if( !$res ) {
-            // non existent link
-            $return = array(
-                'statusCode' => 404,
-                'message'    => 'Error: short URL not found',
-            );
-        } else {
-            $return = array(
-                'statusCode' => 200,
-                'message'    => 'success',
-                'link'       => array(
-                    'shorturl' => SITE .'/'. $res->keyword,
-                    'url'      => $res->url,
-                    'title'    => $res->title,
-                    'timestamp'=> $res->timestamp,
-                    'ip'       => $res->ip,
-                    'clicks'   => $res->clicks,
-                )
-            );
-        }
-
-        return Filters::apply_filter( 'get_link_stats', $return, $shorturl );
-    }
 
     /**
      * Return title associated with keyword. Optional $notfound = string default message if nothing found
@@ -379,7 +327,7 @@ class Manager {
      * Return IP that added a keyword. Optional $notfound = string default message if nothing found
      *
      */
-    public function get_keyword_IP( $notfound = false ) {
+    public function get_keyword_ip( $notfound = false ) {
         return get_keyword_info(  'ip', $notfound );
     }
 
