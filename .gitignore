@@ -4,12 +4,12 @@
 
 # Configuration
 user/*
+!user/config-sample.php
 !user/*/
 user/*/*
-!user/config-sample.php
+!user/*/.gitkeep
 .htaccess
-*.config
-*.conf
+*.conf*
 [Rr]obots.txt
 
 # Core plugins
@@ -50,7 +50,7 @@ includes/vendor/bin/
 ############
 
 # Windows image file caches
-Thumbs.db
+*umbs.db
 
 # Folder config file
 Desktop.ini
