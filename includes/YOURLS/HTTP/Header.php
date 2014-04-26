@@ -13,9 +13,9 @@ namespace YOURLS\HTTP;
 
 use Requests\Exception\HTTP;
 
-class Headers {
+class Header {
 
-    protected static $headers_desc = array(
+    protected static $codes = array(
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',
@@ -75,6 +75,17 @@ class Headers {
     );
 
     /**
+     * Set HTTP header
+     *
+     */
+    public function __construct( $name, $value ) {
+        if( !headers_sent() ) {
+            $value = Filters::apply_filters( $name . '_header', $value );
+            header( $name . ( $value ? ': ' . $value : '' ) );
+        }
+    }
+
+    /**
      * Return a HTTP status code
      *
      */
@@ -82,7 +93,7 @@ class Headers {
         $code = intval( $code );
 
         try {
-            return $this->headers_desc[$code];
+            return $this->codes[ $code ];
         } catch (OutOfRangeException $exception) {
             throw new UnknownStatus();
         }
@@ -96,47 +107,31 @@ class Headers {
      * @return bool whether header was sent
      */
     public static function content_type( $type ) {
-        if( headers_sent() )
-
-            return false;
-
-        $charset = Filters::apply_filters( 'content_type_header_charset', 'utf-8' );
-        self::__set( 'Content-Type', "$type; charset=$charset" );
-
-        return true;
+        $charset = Filters::apply_filters( 'content_type_header_charset', 'utf-8', $type );
+        self::__construct( 'Content-Type', $type . '; charset=' . $charset );
     }
 
     /**
      * Set HTTP status header
      *
      */
-    public static function status( $code = 200 ) {
+    public static function status( $code ) {
         if( headers_sent() )
 
             return;
+    
+        try {
+            http_response_code( $code ); // @TODO callback and check relevances
+        } catch (Exception $e) {
+            $protocol = $_SERVER['SERVER_PROTOCOL'];
+            if ( 'HTTP/1.1' != $protocol && 'HTTP/1.0' != $protocol )
+                $protocol = 'HTTP/1.0';
 
-        $protocol = $_SERVER['SERVER_PROTOCOL'];
-        if ( 'HTTP/1.1' != $protocol && 'HTTP/1.0' != $protocol )
-            $protocol = 'HTTP/1.0';
-
-        $code = intval( $code );
-        $desc = get_http_status( $code );
-
-        @header ("$protocol $code $desc"); // This causes problems on IIS and some FastCGI setups
+            $code = intval( $code );
+            $desc = get_http_status( $code );
+            @header ("$protocol $code $desc"); // This causes problems on IIS and some FastCGI setups
+        }
         Filters::do_action( 'status_header', $code );
     }
-
-    /**
-     * Set HTTP header
-     *
-     */
-    public static function __set( $name, $value ) {
-        if( headers_sent() )
-
-            return;
-
-        $value = Filters::apply_filters( $name . '_header', $value );
-        header( $name . ( $value ? ': ' . $value : '' ) );
-    }
-
+    
 }
