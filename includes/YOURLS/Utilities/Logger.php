@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace YOURLS;
+namespace YOURLS\Utilities;
 
 use Monolog\Handler\StreamHandler;
 
