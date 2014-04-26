@@ -64,18 +64,6 @@ class Format {
     }
 
     /**
-     * Make sure a link keyword (ie "1fv" as in "site.com/1fv") is valid.
-     *
-     */
-    public static function sanitize_string( $string ) {
-        // make a regexp pattern with the shorturl charset, and remove everything but this
-        $pattern = self::make_regexp_pattern( get_shorturl_charset() );
-        $valid = substr( preg_replace( '![^'.$pattern.']!', '', $string ), 0, 199 );
-
-        return Filters::apply_filter( 'sanitize_string', $valid, $string );
-    }
-
-    /**
      * Sanitize a page title. No HTML per W3C http://www.w3.org/TR/html401/struct/global.html#h-7.4.2
      *
      */
@@ -85,19 +73,6 @@ class Format {
         $title = preg_replace( "/\s+/", ' ', trim( $title ) );
 
         return Filters::apply_filter( 'sanitize_title', $title, $unsafe_title );
-    }
-
-    /**
-     * A few sanity checks on the URL. Used for redirection or DB. For display purpose, see esc_url()
-     *
-     * @param string $unsafe_url unsafe URL
-     * @param array $protocols Optional allowed protocols, default to global $allowedprotocols
-     * @return string Safe URL
-     */
-    public static function sanitize_url( $unsafe_url, $protocols = array() ) {
-        $url = $this->esc_url( $unsafe_url, 'redirection', $protocols );
-
-        return Filters::apply_filter( 'sanitize_url', $url, $unsafe_url );
     }
 
     /**
@@ -171,14 +146,6 @@ class Format {
 
         // YOURLS DB classes have been bypassed by a custom DB engine or a custom cache layer
         return Filters::apply_filters( 'custom_escape_real', addslashes( $string ), $string );
-    }
-
-    /**
-     * Sanitize an IP address
-     *
-     */
-    public static function sanitize_ip( $ip ) {
-        return preg_replace( '/[^0-9a-fA-F:., ]/', '', $ip );
     }
 
     /**

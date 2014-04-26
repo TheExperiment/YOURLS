@@ -32,9 +32,13 @@ class Keyword {
     /**
      * Sanitize the keyword string
      *
+     * Make sure a link keyword (ie "1fv" as in "site.com/1fv") is valid.
      */
-    public static function sanitize() {
-        Format::sanitize_string( $this->keyword );
+    public function sanitize() {
+        $pattern = self::make_regexp_pattern( get_shorturl_charset() );
+        $valid = substr( preg_replace( '![^'.$pattern.']!', '', $this->keyword ), 0, 199 );
+
+        $this->keyword = Filters::apply_filter( 'sanitize_keyword', $valid, $this->keyword );
     }
 
     public function __toString() {
@@ -51,7 +55,6 @@ class Keyword {
         $link->path->add( $this );
 
         return Filters::apply_filter( 'link', $link, $this->keyword );
-
     }
 
     public function long() {
