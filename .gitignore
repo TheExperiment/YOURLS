@@ -49,18 +49,22 @@ includes/vendor/bin/
 ## Environnement
 ############
 
-# Windows image file caches
+# Windows
 *umbs.db
-
-# Folder config file
 Desktop.ini
+$RECYCLE.BIN/
 
-# Mac crap
+# Mac
 .DS_Store
 
 ############
 ## Developpement
 ############
+
+# Tests
+[Cc]overage*
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
 
 # Visual Studio
 *.sln
