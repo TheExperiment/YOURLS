@@ -91,7 +91,7 @@ class Link {
                     $return['message'] = s( 'Short URL %s already exists in database or is reserved', $keyword );
                 } else {
                     // all clear, store !
-                    insert_link_in_db( $url, $keyword, $title );
+                    insert( $url, $keyword, $title );
                     $return['url']      = array('keyword' => $keyword, 'url' => $strip_url, 'title' => $title, 'date' => date('Y-m-d H:i:s'), 'ip' => $ip );
                     $return['status']   = 'success';
                     $return['message']  = /* //translators: eg "http://someurl/ added to DB" */ s( '%s added to database', trim_long_string( $strip_url ) );
@@ -112,7 +112,7 @@ class Link {
                     $keyword = int2string( $id );
                     $keyword = Filters::apply_filter( 'random_keyword', $keyword, $url, $title );
                     if ( keyword_is_free($keyword) ) {
-                        if( @insert_link_in_db( $url, $keyword, $title ) ){
+                        if( @insert( $url, $keyword, $title ) ){
                             // everything ok, populate needed vars
                             $return['url']      = array('keyword' => $keyword, 'url' => $strip_url, 'title' => $title, 'date' => $timestamp, 'ip' => $ip );
                             $return['status']   = 'success';
@@ -157,7 +157,7 @@ class Link {
      * Edit a link
      *
      */
-    public function edit_link( $newkeyword = '', $title = '' ) {
+    public function edit( $newkeyword = '', $title = '' ) {
         // Allow plugins to short-circuit the whole function
         $pre = Filters::apply_filter( 'shunt_edit_link', null, $keyword, $url, $keyword, $newkeyword, $title );
         if ( null !== $pre )
@@ -214,7 +214,7 @@ class Link {
      * Update a title link (no checks for duplicates etc..)
      *
      */
-    public function edit_link_title( $keyword, $title ) {
+    public function edit_title( $keyword, $title ) {
         // Allow plugins to short-circuit the whole function
         $pre = Filters::apply_filter( 'shunt_edit_link_title', null, $keyword, $title );
         if ( null !== $pre )
@@ -235,7 +235,7 @@ class Link {
      * Return array of stats. (string)$filter is 'bottom', 'last', 'rand' or 'top'. (int)$limit is the number of links to return
      *
      */
-    public function get_link_stats( $shorturl ) {
+    public function get_stats( $shorturl ) {
         global $ydb;
 
         $table_url = YOURLS_DB_TABLE_URL;
@@ -266,6 +266,27 @@ class Link {
         }
 
         return Filters::apply_filter( 'get_link_stats', $return, $shorturl );
+    }
+
+    /**
+     * SQL query to insert a new link in the DB. Returns boolean for success or failure of the inserting
+     *
+     */
+    public function insert( $url, $keyword, $title = '' ) {
+        global $ydb;
+
+        $url     = escape( sanitize_url( $url ) );
+        $keyword = escape( sanitize_keyword( $keyword ) );
+        $title   = escape( sanitize_title( $title ) );
+
+        $table = YOURLS_DB_TABLE_URL;
+        $timestamp = date('Y-m-d H:i:s');
+        $ip = get_IP();
+        $insert = $ydb->query("INSERT INTO `$table` (`keyword`, `url`, `title`, `timestamp`, `ip`, `clicks`) VALUES('$keyword', '$url', '$title', '$timestamp', '$ip', 0);");
+
+        Filters::do_action( 'insert_link', (bool)$insert, $url, $keyword, $title, $timestamp, $ip );
+
+        return (bool)$insert;
     }
 
 }

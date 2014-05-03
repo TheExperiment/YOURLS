@@ -124,4 +124,30 @@ class URL /*extends \HTTP\URL*/ {
         return Filters::apply_filter( 'get_remote_title', $title, $url );
     }
 
+    /**
+     * Return array of keywords that redirect to the submitted long URL
+     *
+     * @since 1.7
+     * @param string $longurl long url
+     * @param string $sort Optional ORDER BY order (can be 'keyword', 'title', 'timestamp' or'clicks')
+     * @param string $order Optional SORT order (can be 'ASC' or 'DESC')
+     * @return array array of keywords
+     */
+    public function get_keywords( $longurl, $sort = 'none', $order = 'ASC' ) {
+        global $ydb;
+        $longurl = escape( sanitize_url( $longurl ) );
+        $table   = YOURLS_DB_TABLE_URL;
+        $query   = "SELECT `keyword` FROM `$table` WHERE `url` = '$longurl'";
+
+        // Ensure sort is a column in database (@TODO: update verification array if database changes)
+        if ( in_array( $sort, array('keyword','title','timestamp','clicks') ) ) {
+            $query .= " ORDER BY '".$sort."'";
+            if ( in_array( $order, array( 'ASC','DESC' ) ) ) {
+                $query .= " ".$order;
+            }
+        }
+
+        return Filters::apply_filter( 'get_longurl_keywords', $ydb->get_col( $query ), $longurl );
+    }
+
 }

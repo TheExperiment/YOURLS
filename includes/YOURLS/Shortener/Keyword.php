@@ -139,7 +139,7 @@ class Keyword {
      * Return array of all information associated with keyword. Returns false if keyword not found. Set optional $use_cache to false to force fetching from DB
      *
      */
-    public function get_infos( $keyword, $use_cache = true ) {
+    public function get_infos( $use_cache = true ) {
         global $ydb;
         $keyword = escape( sanitize_string( $keyword ) );
 
@@ -162,6 +162,50 @@ class Keyword {
         }
 
         return Filters::apply_filter( 'get_keyword_infos', $ydb->infos[$keyword], $keyword );
+    }
+
+    /**
+     * Update click count on a short URL. Return 0/1 for error/success.
+     *
+     */
+    public function update_clicks( $clicks = false ) {
+        // Allow plugins to short-circuit the whole function
+        $pre = Filters::apply_filter( 'shunt_update_clicks', false, $keyword, $clicks );
+        if ( false !== $pre )
+            return $pre;
+
+        global $ydb;
+        $keyword = escape( sanitize_string( $keyword ) );
+        $table = YOURLS_DB_TABLE_URL;
+        if ( $clicks !== false && is_int( $clicks ) && $clicks >= 0 )
+            $update = $ydb->query( "UPDATE `$table` SET `clicks` = $clicks WHERE `keyword` = '$keyword'" );
+        else
+            $update = $ydb->query( "UPDATE `$table` SET `clicks` = clicks + 1 WHERE `keyword` = '$keyword'" );
+
+        Filters::do_action( 'update_clicks', $keyword, $update, $clicks );
+
+        return $update;
+    }
+
+    /**
+     * Return (string) selected information associated with a keyword. Optional $notfound = string default message if nothing found
+     *
+     */
+    public function get_info( $field, $notfound = false ) {
+
+        // Allow plugins to short-circuit the whole function
+        $pre = Filters::apply_filter( 'shunt_get_keyword_info', false, $keyword, $field, $notfound );
+        if ( false !== $pre )
+            return $pre;
+
+        $keyword = sanitize_string( $keyword );
+        $infos = get_keyword_infos( $keyword );
+
+        $return = $notfound;
+        if ( isset( $infos[ $field ] ) && $infos[ $field ] !== false )
+            $return = $infos[ $field ];
+
+        return Filters::apply_filter( 'get_keyword_info', $return, $keyword, $field, $notfound );
     }
 
     /**

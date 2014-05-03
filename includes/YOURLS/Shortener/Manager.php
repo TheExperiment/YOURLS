@@ -79,74 +79,9 @@ class Manager {
      *
      */
     public function update_next_decimal( $int = '' ) {
-        $int = ( $int == '' ) ? (int)Options::$next_id + 1 : (int)$int ;
-        Options::$next_id = $int;
+        $int = ( $int == '' ) ? (int)Options::get( 'next_id' ) + 1 : (int)$int ;
+        Options::set( 'next_id', $int );
         Filters::do_action( 'update_next_decimal', $int );
-    }
-
-    /**
-     * SQL query to insert a new link in the DB. Returns boolean for success or failure of the inserting
-     *
-     */
-    public function insert_link_in_db( $url, $keyword, $title = '' ) {
-        global $ydb;
-
-        $url     = escape( sanitize_url( $url ) );
-        $keyword = escape( sanitize_keyword( $keyword ) );
-        $title   = escape( sanitize_title( $title ) );
-
-        $table = YOURLS_DB_TABLE_URL;
-        $timestamp = date('Y-m-d H:i:s');
-        $ip = get_IP();
-        $insert = $ydb->query("INSERT INTO `$table` (`keyword`, `url`, `title`, `timestamp`, `ip`, `clicks`) VALUES('$keyword', '$url', '$title', '$timestamp', '$ip', 0);");
-
-        Filters::do_action( 'insert_link', (bool)$insert, $url, $keyword, $title, $timestamp, $ip );
-
-        return (bool)$insert;
-    }
-
-    /**
-     * Return (string) selected information associated with a keyword. Optional $notfound = string default message if nothing found
-     *
-     */
-    public function get_keyword_info( $keyword, $field, $notfound = false ) {
-
-        // Allow plugins to short-circuit the whole function
-        $pre = Filters::apply_filter( 'shunt_get_keyword_info', false, $keyword, $field, $notfound );
-        if ( false !== $pre )
-            return $pre;
-
-        $keyword = sanitize_string( $keyword );
-        $infos = get_keyword_infos( $keyword );
-
-        $return = $notfound;
-        if ( isset( $infos[ $field ] ) && $infos[ $field ] !== false )
-            $return = $infos[ $field ];
-
-        return Filters::apply_filter( 'get_keyword_info', $return, $keyword, $field, $notfound );
-    }
-
-    /**
-     * Update click count on a short URL. Return 0/1 for error/success.
-     *
-     */
-    public function update_clicks( $keyword, $clicks = false ) {
-        // Allow plugins to short-circuit the whole function
-        $pre = Filters::apply_filter( 'shunt_update_clicks', false, $keyword, $clicks );
-        if ( false !== $pre )
-            return $pre;
-
-        global $ydb;
-        $keyword = escape( sanitize_string( $keyword ) );
-        $table = YOURLS_DB_TABLE_URL;
-        if ( $clicks !== false && is_int( $clicks ) && $clicks >= 0 )
-            $update = $ydb->query( "UPDATE `$table` SET `clicks` = $clicks WHERE `keyword` = '$keyword'" );
-        else
-            $update = $ydb->query( "UPDATE `$table` SET `clicks` = clicks + 1 WHERE `keyword` = '$keyword'" );
-
-        Filters::do_action( 'update_clicks', $keyword, $update, $clicks );
-
-        return $update;
     }
 
     /**
@@ -262,81 +197,6 @@ class Manager {
         $location = escape( geo_ip_to_countrycode( $ip ) );
 
         return $ydb->query( "INSERT INTO `$table` (click_time, shorturl, referrer, user_agent, ip_address, country_code) VALUES (NOW(), '$keyword', '$referrer', '$ua', '$ip', '$location')" );
-    }
-
-    /**
-     * Check if we want to not log redirects (for stats)
-     *
-     */
-    public function do_log_redirect() {
-        return ( !defined( 'YOURLS_NOSTATS' ) || YOURLS_NOSTATS != true );
-    }
-
-    /**
-     * Return array of keywords that redirect to the submitted long URL
-     *
-     * @since 1.7
-     * @param string $longurl long url
-     * @param string $sort Optional ORDER BY order (can be 'keyword', 'title', 'timestamp' or'clicks')
-     * @param string $order Optional SORT order (can be 'ASC' or 'DESC')
-     * @return array array of keywords
-     */
-    public function get_longurl_keywords( $longurl, $sort = 'none', $order = 'ASC' ) {
-        global $ydb;
-        $longurl = escape( sanitize_url( $longurl ) );
-        $table   = YOURLS_DB_TABLE_URL;
-        $query   = "SELECT `keyword` FROM `$table` WHERE `url` = '$longurl'";
-
-        // Ensure sort is a column in database (@TODO: update verification array if database changes)
-        if ( in_array( $sort, array('keyword','title','timestamp','clicks') ) ) {
-            $query .= " ORDER BY '".$sort."'";
-            if ( in_array( $order, array( 'ASC','DESC' ) ) ) {
-                $query .= " ".$order;
-            }
-        }
-
-        return Filters::apply_filter( 'get_longurl_keywords', $ydb->get_col( $query ), $longurl );
-    }
-
-
-    /**
-     * Return title associated with keyword. Optional $notfound = string default message if nothing found
-     *
-     */
-    public function get_keyword_title( $notfound = false ) {
-        return get_keyword_info( 'title', $notfound );
-    }
-
-    /**
-     * Return long URL associated with keyword. Optional $notfound = string default message if nothing found
-     *
-     */
-    public function get_keyword_longurl( $notfound = false ) {
-        return get_keyword_info( 'url', $notfound );
-    }
-
-    /**
-     * Return number of clicks on a keyword. Optional $notfound = string default message if nothing found
-     *
-     */
-    public function get_keyword_clicks( $notfound = false ) {
-        return get_keyword_info( 'clicks', $notfound );
-    }
-
-    /**
-     * Return IP that added a keyword. Optional $notfound = string default message if nothing found
-     *
-     */
-    public function get_keyword_ip( $notfound = false ) {
-        return get_keyword_info(  'ip', $notfound );
-    }
-
-    /**
-     * Return timestamp associated with a keyword. Optional $notfound = string default message if nothing found
-     *
-     */
-    public function get_keyword_timestamp( $notfound = false ) {
-        return get_keyword_info( 'timestamp', $notfound );
     }
 
 }
