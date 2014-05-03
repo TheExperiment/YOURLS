@@ -46,103 +46,6 @@ class Functions {
 
 
     /**
-     * Add a query var to a URL and return URL. Completely stolen from WP.
-     *
-     * Works with one of these parameter patterns:
-     *     array( 'var' => 'value' )
-     *     array( 'var' => 'value' ), $url
-     *     'var', 'value'
-     *     'var', 'value', $url
-     * If $url omitted, uses $_SERVER['REQUEST_URI']
-     *
-     */
-    public function add_query_arg() {
-        $ret = '';
-        if ( is_array( func_get_arg(0) ) ) {
-            if ( @func_num_args() < 2 || false === @func_get_arg( 1 ) )
-                $uri = $_SERVER['REQUEST_URI'];
-            else
-                $uri = @func_get_arg( 1 );
-        } else {
-            if ( @func_num_args() < 3 || false === @func_get_arg( 2 ) )
-                $uri = $_SERVER['REQUEST_URI'];
-            else
-                $uri = @func_get_arg( 2 );
-        }
-
-        $uri = str_replace( '&amp;', '&', $uri );
-
-
-        if ( $frag = strstr( $uri, '#' ) )
-            $uri = substr( $uri, 0, -strlen( $frag ) );
-        else
-            $frag = '';
-
-        if ( preg_match( '|^https?://|i', $uri, $matches ) ) {
-            $protocol = $matches[0];
-            $uri = substr( $uri, strlen( $protocol ) );
-        } else {
-            $protocol = '';
-        }
-
-        if ( strpos( $uri, '?' ) !== false ) {
-            $parts = explode( '?', $uri, 2 );
-            if ( 1 == count( $parts ) ) {
-                $base = '?';
-                $query = $parts[0];
-            } else {
-                $base = $parts[0] . '?';
-                $query = $parts[1];
-            }
-        } elseif ( !empty( $protocol ) || strpos( $uri, '=' ) === false ) {
-            $base = $uri . '?';
-            $query = '';
-        } else {
-            $base = '';
-            $query = $uri;
-        }
-
-        parse_str( $query, $qs );
-        $qs = urlencode_deep( $qs ); // this re-URL-encodes things that were already in the query string
-        if ( is_array( func_get_arg( 0 ) ) ) {
-            $kayvees = func_get_arg( 0 );
-            $qs = array_merge( $qs, $kayvees );
-        } else {
-            $qs[func_get_arg( 0 )] = func_get_arg( 1 );
-        }
-
-        foreach ( (array) $qs as $k => $v ) {
-            if ( $v === false )
-                unset( $qs[$k] );
-        }
-
-        $ret = http_build_query( $qs );
-        $ret = trim( $ret, '?' );
-        $ret = preg_replace( '#=(&|$)#', '$1', $ret );
-        $ret = $protocol . $base . $ret . $frag;
-        $ret = rtrim( $ret, '?' );
-
-        return $ret;
-    }
-
-
-
-    /**
-     * Remove arg from query. Opposite of add_query_arg. Stolen from WP.
-     *
-     */
-    public function remove_query_arg( $key, $query = false ) {
-        if ( is_array( $key ) ) { // removing multiple keys
-            foreach ( $key as $k )
-                $query = add_query_arg( $k, false, $query );
-
-            return $query;
-        }
-
-        return add_query_arg( $key, false, $query );
-    }
-
-    /**
      * Return a time-dependent string for nonce creation
      *
      */
@@ -270,19 +173,6 @@ class Functions {
             else
                 trigger_error( sprintf( _( '%1$s is <strong>deprecated</strong> since version %2$s with no alternative available.' ), $function, $version ) );
         }
-    }
-
-    /**
-     * Return the value if not an empty string
-     *
-     * Used with array_filter(), to remove empty keys but not keys with value 0 or false
-     *
-     * @since 1.6
-     * @param mixed $val Value to test against ''
-     * @return bool True if not an empty string
-     */
-    public function is_not_empty_string( $val ) {
-        return( $val !== '' );
     }
 
 }
