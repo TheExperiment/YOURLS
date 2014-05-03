@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace YOURLS\HTTP;
+namespace YOURLS\Network;
 
 use Requests\Exception\HTTP;
 

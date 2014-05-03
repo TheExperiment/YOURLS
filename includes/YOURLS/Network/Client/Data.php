@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace YOURLS\HTTP\Client;
+namespace YOURLS\Network\Client;
 
 interface Data {
 

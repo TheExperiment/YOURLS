@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace YOURLS\HTTP;
+namespace YOURLS\Network;
 
 class URL extends Purl\Url {
 

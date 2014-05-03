@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace YOURLS\HTTP;
+namespace YOURLS\Network;
 
 /**
  * Class that relate to HTTP requests

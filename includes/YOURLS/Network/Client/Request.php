@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace YOURLS\HTTP\Client;
+namespace YOURLS\Network\Client;
 
 class Request extends Keyword /* or URl ??? */implements Data {
 
