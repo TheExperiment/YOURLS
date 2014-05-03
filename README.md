@@ -2,7 +2,10 @@
 
 [YOURLS](http://yourls.org)
 ========
-[![Build Status](https://travis-ci.org/YOURLS/YOURLS.png?branch=master)](https://travis-ci.org/YOURLS/YOURLS) [![Dependency Status](https://www.versioneye.com/user/projects/531375c4ec13752b0e0000f6/badge.png)](https://www.versioneye.com/user/projects/531375c4ec13752b0e0000f6) [![Code Climate](https://codeclimate.com/github/YOURLS/YOURLS.png)](https://codeclimate.com/github/YOURLS/YOURLS)
+[![Release](http://img.shields.io/github/release/YOURLS/YOURLS.svg?style=flat)](https://github.com/YOURLS/YOURLS/releases)
+[![Build Status](http://img.shields.io/travis/YOURLS/YOURLS.svg?style=flat)](https://travis-ci.org/YOURLS/YOURLS)
+[![Code Climate](http://img.shields.io/codeclimate/github/YOURLS/YOURLS.svg?style=flat)](https://codeclimate.com/github/YOURLS/YOURLS)
+[![Dependency Status](https://www.versioneye.com/php/yourls:yourls/badge.svg?style=flat)](https://www.versioneye.com/php/yourls:yourls)
 
 **YOURLS** is a set of PHP scripts that will allow you to run **Your Own URL Shortener**.  
 
