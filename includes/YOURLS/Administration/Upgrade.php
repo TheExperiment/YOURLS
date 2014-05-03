@@ -35,8 +35,8 @@ class Upgrade {
 
             case 3:
                 // Update options to reflect latest version
-                Options::$version = VERSION;
-                Options::$db_version = YOURLS_DB_VERSION;
+                Options::set( 'version', VERSION );
+                Options::set( 'db_version', YOURLS_DB_VERSION );
                 break;
         }
     }

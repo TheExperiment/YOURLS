@@ -24,6 +24,59 @@ class Options {
     private static $options = array();
 
     /**
+     * Default core options if that have not been user defined
+     */
+    protected $default = array(
+        // physical path of YOURLS root
+        'ABSPATH'             => str_replace( '\\', '/', dirname( dirname( __DIR__ ) ) ),
+        // physical path of includes directory
+        'INC'                 => array( 'ABSPATH', '/includes' ),
+
+        // physical path and url of asset directory
+        'ASSET_DIR'           => array( 'ABSPATH', '/assets' ),
+        'ASSET_URL'           => array( 'SITE', '/assets' ),
+
+        // physical path and url of user directory
+        'USER_DIR'            => array( 'ABSPATH', '/user' ),
+        'USER_URL'            => array( 'SITE', '/user' ),
+        // physical path of translations directory
+        'LANG_DIR'            => array( 'USER_DIR', '/languages' ),
+        // physical path and url of plugins directory
+        'PLUGIN_DIR'          => array( 'USER_DIR', '/plugins' ),
+        'PLUGIN_URL'          => array( 'USER_URL', '/plugins' ),
+        // physical path and url of themes directory
+        'THEME_DIR'           => array( 'USER_DIR', '/themes' ),
+        'THEME_URL'           => array( 'USER_URL', '/themes' ),
+        // physical path of pages directory
+        'PAGE_DIR'            => array( 'USER_DIR', '/pages' ),
+
+        // admin pages location
+        'ADMIN_LOCATION'      => 'admin',
+
+        // table to store URLs
+        'DB_TABLE_URL'        => array( 'DB_PREFIX', 'url' ),
+        // table to store options
+        'DB_TABLE_OPTIONS'    => array( 'DB_PREFIX', 'options' ),
+        // table to store hits, for stats
+        'DB_TABLE_LOG'        => array( 'DB_PREFIX', 'log' ),
+
+        // minimum delay in sec before a same IP can add another URL. Note: logged in users are not throttled down.
+        'FLOOD_DELAY_SECONDS' => 15,
+        // comma separated list of IPs that can bypass flood check.
+        'FLOOD_IP_WHITELIST'  => '',
+        'COOKIE_LIFE'         => 60*60*24*7,
+        // life span of a nonce in seconds
+        'NONCE_LIFE'          => 43200, // 3600 *,12
+
+        // if set to true, disable stat logging (no use for it, too busy servers, ...)
+        'check_update'        => false,
+        // if set to true, force https:// in the admin area
+        'ADMIN_SSL'           => false,
+        // if set to true, verbose debug infos. Will break things. Don't enable.
+        'DEBUG'               => false,
+    );
+
+    /**
      * Read all options from DB at once
      *
      * The goal is to read all options at once and then populate array $ydb->option, to prevent further
@@ -33,7 +86,21 @@ class Options {
      *
      * @since 1.4
      */
-    public static function __construct() {
+    public function __construct() {
+         // Check if config.php was properly updated for 1.4
+        if( !Options::is_set( 'DB_PREFIX' ) )
+            throw new YOURLSException( 'Your <code>configuration</code> does not contain all the required constant definitions.', 'Please check <code>config-sample.php</code> and update your config accordingly, there are new stuffs!' );
+
+        foreach ( $yourls_definitions as $const_name => $const_default_value ) {
+            if( !defined( $const_name ) ) {
+                if ( is_array( $const_default_value ) ) {
+                    define( $const_name, constant( $const_default_value[0] ) . $const_default_value[1] );
+                } else {
+                    define( $const_name, $const_default_value );
+                }
+            }
+        }
+
         // Allow plugins to short-circuit all options. (Note: regular plugins are loaded after all options)
         $pre = Filters::apply_filter( 'shunt_all_options', false );
         if ( false !== $pre )
@@ -69,7 +136,7 @@ class Options {
      * @param mixed $value Option value. Must be serializable if non-scalar. Expected to not be SQL-escaped.
      * @param mixed $force Replace existent. If the option already exist, the value will be override.
      */
-    public static function __set( $name, $value, $force = true ) {
+    public static function set( $name, $value, $force = true ) {
         $name = trim( $name );
         if ( empty( $name ) )
             return false;
@@ -109,14 +176,14 @@ class Options {
      * @param mixed $default Optional value to return if option doesn't exist. Default null.
      * @return mixed Value set for the option.
      */
-    public static function __get( $name, $default = null ) {
+    public static function get( $name, $default = null ) {
         // Allow plugins to short-circuit options
         $pre = Filters::apply_filter( 'shunt_option_' . $name, false );
         if ( false !== $pre )
             return $pre;
 
         // If option not cached already, get its value from the DB
-        if ( !isset( $this->$name ) ) {
+        if ( !self::is_set( $name ) ) {
             $name = Format::escape( $name );
             $row = $ydb->get_row( "SELECT `option_value` FROM `YOURLS_DB_TABLE_OPTIONS` WHERE `option_name` = '$name' LIMIT 1" );
             if ( is_object( $row ) ) { // Has to be get_row instead of get_var because of funkiness with 0, false, null values
@@ -137,7 +204,7 @@ class Options {
      * @param string $name Name of option to add. Expected to not be SQL-escaped.
      * @return bool False if option doesn't exist.
      */
-    public static function __isset( $name ) {
+    public static function is_set( $name ) {
         return( isset( $this->options[ $name ] ) );
     }
 
@@ -149,7 +216,7 @@ class Options {
      * @since 1.4
      * @param string $option Option name to delete. Expected to not be SQL-escaped.
      */
-    public static function __unset( $name ) {
+    public static function un_set( $name ) {
         $name = Format::escape( $name );
 
         // Get the ID, if no ID then return

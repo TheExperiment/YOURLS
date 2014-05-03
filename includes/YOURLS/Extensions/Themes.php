@@ -465,7 +465,7 @@ class Themes extends Extensions {
      */
     public function activate( $theme ) {
         if ( $theme == 'default' ) {
-            Options::$active_theme = '';
+            Options::set( 'active_theme', '' );
             Filters::do_action( 'activated_theme', $theme );
             Filters::do_action( 'activated_' . $theme );
 
@@ -495,7 +495,7 @@ class Themes extends Extensions {
 
         if( $load === true ) {
             // so far, so good
-            update_option( 'active_theme', $theme );
+            Options::set( 'active_theme', $theme );
             Filters::do_action( 'activated_theme', $theme );
             Filters::do_action( 'activated_' . $theme );
 
@@ -517,9 +517,9 @@ class Themes extends Extensions {
     public function get_active() {
         global $ydb;
         if( !property_exists( $ydb, 'theme' ) || $ydb->theme == '' ) {
-            $ydb->theme = ( get_option( 'active_theme' ) ) ? get_option( 'active_theme' ) : '';
+            $ydb->theme = ( Options::get( 'active_theme' ) ) ? Options::get( 'active_theme' ) : '';
             // Update option to save one query on next page load
-            update_option( 'active_theme', $ydb->theme );
+            Options::set( 'active_theme', $ydb->theme );
         }
 
         return Filters::apply_filter( 'get_active_theme', $ydb->theme );

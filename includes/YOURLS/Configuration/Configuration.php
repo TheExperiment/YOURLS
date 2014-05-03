@@ -16,20 +16,103 @@ use YOURLS\Extensions\Filters;
 class Configuration {
 
     /**
+     * Get current version & db version as stored in the options DB.
+     *
+     */
+    public static function current_version() {
+        $current_ver = Options::get( 'version' );
+        $current_sql = Options::get( 'db_version' );
+
+        return array( $current_ver, $current_sql);
+    }
+
+    /**
+     * Get DB version
+     *
+     * The regex removes everything that's not a number at the start of the string, or remove anything that's not a number and what
+     * follows after that.
+     *   'omgmysql-5.5-ubuntu-4.20' => '5.5'
+     *   'mysql5.5-ubuntu-4.20'     => '5.5'
+     *   '5.5-ubuntu-4.20'          => '5.5'
+     *   '5.5-beta2'                => '5.5'
+     *   '5.5'                      => '5.5'
+     *
+     * @since 1.7
+     * @return string sanitized DB version
+     * @todo New databases model
+     */
+    public static function database_version() {
+        global $ydb;
+
+        return preg_replace( '/(^[^0-9]*)|[^0-9.].*/', '', $ydb->mysql_version() );
+    }
+
+    /**
+     * Check an PHP version
+     *
+     * @param string $version PHP version wanted
+     * @return bool True if the current PHP version is correct
+     */
+    public static function check_php_version( $vesion ) {
+        return version_compare( $vesion, phpversion() ) <= 0;
+    }
+
+    /**
+     * Check an Apache version
+     *
+     * @param string $version Apache version wanted
+     * @return bool True if the current Apache version is correct
+     */
+    public static function check_apache_version( $vesion ) {
+        return version_compare( $vesion, apache_get_version() ) <= 0;
+    }
+
+    /**
      *
      * @since 2.0
      * @todo Review and PHPDoc
      */
     public static function is( $config ) {
-        if ( defined( 'YOURLS_' . strtoupper( $config ) )
-            && is_bool( constant( 'YOURLS_' . strtoupper( $config ) ) ) ) {
-            return constant( 'YOURLS_' . strtoupper( $config ) );
+        if ( Options::is_set( $config ) && is_bool( Options::get( $config ) ) ) {
+            return Options::get( $config );
         }
         if ( method_exists( $this, 'is_' . $config ) ) {
             return call_user_func(array( $this, 'is_' . $config ) );
         }
 
         return false;
+    }
+
+    /**
+     * Check if the server seems to be running on Windows
+     *
+     * @return bool True if the server run Windows
+     */
+    public static function is_windows() {
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+    }
+
+    /**
+     * Check if server is running Apache
+     *
+     * @return bool True if the server run Apache
+     */
+    public static function is_apache() {
+        if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ) {
+            return false;
+        }
+
+        return strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== false
+            || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== false;
+    }
+
+    /**
+     * Check if server is running IIS
+     *
+     * @return bool True if the server run IIS
+     */
+    public static function is_iis() {
+        return ( array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ? ( strpos( $_SERVER['SERVER_SOFTWARE'], 'IIS' ) !== false ) : false );
     }
 
     /**
@@ -147,6 +230,24 @@ class Configuration {
         _( 'Things should not last very long, thank you for your patience and please excuse the inconvenience' );
         die( $message/*, $title , 503 */);
 
+    }
+
+    /**
+     * Check if SSL is used, returns bool. Stolen from WP.
+     *
+     */
+    public function is_ssl() {
+        $is_ssl = false;
+        if ( isset( $_SERVER['HTTPS'] ) ) {
+            if ( 'on' == strtolower( $_SERVER['HTTPS'] ) )
+                $is_ssl = true;
+            if ( '1' == $_SERVER['HTTPS'] )
+                $is_ssl = true;
+        } elseif ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) ) {
+            $is_ssl = true;
+        }
+
+        return Filters::apply_filter( 'is_ssl', $is_ssl );
     }
 
 }

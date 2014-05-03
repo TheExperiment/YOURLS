@@ -152,28 +152,6 @@ class Functions {
 
 
     /**
-     * Check if SSL is used, returns bool. Stolen from WP.
-     *
-     */
-    public function is_ssl() {
-        $is_ssl = false;
-        if ( isset( $_SERVER['HTTPS'] ) ) {
-            if ( 'on' == strtolower( $_SERVER['HTTPS'] ) )
-                $is_ssl = true;
-            if ( '1' == $_SERVER['HTTPS'] )
-                $is_ssl = true;
-        } elseif ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) ) {
-            $is_ssl = true;
-        }
-
-        return Filters::apply_filter( 'is_ssl', $is_ssl );
-    }
-
-
-
-
-
-    /**
      * Fix $_SERVER['REQUEST_URI'] variable for various setups. Stolen from WP.
      *
      */

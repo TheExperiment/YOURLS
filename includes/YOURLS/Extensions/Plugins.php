@@ -67,7 +67,7 @@ class Plugins extends Extensions {
 
             return;
 
-        $active_plugins = Options::$active_plugins;
+        $active_plugins = Options::get( 'active_plugins' );
         if( false === $active_plugins )
 
             return;
@@ -88,7 +88,7 @@ class Plugins extends Extensions {
 
         // $active_plugins should be empty now, if not, a plugin could not be find: remove it
         if( count( $active_plugins ) ) {
-            Options::$active_plugins = $ydb->plugins;
+            Options::set( 'active_plugins', $ydb->plugins );
             $message = n( 'Could not find and deactivated plugin:', 'Could not find and deactivated plugins:', count( $active_plugins ) );
             $missing = '<strong>'.join( '</strong>, <strong>', $active_plugins ).'</strong>';
             add_notice( $message .' '. $missing );
@@ -127,7 +127,7 @@ class Plugins extends Extensions {
 
         // so far, so good: update active plugin list
         $ydb->plugins[] = $plugin;
-        Options::$active_plugins = $ydb->plugins;
+        Options::set( 'active_plugins', $ydb->plugins );
         Filters::do_action( 'activated_plugin', $plugin );
         Filters::do_action( 'activated_' . $plugin );
 
@@ -155,7 +155,7 @@ class Plugins extends Extensions {
             array_splice( $ydb->plugins, $key, 1 );
         }
 
-        Options::$active_plugins = $ydb->plugins;
+        Options::set( 'active_plugins', $ydb->plugins );
         Filters::do_action( 'deactivated_plugin', $plugin );
         Filters::do_action( 'deactivated_' . $plugin );
 
