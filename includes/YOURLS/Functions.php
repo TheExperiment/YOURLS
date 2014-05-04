@@ -58,7 +58,7 @@ class Functions {
      * Fix $_SERVER['REQUEST_URI'] variable for various setups. Stolen from WP.
      *
      */
-    public function fix_request_uri() {
+    public static function fix_request_uri() {
 
         $default_server_values = array(
             'SERVER_SOFTWARE' => '',

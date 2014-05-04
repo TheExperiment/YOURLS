@@ -58,7 +58,7 @@ class Loader {
         Configuration::check_maintenance_mode();
 
         // Fix REQUEST_URI for IIS
-        //$funct->fix_request_uri();
+        Functions::fix_request_uri();
 
         // If request for an admin page is http:// and SSL is required, redirect
         if( $config->is_admin() && $config->needs_ssl() && !$config->is_ssl() ) {
