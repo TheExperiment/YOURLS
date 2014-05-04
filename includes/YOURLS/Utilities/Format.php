@@ -105,50 +105,6 @@ class Format {
     }
 
     /**
-     * Escape a string or an array of strings before DB usage. ALWAYS escape before using in a SQL query. Thanks.
-     *
-     * @param string|array $data string or array of strings to be escaped
-     * @return string|array escaped data
-     */
-    public static function escape( $data ) {
-        if( is_array( $data ) ) {
-            foreach( $data as $k => $v ) {
-                if( is_array( $v ) ) {
-                    $data[ $k ] = $this->escape( $v );
-                } else {
-                    $data[ $k ] = $this->escape_real( $v );
-                }
-            }
-        } else {
-            $data = $this->escape_real( $data );
-        }
-
-        return $data;
-    }
-
-    /**
-     * "Real" escape. This function should NOT be called directly. Use escape() instead.
-     *
-     * This function uses a "real" escape if possible, using PDO, MySQL or MySQLi functions,
-     * with a fallback to a "simple" addslashes
-     * If you're implementing a custom DB engine or a custom cache system, you can define an
-     * escape function using filter 'custom_escape_real'
-     *
-     * @since 1.7
-     * @param string $a string to be escaped
-     * @return string escaped string
-     */
-    public static function escape_real( $string ) {
-        global $ydb;
-        if( isset( $ydb ) && ( $ydb instanceof ezSQLcore ) )
-
-            return $ydb->escape( $string );
-
-        // YOURLS DB classes have been bypassed by a custom DB engine or a custom cache layer
-        return Filters::apply_filters( 'custom_escape_real', addslashes( $string ), $string );
-    }
-
-    /**
      * Make sure a date is m(m)/d(d)/yyyy, return false otherwise
      *
      */
@@ -504,7 +460,6 @@ class Format {
 
         return Filters::apply_filter( 'esc_url', $url, $original_url, $context );
     }
-
     /**
      * Escape single quotes, htmlspecialchar " < > &, and fix line endings. Stolen from WP.
      *

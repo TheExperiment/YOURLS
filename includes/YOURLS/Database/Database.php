@@ -20,12 +20,18 @@ use YOURLS\Extensions\Filters;
  */
 class Database /*extends someThingLikeEzSQL*/ {
 
-    private $filters;
+    /**
+     * Driver for the database connection
+     */
+    private static $driver;
+
+    /**
+     * Driver for the database connection
+     */
     private $logger;
 
     public function __construct() {
-        $this->filters = new Filters;
-        $this->logger = new \YOURLS\Logger( 'DATABASE' );
+        $this->logger = new Logger();
     }
 
     /**
@@ -38,16 +44,16 @@ class Database /*extends someThingLikeEzSQL*/ {
     public function set_driver() {
 
         // Auto-pick the driver. Priority: user defined, then PDO, then mysqli, then mysql
-        if ( defined( 'YOURLS_DB_DRIVER' ) ) {
-            $driver = YOURLS_DB_DRIVER;
-        } elseif ( extension_loaded( 'pdo_mysql' ) ) {
-            $driver = 'PDO';
-        } elseif ( extension_loaded( 'mysqli' ) ) {
-            $driver = 'MySQLi';
-        } elseif ( extension_loaded( 'mysql' ) ) {
-            $driver = 'MySQL';
-        } else {
-            $driver = '';
+        if ( !Options::is_set( 'db_driver' ) ) {
+            if ( extension_loaded( 'pdo_mysql' ) ) {
+                Options::set( 'db_driver', 'PDO' );
+            } elseif ( extension_loaded( 'mysqli' ) ) {
+                Options::set( 'db_driver', 'MySQLi' );
+            } elseif ( extension_loaded( 'mysql' ) ) {
+                Options::set( 'db_driver', 'MySQL' );
+            } else {
+                Options::set( 'db_driver', '' );
+            }
         }
 
         // Set the new driver
@@ -58,10 +64,8 @@ class Database /*extends someThingLikeEzSQL*/ {
             );
         }
 
-        global $ydb;
-
-        $this->filters->do_action( 'set_YOURLS_DB_driver', $driver );
-        $driver = 'YOURLS\\Database\\'.$driver;
+        Filters:do_action( 'set_YOURLS_DB_driver', $driver );
+        self::$driver = 'YOURLS\\Database\\'.$driver;
         $ydb = new $driver( YOURLS_DB_USER, YOURLS_DB_PASS, YOURLS_DB_NAME, YOURLS_DB_HOST );
         $ydb->db_driver = $driver;
 
@@ -141,6 +145,48 @@ class Database /*extends someThingLikeEzSQL*/ {
         }
 
         die( _( 'Incorrect DB config, or could not connect to DB' )/*, _( 'Fatal error' ), 503 */);
+    }
+
+    /**
+     * Escape a string or an array of strings before DB usage. ALWAYS escape before using in a SQL query. Thanks.
+     *
+     * @param string|array $data string or array of strings to be escaped
+     * @return string|array escaped data
+     */
+    public static function escape( $data ) {
+        if( is_array( $data ) ) {
+            foreach( $data as $k => $v ) {
+                if( is_array( $v ) ) {
+                    $data[ $k ] = self::escape( $v );
+                } else {
+                    $data[ $k ] = self::escape_real( $v );
+                }
+            }
+        } else {
+            $data = self::escape_real( $data );
+        }
+
+        return $data;
+    }
+
+    /**
+     * This function uses a "real" escape if possible, using PDO, MySQL or MySQLi functions,
+     * with a fallback to a "simple" addslashes
+     * If you're implementing a custom DB engine or a custom cache system, you can define an
+     * escape function using filter 'custom_escape_real'
+     *
+     * @since 1.7
+     * @param string $a string to be escaped
+     * @return string escaped string
+     */
+    private static function escape_real( $string ) {
+        global $ydb;
+        if( isset( $ydb ) && ( $ydb instanceof ezSQLcore ) )
+
+            return $ydb->escape( $string );
+
+        // YOURLS DB classes have been bypassed by a custom DB engine or a custom cache layer
+        return Filters::apply_filters( 'custom_escape_real', addslashes( $string ), $string );
     }
 
 }
