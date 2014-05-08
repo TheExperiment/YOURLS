@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-namespace YOURLS\Utilities;
+namespace YOURLS\Administration;
 
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\ErrorHandler;
