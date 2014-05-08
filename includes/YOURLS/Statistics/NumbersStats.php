@@ -14,7 +14,7 @@ namespace YOURLS\Statistics;
 /**
  * Summary of Info
  */
-class Info implements Statistics {
+class NumbersStats implements Statistics {
 
     /**
      * Build a list of all daily values between d1/m1/y1 to d2/m2/y2.
@@ -97,6 +97,143 @@ class Info implements Statistics {
             if ( $v == $max )
                 return array( 'day' => $k, 'max' => $max );
         }
+    }
+    
+    public function __toString() {
+        yourls_do_action( 'pre_yourls_info_stats', $keyword );
+        if ( $list_of_days ) { ?>
+
+            <ul id="stats_lines" class="toggle_display stat_line">
+                <?php
+                if( $do_24 == true )
+                    echo '<li><a href="#stat_line_24">' . yourls__( 'Last 24 hours' ) . '</a>';
+                if( $do_7 == true )
+                    echo '<li><a href="#stat_line_7">' . yourls__( 'Last 7 days' ) . '</a>';
+                if( $do_30 == true )
+                    echo '<li><a href="#stat_line_30">' . yourls__( 'Last 30 days' ) . '</a>';
+                if( $do_all == true )
+                    echo '<li><a href="#stat_line_all">' . yourls__( 'All time' ) . '</a>';
+                ?>				
+            </ul>
+            <?php
+            // Generate, and display if applicable, each needed graph
+            foreach( $graphs as $graph => $graphtitle ) {
+                if( ${'do_'.$graph} == true ) {
+                    $display = ( ${'display_'.$graph} === true ? 'display:block' : 'display:none' );
+                    echo "<div id='stat_line_$graph' class='stats_line line' style='$display'>";
+                    echo '<h3>' . yourls_s( 'Number of hits : %s' , $graphtitle ) . '</h3>';
+                    switch( $graph ) {
+                        case '24':
+                            yourls_stats_line( $last_24h, "stat_line_$graph" );
+                            break;
+
+                        case '7':
+                        case '30':
+                            $slice = array_slice( $list_of_days, intval( $graph ) * -1 );
+                            yourls_stats_line( $slice, "stat_line_$graph" );
+                            unset( $slice );
+                            break;
+
+                        case 'all':
+                            yourls_stats_line( $list_of_days, "stat_line_$graph" );
+                            break;
+                    }
+                    echo "</div>";
+                }			
+            } ?>
+                                <details>
+                    <summary><?php yourls_e( 'More details' ); ?></summary>
+<?php
+            yourls_html_htag( yourls__( 'Historical click count' ), 3 ); 
+            
+            $ago = round( (date('U') - strtotime($timestamp)) / (24* 60 * 60 ) );
+            if( $ago <= 1 ) {
+                $daysago = '';
+            } else {
+                $daysago = ' (' . sprintf( yourls_n( 'about 1 day ago', 'about %s days ago', $ago ), $ago ) . ')';
+            }
+            ?>
+            <p><?php echo /* //translators: eg Short URL created on March 23rd 1972 */ yourls_s( 'Short URL created on %s', yourls_date_i18n( "F j, Y @ g:i a", ( strtotime( $timestamp ) + YOURLS_HOURS_OFFSET * 3600 ) ) ) . $daysago; ?></p>
+            <div class="wrap_unfloat">
+                <ul class="stat_line" id="historical_clicks">
+                <?php
+                foreach( $graphs as $graph => $graphtitle ) {
+                    if ( ${'do_'.$graph} ) {
+                        $link = "<a href='#stat_line_$graph'>$graphtitle</a>";
+                    } else {
+                        $link = $graphtitle;
+                    }
+                    $stat = '';
+                    if( ${'do_'.$graph} ) {
+                        switch( $graph ) {
+                            case '7':
+                            case '30':
+                                $stat = yourls_s( '%s per day', round( ( ${'hits_'.$graph} / intval( $graph ) ) * 100 ) / 100 );
+                                break;
+                            case '24':
+                                $stat = yourls_s( '%s per hour', round( ( ${'hits_'.$graph} / 24 ) * 100 ) / 100 );
+                                break;
+                            case 'all':
+                                if( $ago > 0 )
+                                    $stat = yourls_s( '%s per day', round( ( ${'hits_'.$graph} / $ago ) * 100 ) / 100 );
+                        }
+                    }
+                    $hits = sprintf( yourls_n( '%s hit', '%s hits', ${'hits_'.$graph} ), ${'hits_'.$graph} );
+                    echo "<li><span class='historical_link'>$link</span> <span class='historical_count'>$hits</span> $stat</li>";
+                }
+                ?>
+                </ul>
+            </div>
+        
+                <?php yourls_html_htag( yourls__( 'Best day' ), 3 ); 
+                $best = yourls_stats_get_best_day( $list_of_days );
+                $best_time['day']   = date( "d", strtotime( $best['day'] ) );
+                $best_time['month'] = date( "m", strtotime( $best['day'] ) );
+                $best_time['year']  = date( "Y", strtotime( $best['day'] ) );
+                ?>
+                <p><?php echo sprintf( /* //translators: eg. 43 hits on January 1, 1970 */ yourls_n( '<strong>%1$s</strong> hit on %2$s', '<strong>%1$s</strong> hits on %2$s', $best['max'] ), $best['max'],  yourls_date_i18n( "F j, Y", strtotime( $best['day'] ) ) ); ?>.</p>
+                    <ul id="details-clicks">
+                        <?php
+                        foreach( $dates as $year=>$months ) {
+                            $css_year = ( $year == $best_time['year'] ? 'best_year' : '' );
+                            if( count( $list_of_years ) > 1 ) {
+                                $li = "<a href='' class='details' id='more_year$year'>" . yourls_s( 'Year %s', $year ) . '</a>';
+                                $display = 'none';
+                            } else {
+                                $li = yourls_s( 'Year %s', $year );
+                                $display = 'block';
+                            }
+                            echo "<li><span class='$css_year'>$li</span>";
+                            echo "<ul style='display:$display' id='details_year$year'>";
+                            foreach( $months as $month=>$days ) {
+                                $css_month = ( ( $month == $best_time['month'] && ( $css_year == 'best_year' ) ) ? 'best_month' : '' );
+                                $monthname = yourls_date_i18n( "F", mktime( 0, 0, 0, $month, 1 ) );
+                                if( count( $list_of_months ) > 1 ) {
+                                    $li = "<a href='' class='details' id='more_month$year$month'>$monthname</a>";
+                                    $display = 'none';
+                                } else {
+                                    $li = "$monthname";
+                                    $display = 'block';
+                                }
+                                echo "<li><span class='$css_month'>$li</span>";
+                                echo "<ul style='display:$display' id='details_month$year$month'>";
+                                foreach( $days as $day=>$hits ) {
+                                    $class = ( $hits == $best['max'] ? 'class="bestday"' : '' );
+                                    echo "<li $class>$day: " . sprintf( yourls_n( '1 hit', '%s hits', $hits ), $hits ) ."</li>";
+                                }
+                                echo "</ul>";
+                            }
+                            echo "</ul>";
+                        }
+                        ?>
+                    </ul>
+                </details>
+
+        <?php yourls_do_action( 'post_yourls_info_stats', $keyword ); ?>
+        
+    </div>
+
+    <?php
     }
 
 }
