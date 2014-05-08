@@ -32,10 +32,11 @@
         "hautelook/phpass": "~0.3.0",
         "monolog/monolog": "~1.9.0",
         "nesbot/carbon": "~1.8.0",
-        "jwage/purl": "~0.0.3"
+        "jwage/purl": "~0.0.3",
+        "jv2222/ezsql": "dev-master"
     },
     "require-dev": {
-        "filp/whoops": "~1.0.10",
+        "filp/whoops": "~1.1.0",
         "phpunit/phpunit": ">=4.0"
     },
     "suggest": {
