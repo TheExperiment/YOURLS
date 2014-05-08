@@ -34,7 +34,8 @@ Community
 Contributing
 ------------
 Have a bug or a feature request? Want to propose code changes?  
-Please read through our __[contributing guidelines](CONTRIBUTING.md)__. Included are directions for opening issues, coding standards, and notes on development.  
+Please read through our __[contributing guidelines](CONTRIBUTING.md)__.
+Included are directions for opening issues, coding standards, and notes on development.  
 __Before opening any issue, please search for existing issues and read the [Issue Guidelines](https://github.com/YOURLS/YOURLS/wiki/Bug-Report).__
 
 Have a **new bug** to report? [Please fill a new issue](https://github.com/YOURLS/YOURLS/issues/new?title=Issue+title+--+be+DESCRIPTIVE&body=Before%20any%20bug%20report%2C%20check%20you%20are%20using%20the%20LATEST%20release%20or%20the%20development%20branch.%20Make%20sure%20you%20have%20SEARCHED%20closed%20issues%20first.%20Read%20the%20GUIDELINES%20linked%20in%20the%20yellow%20notice%20box%20above.%20Now%20please%20DELETE%20these%20first%20lines.%0A%0A%0A%23%23%23%20Reproducible%20Bug%20Summary%20%0A%0A1.%20This%20is%20the%20first%20step%0A2.%20second%20step%0A3.%20etc...%0A%0AThis%20is%20a%20bug%20because...%0A%0A%0A%23%23%23%20Technical%20details%0A%0A*%20YOURLS%20version%3A%0A*%20PHP%20version%3A%0A*%20Any%20other%20useful%20information%20depending%20on%20context%20%28server%20version%2C%20mysql%20version%2C%20browser%20version%2C%20OS%20version...%29%0A).
@@ -54,4 +55,6 @@ For transparency into our release cycle and in striving to maintain backward com
 License
 -------
 Free software. Do whatever the hell you want with it.  
+Dependencies and third party code are shared with
+and under their specific license.  
 Licensed under the [MIT License](LICENSE.md).
