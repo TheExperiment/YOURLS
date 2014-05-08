@@ -26,11 +26,11 @@ restrictions:
 
 Guidelines
 ----------
-
 Your bible must be the **[:octocat: GitHub Contributing Guide](https://guides.github.com/activities/contributing-to-open-source/#contributing)**.
 
 ### Bug Reports
 
+A bug is a _demonstrable problem_ that is caused by the code in the repository.
 Good bug reports are extremely helpful - thank you!
 
 #### Rules
@@ -40,13 +40,16 @@ Good bug reports are extremely helpful - thank you!
    you're about to report something very trivial that would have been noticed for long, maybe it's
    not a bug, but only a problem on your side (YOURLS config, server config, or a good old
    _PEBKAC_ case...)
+
 2. **Use the GitHub issue search**  
    Check if the issue has already been reported. Reporting duplicates is a waste of
    time for everyone.  
   [Search](https://github.com/YOURLS/YOURLS/search?type=Issues) in **all issues**, open and closed.
+
 3. **Check if the issue has been fixed**  
    Try to reproduce it using the [latest code](https://github.com/YOURLS/YOURLS/archive/master.zip).  
    Maybe it has been fixed since the last stable release.
+
 4. **Give details**  
    Give any information that is relevant to the bug: 
    * YOURLS & MySQL & PHP versions
@@ -55,14 +58,17 @@ Good bug reports are extremely helpful - thank you!
    * ...
    
    What is the expected output? What do you see instead? See the report example below.  
+
 6. **Be accurate**  
    Vague statements (_"it makes an error"_) are useless and will probably get
    your issue closed without particular kindness. A good bug report must not leave others needing
    to chase you up for more information.
+
 7. **Isolate the problem**  
    Isolate the problem as much as you can, reduce to the bare minimum required to reproduce the issue.
    Don't describe a general situation that doesn't work as expected and just count on us to pin
    point the problem. 
+
 8. **Use understandable English**  
    This project gathers people from all over the world, and that
    is awesome. We know that not everyone writes and read English fluently, but that is the only
@@ -103,7 +109,7 @@ directly.
 Feature requests are welcome. 
 
 Take a moment to find out whether your idea fits the scope and
-goals of the project. Check also the [RoadMap](https://github.com/YOURLS/YOURLS/wiki/Road-Map),
+goals of the project. Check also the [Road Map](https://github.com/YOURLS/YOURLS/issues/milestones),
 maybe your idea is already planned.
 
 It's up to you to make a strong case to convince the project's developers of the merits of this feature.
@@ -118,12 +124,15 @@ Good pull requests are a fantastic help.
    Please get in touch before embarking on any significant pull request (e.g.
    implementing features, refactoring code), otherwise you risk spending a lot
    of time working on something that will not get merged into the project.
+
 2. **Licensing**  
    By submitting a patch, you agree that your code will be licensed under the same
    hippie license that YOURLS uses, *aka* the "Do whatever the hell you want with it" license.  
    See also [MIT License](LICENSE.md) terms.
+
 3. **Coding Standards**  
    Please adhere to YOURLS [Coding Standards](https://github.com/YOURLS/YOURLS/wiki/Coding-Standards).
+
 4. **Tests**  
    Make sure you've tested your patch under different scenarios (various browsers, non default installation path, etc).  
    Write unit-tests for what you have implemented.
