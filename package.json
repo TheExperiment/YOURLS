@@ -13,7 +13,7 @@
     "grunt-contrib-uglify": "~0.4.0",
     "grunt-contrib-less": "~0.11.0",
     "grunt-contrib-watch": "~0.6.0",
-    "grunt-update-submodules": "~0.3.0",
+    "grunt-update-submodules": "~0.4.0",
     "grunt-banner": "~0.2.1",
     "grunt-text-replace": "~0.3.0",
     "grunt-curl": "~1.5.0",

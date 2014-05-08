@@ -55,7 +55,7 @@ module.exports = function (grunt) {
         ]
       }
     },
-    phpunit: {
+    test: {
       yourls: {}
     },
 
@@ -222,7 +222,7 @@ module.exports = function (grunt) {
         files: '*/YOURLS/**/*.php',
         tasks: [
           'phpcsfixer:src',
-          'phpunit'
+          'test'
         ]
       }
     },
@@ -270,33 +270,34 @@ module.exports = function (grunt) {
 
   // Rename server task for understandability
   grunt.renameTask('php', 'server');
+  grunt.renameTask('phpunit', 'test');
 
   // Development Tasks
   // -----------------
 
   // Default task
-  // -> LESS watch
+  // -> Build and compile
   grunt.registerTask('default', [
-    'less:dev',
-    'watch:less'
+    'up-deps',
+    'dist',
+    'test',
+    'pot'
   ]);
   // PHP task
   // -> Checks and fixes for PHP
   // -> Make it distributable
   // -> Generate translation file
-  grunt.registerTask('php', [
+  grunt.registerTask('dist-php', [
     'replace:version',
-    'replace:composer',
     'replace:requirements',
+    'replace:test',
     'replace:banner',
-    'phpcsfixer:src',
-    'phpunit',
-    'pot'
+    'phpcsfixer'
   ]);
   // Assets task
   // -> Compile JS/HTML
   // -> Make it distributable
-  grunt.registerTask('assets', [
+  grunt.registerTask('dist-assets', [
     'uglify',
     'less:dist',
     'usebanner'
@@ -305,8 +306,9 @@ module.exports = function (grunt) {
   // -> Global distribution
   // -> PHP & Assets
   grunt.registerTask('dist', [
-    'assets',
-    'php'
+    'dist-assets',
+    'dist-php',
+    'replace:composer'
   ]);
   // GeoIP task
   // -> Update dependencies
@@ -324,6 +326,7 @@ module.exports = function (grunt) {
     'composer:update:no-dev:optimize-autoloader',
     'bower',
     'replace:bootstrap',
-    'update_submodules'
+    'update_submodules',
+    'geoip'
   ]);
 };

@@ -286,6 +286,7 @@ return array(
     'MaxMind\\Db\\Reader\\Decoder' => $vendorDir . '/maxmind-db/reader/src/MaxMind/Db/Reader/Decoder.php',
     'MaxMind\\Db\\Reader\\InvalidDatabaseException' => $vendorDir . '/maxmind-db/reader/src/MaxMind/Db/Reader/InvalidDatabaseException.php',
     'MaxMind\\Db\\Reader\\Metadata' => $vendorDir . '/maxmind-db/reader/src/MaxMind/Db/Reader/Metadata.php',
+    'MaxMind\\Db\\Reader\\Util' => $vendorDir . '/maxmind-db/reader/src/MaxMind/Db/Reader/Util.php',
     'Symfony\\Component\\EventDispatcher\\ContainerAwareEventDispatcher' => $vendorDir . '/symfony/event-dispatcher/Symfony/Component/EventDispatcher/ContainerAwareEventDispatcher.php',
     'Symfony\\Component\\EventDispatcher\\Debug\\TraceableEventDispatcherInterface' => $vendorDir . '/symfony/event-dispatcher/Symfony/Component/EventDispatcher/Debug/TraceableEventDispatcherInterface.php',
     'Symfony\\Component\\EventDispatcher\\Event' => $vendorDir . '/symfony/event-dispatcher/Symfony/Component/EventDispatcher/Event.php',
