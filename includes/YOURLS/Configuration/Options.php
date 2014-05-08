@@ -22,6 +22,8 @@ class Options {
      * @since 2.0
      */
     private static $options = array();
+    
+    private static $static_options = array();
 
     /**
      * Default core options if that have not been user defined
@@ -91,15 +93,7 @@ class Options {
         if( !Options::is_set( 'DB_PREFIX' ) )
             throw new YOURLSException( 'Your <code>configuration</code> does not contain all the required constant definitions.', 'Please check <code>config-sample.php</code> and update your config accordingly, there are new stuffs!' );
 
-        foreach ( $yourls_definitions as $const_name => $const_default_value ) {
-            if( !defined( $const_name ) ) {
-                if ( is_array( $const_default_value ) ) {
-                    define( $const_name, constant( $const_default_value[0] ) . $const_default_value[1] );
-                } else {
-                    define( $const_name, $const_default_value );
-                }
-            }
-        }
+        array_merge( $default, $user );
 
         // Allow plugins to short-circuit all options. (Note: regular plugins are loaded after all options)
         $pre = Filters::apply_filter( 'shunt_all_options', false );
