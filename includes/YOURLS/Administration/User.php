@@ -32,7 +32,7 @@ class User extends PasswordHash {
                 // API mode,
                 if ( Configuration::is( 'api' ) ) {
                     $callback = isset( $_REQUEST['callback'] ) ? $_REQUEST['callback'] : '';
-                    new Answer( array(
+                    new Response( array(
                         'simple' => $auth[1],
                         'message' => $auth[0],
                         'error_code' => 403,

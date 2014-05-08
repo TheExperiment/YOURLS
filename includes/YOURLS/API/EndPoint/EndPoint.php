@@ -11,7 +11,7 @@
 
 namespace YOURLS\API;
 
-interface EndPoint extends Answer {
+interface EndPoint extends Response {
 
     public function __construct() {}
 

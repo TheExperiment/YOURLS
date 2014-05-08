@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Answer Wrapper
+ * Response Wrapper
  *
  * @since 2.0
  * @version 2.0-alpha
@@ -11,7 +11,7 @@
 
 namespace YOURLS\API;
 
-class KeywordStatsPoint extends Answer implements EndPoint {
+class KeywordStatsPoint extends Response implements EndPoint {
 
     /**
      * Return array for API stat requests
@@ -25,7 +25,7 @@ class KeywordStatsPoint extends Answer implements EndPoint {
 
         parent::__construct( get_link_stats( $keyword ) );
 
-        return Filters::apply_filter( 'api_url_stats', $this->answer, $shorturl );
+        return Filters::apply_filter( 'api_url_stats', $this->response, $shorturl );
     }
 
 }

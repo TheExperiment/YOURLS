@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Answer Wrapper
+ * Response Wrapper
  *
  * @since 2.0
  * @version 2.0-alpha
@@ -11,7 +11,7 @@
 
 namespace YOURLS\API;
 
-class StatsPoint extends Answer implements EndPoint {
+class StatsPoint extends Response implements EndPoint {
 
     /**
      * Expand short url to long url
@@ -24,7 +24,7 @@ class StatsPoint extends Answer implements EndPoint {
 
         parent::__construct( get_stats( $filter, $limit, $start ) );
 
-        return Filters::apply_filter( 'api_stats', $this->answer, $filter, $limit, $start );
+        return Filters::apply_filter( 'api_stats', $this->response, $filter, $limit, $start );
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Answer Wrapper
+ * Response Wrapper
  *
  * @since 2.0
  * @version 2.0-alpha
@@ -11,7 +11,7 @@
 
 namespace YOURLS\API;
 
-class ShortPoint extends Answer implements EndPoint {
+class ShortPoint extends Response implements EndPoint {
 
     /**
      * API function wrapper: Shorten a URL
@@ -30,7 +30,7 @@ class ShortPoint extends Answer implements EndPoint {
         // in API mode, no need for our internal HTML output
         unset( $this->html );
 
-        return Filters::apply_filter( 'api_shorturl', $this->answer );
+        return Filters::apply_filter( 'api_shorturl', $this->response );
     }
 
 }

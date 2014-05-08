@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Answer Wrapper
+ * Response Wrapper
  *
  * @since 2.0
  * @version 2.0-alpha
@@ -11,7 +11,7 @@
 
 namespace YOURLS\API;
 
-class DatabaseStatsPoint extends Answer implements EndPoint {
+class DatabaseStatsPoint extends Response implements EndPoint {
 
     /**
      * Return array for counts of shorturls and clicks
@@ -22,7 +22,7 @@ class DatabaseStatsPoint extends Answer implements EndPoint {
             'db-stats'   => get_db_stats()
         ) );
 
-        return Filters::apply_filter( 'api_db_stats', $this->answer );
+        return Filters::apply_filter( 'api_db_stats', $this->response );
     }
 
 }

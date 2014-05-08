@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Answer Wrapper
+ * Response Wrapper
  *
  * @since 2.0
  * @version 2.0-alpha
@@ -11,7 +11,7 @@
 
 namespace YOURLS\API;
 
-class ExpendPoint extends Answer implements EndPoint {
+class ExpendPoint extends Response implements EndPoint {
 
     /**
      * Expand short url to long url
@@ -39,7 +39,7 @@ class ExpendPoint extends Answer implements EndPoint {
             ) );
         }
 
-        return Filters::apply_filter( 'api_expand', $this->answer, $shorturl );
+        return Filters::apply_filter( 'api_expand', $this->response, $shorturl );
     }
 
 }
