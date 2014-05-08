@@ -9,12 +9,16 @@
  * @license MIT
  */
 
-namespace YOURLS\Administration\Installer;
+namespace YOURLS\Administration;
 
 /**
  * Summary of Install
  */
 class Installer {
+
+    const PHP = '5.3.0';
+
+    const MYSQL = '5.0';
 
     private $step;
 
@@ -48,7 +52,7 @@ class Installer {
         $path = ( isset( $host[ 'path' ] ) ? $host[ 'path' ] : '' );
         $file = ( isset( $host[ 'file' ] ) ? $host[ 'file' ] : 'yourls-loader.php' );
 
-        if ( is_iis() ) {
+        if ( Configuration::is( 'iis' ) ) {
 
         } else {
             // Prepare content for a .htaccess file
