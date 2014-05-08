@@ -57,4 +57,4 @@ License
 Free software. Do whatever the hell you want with it.  
 Dependencies and third party code are shared with
 and under their specific license.  
-Licensed under the [MIT License](LICENSE.md).
+Licensed under the [MIT License](LICENSE).

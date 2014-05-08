@@ -128,7 +128,7 @@ Good pull requests are a fantastic help.
 2. **Licensing**  
    By submitting a patch, you agree that your code will be licensed under the same
    hippie license that YOURLS uses, *aka* the "Do whatever the hell you want with it" license.  
-   See also [MIT License](LICENSE.md) terms.
+   See also [MIT License](LICENSE) terms.
 
 3. **Coding Standards**  
    Please adhere to YOURLS [Coding Standards](https://github.com/YOURLS/YOURLS/wiki/Coding-Standards).
