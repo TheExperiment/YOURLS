@@ -11,7 +11,7 @@
 
 namespace YOURLS\API;
 
-class Answer {
+class Response {
 
     private $answer = array(
         'simple'      => 'Need either XML or JSON format for stats',
