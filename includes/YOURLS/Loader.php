@@ -128,13 +128,17 @@ class Loader {
         // Get request in YOURLS base (eg in 'http://site.com/yourls/abcd' get 'abdc')
         $request = yourls_get_request();
 
+        // API
+        if ( preg_match( "@^".YOURLS_API_LOCATION."/(.*)?$@", $request, $matches ) ) {
+            new API\Request;
+        }
+
         // Admin:
         if( preg_match( "@^".YOURLS_ADMIN_LOCATION."/(([a-zA-Z\-]+)(\.php)?)?$@", $request, $matches ) ) {
             $page = YOURLS_INC.'/admin/';
             $page .= ( isset( $matches[2] ) && $matches[2] ) ? $matches[2].'.php' : 'index.php';
             if ( file_exists( $page ) ) {
                 require_once( $page );
-                exit;
             }
         }
 
@@ -152,8 +156,7 @@ class Loader {
             $keyword = isset( $matches[1] ) ? $matches[1] : '';
             $keyword = yourls_sanitize_keyword( $keyword );
             Filters::do_action( 'load_template_go', $keyword );
-            require_once( YOURLS_ABSPATH.'/yourls-go.php' );
-            exit;
+            $this->pass();
         }
 
         // Stats:
@@ -163,7 +166,6 @@ class Loader {
             $aggregate = isset( $matches[2] ) ? (bool)$matches[2] && yourls_allow_duplicate_longurls() : false;
             Filters::do_action( 'load_template_infos', $keyword );
             require_once( YOURLS_ABSPATH.'/yourls-infos.php' );
-            exit;
         }
 
         // Prefix-n-Shorten sends to bookmarklet (doesn't work on Windows)
@@ -174,14 +176,49 @@ class Loader {
                 $parse = array_map( 'rawurlencode', $parse );
                 // Redirect to /admin/index.php?up=<url protocol>&us=<url slashes>&ur=<url rest>
                 Redirect::redirect( yourls_add_query_arg( $parse , yourls_admin_url( 'index.php' ) ), 302 );
-                exit;
             }
         }
 
         // Past this point this is a request the loader could not understand
         Filters::do_action( 'loader_failed', $request );
         Redirect::redirect( YOURLS_SITE, 302 );
-        exit;
+    }
+
+    public function pass() {
+        // First possible exit:
+        if ( !isset( $keyword ) ) {
+            yourls_do_action( 'redirect_no_keyword' );
+            yourls_redirect( YOURLS_SITE, 301 );
+        }
+
+        // Get URL From Database
+        $url = yourls_get_keyword_longurl( $keyword );
+
+        // URL found
+        if ( !empty( $url ) ) {
+            yourls_do_action( 'redirect_shorturl', $url, $keyword );
+
+            // Update click count in main table
+            $update_clicks = yourls_update_clicks( $keyword );
+
+            // Update detailed log for stats
+            $log_redirect = yourls_log_redirect( $keyword );
+
+            yourls_redirect( $url, 301 );
+
+        // URL not found. Either reserved, or page, or doesn't exist
+        } else {
+
+            // Do we have a page?
+            if ( file_exists( YOURLS_PAGEDIR . "/$keyword.php" ) ) {
+                yourls_page( $keyword );
+
+            // Either reserved id, or no such id
+            } else {
+                yourls_do_action( 'redirect_keyword_not_found', $keyword );
+                yourls_redirect( YOURLS_SITE, 302 ); // no 404 to tell browser this might change, and also to not pollute logs
+            }
+        }
     }
 
     /**
