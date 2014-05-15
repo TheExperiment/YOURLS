@@ -227,6 +227,10 @@ module.exports = function (grunt) {
       }
     },
 
+    "update_submodules": {
+      yourls: {}
+    },
+
     // GeoIP tasks
     curl: {
       geoip: {
