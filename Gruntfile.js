@@ -227,6 +227,7 @@ module.exports = function (grunt) {
       }
     },
 
+    // Update submodules
     "update_submodules": {
       yourls: {}
     },
