@@ -204,17 +204,17 @@
     },
     {
         "name": "geoip2/geoip2",
-        "version": "v0.6.1",
-        "version_normalized": "0.6.1.0",
+        "version": "v0.6.3",
+        "version_normalized": "0.6.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/maxmind/GeoIP2-php.git",
-            "reference": "cb9c024699e7c4e7c2cd74d371e8bd01000b01f4"
+            "reference": "9f0c743afdd637f92db97c76defb96c3faeb2ae9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/maxmind/GeoIP2-php/zipball/cb9c024699e7c4e7c2cd74d371e8bd01000b01f4",
-            "reference": "cb9c024699e7c4e7c2cd74d371e8bd01000b01f4",
+            "url": "https://api.github.com/repos/maxmind/GeoIP2-php/zipball/9f0c743afdd637f92db97c76defb96c3faeb2ae9",
+            "reference": "9f0c743afdd637f92db97c76defb96c3faeb2ae9",
             "shasum": ""
         },
         "require": {
@@ -226,7 +226,7 @@
             "phpunit/phpunit": "3.7.*",
             "satooshi/php-coveralls": "dev-master"
         },
-        "time": "2014-05-01 14:20:30",
+        "time": "2014-05-12 17:53:20",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

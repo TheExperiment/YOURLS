@@ -14,7 +14,7 @@ namespace YOURLS\Statistics;
 /**
  * Summary of Info
  */
-class NumbersStats implements Statistics {
+class AboutStats implements Statistics {
 
     /**
      * Build a list of all daily values between d1/m1/y1 to d2/m2/y2.

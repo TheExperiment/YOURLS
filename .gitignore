@@ -42,7 +42,7 @@ includes/vendor/bin/
 !includes/vendor/psr/log/Psr/
 
 # Useful files
-!README.md
+!README.*
 !LICENSE*
 
 ############
