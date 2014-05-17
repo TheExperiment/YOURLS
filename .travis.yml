@@ -11,15 +11,10 @@ matrix:
     allow_failures:
         - php: hhvm
 
-env:
-  - DB=mysql
-
 before_script:
   - wget https://raw.githubusercontent.com/ozh/YOURLS-fr_FR/master/fr_FR.mo -O ./user/languages/fr_FR.mo
   - mysql -e 'create database IF NOT EXISTS yourls_tests;'
   - cp ./tests/data/yourls-tests-config-travis.php ./user/config.php
-
-script: phpunit
 
 notifications:
   email: false
