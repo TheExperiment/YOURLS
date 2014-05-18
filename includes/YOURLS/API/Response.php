@@ -22,10 +22,10 @@ class Response {
     protected static $formats = array(
         'json',
         'xml',
-        'simple',
+        'simple'
     );
 
-    protected static $format;
+    public $format = 'json';
 
     public function __construct( array $response ) {
         $this->response = array_merge( $this->response, $response );
@@ -54,18 +54,11 @@ class Response {
 
     public function xml() {
         unset( $this->simple );
-        $xml = new SimpleXMLElement('<response/>');
+        $xml = new SimpleXMLElement( '<response/>' );
         self::array_to_xml( $response, $xml );
         Header::type( 'application/xml' );
 
         return $xml->asXML();
-    }
-
-    public function format( $format ) {
-        if( !in_array( $format, $formats ) ) {
-            throw new APIExeption( 'Unknown format' );
-        }
-        $this->format = $format;
     }
 
     public static function array_to_xml( $array, &$xml ) {
@@ -89,7 +82,7 @@ class Response {
     public function simple() {
         Header::type( 'text/plain' );
 
-        return $this->response[ 'simple' ];
+        return $this->simple;
     }
 
 }
