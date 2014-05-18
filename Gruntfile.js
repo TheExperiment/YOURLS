@@ -214,6 +214,9 @@ module.exports = function (grunt) {
 
     // Development tasks
     watch: {
+      options: {
+        livereload: true
+      },
       less: {
         files: 'assets/less/**/*.less',
         tasks: 'less:dev'
