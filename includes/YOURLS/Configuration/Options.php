@@ -22,7 +22,7 @@ class Options {
      * @since 2.0
      */
     private static $options = array();
-    
+
     private static $static_options = array();
 
     /**
@@ -30,30 +30,31 @@ class Options {
      */
     protected $default = array(
         // physical path of YOURLS root
-        'ABSPATH'             => str_replace( '\\', '/', dirname( dirname( __DIR__ ) ) ),
+        'abspath'             => str_replace( '\\', '/', dirname( dirname( __DIR__ ) ) ),
         // physical path of includes directory
-        'INC'                 => array( 'ABSPATH', '/includes' ),
+        'inc'                 => array( 'abspath', '/includes' ),
 
         // physical path and url of asset directory
-        'ASSET_DIR'           => array( 'ABSPATH', '/assets' ),
-        'ASSET_URL'           => array( 'SITE', '/assets' ),
+        'assets_dir'           => array( 'abspath', '/assets' ),
+        'assets_url'           => array( 'site', '/assets' ),
 
         // physical path and url of user directory
-        'USER_DIR'            => array( 'ABSPATH', '/user' ),
-        'USER_URL'            => array( 'SITE', '/user' ),
+        'user_dir'            => array( 'abspath', '/user' ),
+        'user_url'            => array( 'site', '/user' ),
         // physical path of translations directory
-        'LANG_DIR'            => array( 'USER_DIR', '/languages' ),
+        'lang_dir'            => array( 'user_dir', '/languages' ),
         // physical path and url of plugins directory
-        'PLUGIN_DIR'          => array( 'USER_DIR', '/plugins' ),
-        'PLUGIN_URL'          => array( 'USER_URL', '/plugins' ),
+        'plugin_dir'          => array( 'user_dir', '/plugins' ),
+        'plugin_url'          => array( 'user_url', '/plugins' ),
         // physical path and url of themes directory
-        'THEME_DIR'           => array( 'USER_DIR', '/themes' ),
-        'THEME_URL'           => array( 'USER_URL', '/themes' ),
+        'theme_dir'           => array( 'user_dir', '/themes' ),
+        'theme_url'           => array( 'user_url', '/themes' ),
         // physical path of pages directory
-        'PAGE_DIR'            => array( 'USER_DIR', '/pages' ),
+        'page_dir'            => array( 'user_dir', '/pages' ),
 
         // admin pages location
-        'ADMIN_LOCATION'      => 'admin',
+        'admin_location'      => 'admin',
+        'api_location'      => 'api',
 
         // table to store URLs
         'DB_TABLE_URL'        => array( 'DB_PREFIX', 'url' ),
@@ -73,9 +74,9 @@ class Options {
         // if set to true, disable stat logging (no use for it, too busy servers, ...)
         'check_update'        => false,
         // if set to true, force https:// in the admin area
-        'ADMIN_SSL'           => false,
+        'admin_ssl'           => false,
         // if set to true, verbose debug infos. Will break things. Don't enable.
-        'DEBUG'               => false,
+        'debug'               => false,
     );
 
     /**
