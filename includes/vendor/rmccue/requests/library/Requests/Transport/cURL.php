@@ -68,8 +68,11 @@ class Requests_Transport_cURL implements Requests_Transport {
 		if (version_compare($this->version, '7.10.5', '>=')) {
 			curl_setopt($this->fp, CURLOPT_ENCODING, '');
 		}
-		if (version_compare($this->version, '7.19.4', '>=')) {
+		if (defined('CURLOPT_PROTOCOLS')) {
 			curl_setopt($this->fp, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+		}
+		if (defined('CURLOPT_REDIR_PROTOCOLS')) {
+			curl_setopt($this->fp, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 		}
 	}
 
@@ -118,6 +121,7 @@ class Requests_Transport_cURL implements Requests_Transport {
 		}
 
 		$this->process_response($response, $options);
+		curl_close($this->fp);
 		return $this->headers;
 	}
 
@@ -260,7 +264,6 @@ class Requests_Transport_cURL implements Requests_Transport {
 
 	public function process_response($response, $options) {
 		if ($options['blocking'] === false) {
-			curl_close($this->fp);
 			$fake_headers = '';
 			$options['hooks']->dispatch('curl.after_request', array(&$fake_headers));
 			return false;
@@ -279,7 +282,6 @@ class Requests_Transport_cURL implements Requests_Transport {
 		}
 		$this->info = curl_getinfo($this->fp);
 
-		curl_close($this->fp);
 		$options['hooks']->dispatch('curl.after_request', array(&$this->headers));
 		return $this->headers;
 	}
