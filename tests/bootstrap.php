@@ -8,6 +8,4 @@
  */
 
 $loader = require __DIR__ . "/../includes/vendor/autoload.php";
-$loader->addPsr4( 'YOURLS\\', __DIR__ . '/YOURLS' );
-
-date_default_timezone_set( 'UTC' );
+$loader->addPsr4( 'YOURLS\\', __DIR__ );

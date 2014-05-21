@@ -32,7 +32,10 @@ module.exports = function (grunt) {
     },
     phpcsfixer: {
       src: {
-        dir: '*/YOURLS'
+        dir: 'includes/YOURLS'
+      },
+      tests: {
+        dir: 'tests'
       },
       admin: {
         dir: 'includes/admin'
@@ -222,9 +225,10 @@ module.exports = function (grunt) {
         tasks: 'less:dev'
       },
       php: {
-        files: '*/YOURLS/**/*.php',
+        files: '**/*.php',
         tasks: [
           'phpcsfixer:src',
+          'phpcsfixer:tests',
           'test'
         ]
       }
