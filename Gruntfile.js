@@ -8,7 +8,10 @@ module.exports = function (grunt) {
   'use strict';
 
   // Tools
+  require("time-grunt")(grunt);
   var path = require('path');
+  var semver = require('semver');
+  var currentVersion = '2.0.0-alpha';
 
   // Configuration & Options
   // -----------------------
@@ -16,10 +19,10 @@ module.exports = function (grunt) {
   grunt.initConfig({
 
     // Variables
-    rel: {
-      version: '2.0-alpha'
-    },
     pkg: grunt.file.readJSON('composer.json'),
+    pac: {
+      version: currentVersion
+    },
 
     // PHP tasks
     server: {
@@ -28,7 +31,8 @@ module.exports = function (grunt) {
           keepalive: true,
           open: true
         }
-      }
+      },
+      watch: {}
     },
     phpcsfixer: {
       src: {
@@ -67,7 +71,7 @@ module.exports = function (grunt) {
       options: {
         text_domain: '<%= pkg.authors[0].name %>',
         dest: 'user/languages/YOURLS.pot/',
-        package_version: '<%= rel.version %>',
+        package_version: '<%= pac.version %>',
         encoding: 'UTF-8',
         keywords: [
           '__',
@@ -94,7 +98,7 @@ module.exports = function (grunt) {
 
     // LESS and AJAX tasks
     banner: '/*!\n' +
-            ' * YOURLS v<%= rel.version %>\n' +
+            ' * YOURLS v<%= pac.version %>\n' +
             ' * <%= pkg.homepage %>\n' +
             ' * Copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
             ' * Licensed under <%= pkg.license %>\n' +
@@ -104,7 +108,7 @@ module.exports = function (grunt) {
         options: {
           targetDir: './assets',
           layout: function (type, component) {
-            if (type == 'less') {
+            if (type === 'less') {
               return path.join(type, component);
             }
             return type;
@@ -147,6 +151,43 @@ module.exports = function (grunt) {
         }
       }
     },
+    jshint: {
+      options: {
+        curly: true,
+        eqeqeq: true,
+        immed: true,
+        latedef: true,
+        newcap: true,
+        noarg: true,
+        undef: true,
+        strict: true,
+        trailing: true,
+        reporter: require("jshint-stylish")
+      },
+      yourls: {
+        options: {
+          devel: true, //!
+          strict: false, //!
+          latedef: false, //!
+          browser: true,
+          jquery: true,
+          globals: {
+            ZeroClipboard: true
+          }
+        },
+        src: [
+          "assets/js/yourls.js"
+        ]
+      },
+      grunt: {
+        options: {
+          node: true
+        },
+        src: [
+          "Gruntfile.js"
+        ]
+      }
+    },
 
     // Banners Tasks
     usebanner: {
@@ -165,7 +206,15 @@ module.exports = function (grunt) {
         overwrite: true,
         replacements: [{
           from: /const VERSION = \'[0-9a-z\.-]+\';/,
-          to: 'const VERSION = \'<%= rel.version %>\';'
+          to: 'const VERSION = \'<%= pac.version %>\';'
+        }]
+      },
+      gruntfile: {
+        src: 'Gruntfile.js',
+        overwrite: true,
+        replacements: [{
+          from: /var currentVersion = \'[0-9a-z\.-]+\';/,
+          to: 'var currentVersion = \'<%= pac.version %>\';'
         }]
       },
       composer: {
@@ -173,7 +222,7 @@ module.exports = function (grunt) {
         overwrite: true,
         replacements: [{
           from: /"dev-master": "[0-9\.]+x-dev"/,
-          to: '"dev-master": "<%= rel.version.substr(0,3) %>.x-dev"'
+          to: '"dev-master": "<%= pac.version.substr(0,3) %>.x-dev"'
         }]
       },
       requirements: {
@@ -189,7 +238,7 @@ module.exports = function (grunt) {
         overwrite: true,
         replacements: [{
           from: / \* @version [0-9a-z\.-]+[\n\r]+ \* @copyright 2009-[0-9]+ [a-zA-Z]+[\n\r]+ \* @license [a-zA-Z\s]+[\n\r]+ \*\//,
-          to: ' * @version <%= rel.version %>\n' +
+          to: ' * @version <%= pac.version %>\n' +
               ' * @copyright 2009-<%= grunt.template.today("yyyy") %> <%= pkg.authors[0].name %>\n' +
               ' * @license <%= pkg.license %>\n' +
               ' */'
@@ -222,7 +271,10 @@ module.exports = function (grunt) {
       },
       less: {
         files: 'assets/less/**/*.less',
-        tasks: 'less:dev'
+        tasks: [
+          'less:dev',
+          'jshint'
+        ]
       },
       php: {
         files: '**/*.php',
@@ -234,9 +286,30 @@ module.exports = function (grunt) {
       }
     },
 
-    // Update submodules
+    // Update Dependencies tasks
+    devUpdate: {
+      yourls: {
+        options: {
+          updateType: 'force'
+        }
+      }
+    },
     "update_submodules": {
       yourls: {}
+    },
+    composer: {
+      options: {
+        flags: [
+          "no-dev",
+          "optimize-autoloader"
+        ]
+      },
+      yourls: {},
+      geoip: {
+        options: {
+          cwd: 'user/plugins/geoip/'
+        }
+      }
     },
 
     // GeoIP tasks
@@ -251,7 +324,87 @@ module.exports = function (grunt) {
         src: 'user/plugins/geoip/database/temp/GeoLite2-Country.mmdb.gz',
         dest: 'user/plugins/geoip/database/GeoLite2-Country.mmdb'
       }
-    }
+    },
+
+    prompt: {
+      bump: {
+        options: {
+          questions: [
+            {
+              config: 'bump.increment',
+              type: 'list',
+              message: 'Bump version from ' + '<%= pac.version %>'.cyan + ' to:',
+              choices: [
+                {
+                  value: 'git',
+                  name: 'Build:\t'.yellow + (currentVersion + '-#').yellow +
+                    '\tUnstable, betas, and release candidates.'
+                },
+                {
+                  value: 'patch',
+                  name: 'Patch:\t'.yellow + semver.inc(currentVersion, 'patch').yellow +
+                    '\tBackwards-compatible bug fixes.'
+                },
+                {
+                  value: 'minor',
+                  name: 'Minor:\t'.yellow + semver.inc(currentVersion, 'minor').yellow +
+                    '\tAdd functionality in a backwards-compatible manner.'
+                },
+                {
+                  value: 'major',
+                  name: 'Major:\t'.yellow + semver.inc(currentVersion, 'major').yellow +
+                    '\tIncompatible API changes.'
+                },
+                {
+                  value: 'custom',
+                  name: 'Custom:\t?.?.?'.yellow +
+                    '\tSpecify version...'
+                }
+              ]
+            },
+            {
+              config: 'bump.version',
+              type: 'input',
+              message: 'What specific version would you like',
+              when: function (answers) {
+                return answers['bump.increment'] === 'custom';
+              },
+              validate: function (value) {
+                var valid = semver.valid(value) && true;
+                return valid || 'Must be a valid semver, such as 1.2.3-rc1. See ' +
+                  'http://semver.org/'.blue.underline + ' for more details.';
+              }
+            },
+            {
+              config: 'bump.tag',
+              type: 'confirm',
+              message: 'Do we create a new tag for this release?',
+              default: true
+            },
+            {
+              config: 'bump.push',
+              type: 'confirm',
+              message: 'Do you want to push the new release?',
+              default: true,
+              when: function (answers) {
+                return answers['bump.tag'];
+              }
+            }
+          ]
+        }
+      }
+    },
+    bump: {
+      options: {
+        files: [],
+        updateConfigs: ['pac'],
+        type: grunt.config('bump.increment'),
+        version: grunt.config('bump.version'),
+        commitFiles: ['-a'],
+        createTag: grunt.config('bump.tag'),
+        push: grunt.config('bump.push'),
+      }
+    },
   });
 
   // Register Tasks Engines
@@ -288,12 +441,10 @@ module.exports = function (grunt) {
   // -----------------
 
   // Default task
-  // -> Build and compile
+  // -> Developpement environnement
   grunt.registerTask('default', [
-    'up-deps',
-    'dist',
-    'test',
-    'pot'
+    'server:watch',
+    'watch'
   ]);
   // PHP task
   // -> Checks and fixes for PHP
@@ -302,7 +453,7 @@ module.exports = function (grunt) {
   grunt.registerTask('dist-php', [
     'replace:version',
     'replace:requirements',
-    'replace:test',
+    'replace:tests',
     'replace:banner',
     'phpcsfixer'
   ]);
@@ -310,6 +461,7 @@ module.exports = function (grunt) {
   // -> Compile JS/HTML
   // -> Make it distributable
   grunt.registerTask('dist-assets', [
+    'jshint',
     'uglify',
     'less:dist',
     'usebanner'
@@ -326,7 +478,7 @@ module.exports = function (grunt) {
   // -> Update dependencies
   // -> Update database
   grunt.registerTask('geoip', [
-    'composer:update:no-dev:optimize-autoloader:working-dir=user/plugins/geoip/',
+    'composer:geoip:update',
     'curl',
     'gzip'
   ]);
@@ -335,10 +487,25 @@ module.exports = function (grunt) {
   // -> Update Assets dependencies
   // -> Update Git submodules
   grunt.registerTask('up-deps', [
-    'composer:update:no-dev:optimize-autoloader',
+    'composer:yourls:update',
+    'devUpdate',
     'bower',
     'replace:bootstrap',
     'update_submodules',
     'geoip'
+  ]);
+  // Release task
+  // -> Update dependencies
+  // -> Run distrib task
+  // -> Bump version
+  grunt.registerTask('release', [
+    'prompt:bump',
+    'up-deps',
+    'test',
+    'bump-only:' + grunt.config('bump.increment'),
+    'dist',
+    'replace:gruntfile',
+    'bump-commit',
+    'pot'
   ]);
 };
