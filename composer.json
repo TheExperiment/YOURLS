@@ -27,16 +27,16 @@
   ],
   "require": {
     "php": ">=5.3.0",
-    "pomo/pomo": "~1.2.0",
-    "rmccue/requests": "~1.6.0",
-    "hautelook/phpass": "~0.3.0",
-    "monolog/monolog": "~1.9.0",
-    "nesbot/carbon": "~1.9.0",
+    "pomo/pomo": "~1.2",
+    "rmccue/requests": "~1.6",
+    "hautelook/phpass": "~0.3",
+    "monolog/monolog": "~1.10",
+    "nesbot/carbon": "~1.9",
     "jwage/purl": "~0.0.3",
     "jv2222/ezsql": "dev-master"
   },
   "require-dev": {
-    "filp/whoops": "~1.1.0",
+    "filp/whoops": "~1.1",
     "phpunit/phpunit": ">=4.0",
     "codeclimate/php-test-reporter": "dev-master"
   },
