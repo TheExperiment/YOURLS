@@ -26,4 +26,3 @@ define( 'YOURLS_LANG', '' );  // Edit if you have installed a YOURLS translation
 
 /*** PHP binary - edit if the executable binary is not in system path and put full path ie 'c:/php/php.exe' */
 define( 'YOURLS_PHP_BIN', 'php' );
-

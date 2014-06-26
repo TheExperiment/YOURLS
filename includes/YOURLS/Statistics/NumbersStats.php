@@ -4,7 +4,7 @@
  * Info Wrapper
  *
  * @since 2.0
- * @version 2.0-alpha
+ * @version 2.0.0-alpha
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */
@@ -86,7 +86,6 @@ class NumbersStats implements Statistics {
         );
     }
 
-
     /**
      * Get max value from date array of 'Aug 12, 2012' = '1337'
      *
@@ -98,7 +97,7 @@ class NumbersStats implements Statistics {
                 return array( 'day' => $k, 'max' => $max );
         }
     }
-    
+
     public function __toString() {
         yourls_do_action( 'pre_yourls_info_stats', $keyword );
         if ( $list_of_days ) { ?>
@@ -113,7 +112,7 @@ class NumbersStats implements Statistics {
                     echo '<li><a href="#stat_line_30">' . yourls__( 'Last 30 days' ) . '</a>';
                 if( $do_all == true )
                     echo '<li><a href="#stat_line_all">' . yourls__( 'All time' ) . '</a>';
-                ?>				
+                ?>
             </ul>
             <?php
             // Generate, and display if applicable, each needed graph
@@ -139,13 +138,13 @@ class NumbersStats implements Statistics {
                             break;
                     }
                     echo "</div>";
-                }			
+                }
             } ?>
                                 <details>
                     <summary><?php yourls_e( 'More details' ); ?></summary>
 <?php
-            yourls_html_htag( yourls__( 'Historical click count' ), 3 ); 
-            
+            yourls_html_htag( yourls__( 'Historical click count' ), 3 );
+
             $ago = round( (date('U') - strtotime($timestamp)) / (24* 60 * 60 ) );
             if( $ago <= 1 ) {
                 $daysago = '';
@@ -184,8 +183,8 @@ class NumbersStats implements Statistics {
                 ?>
                 </ul>
             </div>
-        
-                <?php yourls_html_htag( yourls__( 'Best day' ), 3 ); 
+
+                <?php yourls_html_htag( yourls__( 'Best day' ), 3 );
                 $best = yourls_stats_get_best_day( $list_of_days );
                 $best_time['day']   = date( "d", strtotime( $best['day'] ) );
                 $best_time['month'] = date( "m", strtotime( $best['day'] ) );
@@ -230,7 +229,7 @@ class NumbersStats implements Statistics {
                 </details>
 
         <?php yourls_do_action( 'post_yourls_info_stats', $keyword ); ?>
-        
+
     </div>
 
     <?php

@@ -4,7 +4,7 @@
  * Filters Wrapper
  *
  * @since 1.5
- * @version 2.0-alpha
+ * @version 2.0.0-alpha
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */

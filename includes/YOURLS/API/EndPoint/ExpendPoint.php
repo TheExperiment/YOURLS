@@ -4,7 +4,7 @@
  * Response Wrapper
  *
  * @since 2.0
- * @version 2.0-alpha
+ * @version 2.0.0-alpha
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */
@@ -17,10 +17,7 @@ class ExpendPoint extends Response implements EndPoint {
      * Expand short url to long url
      *
      */
-    public function __construct( $shorturl ) {
-        $shorturl = new Keyword( $shorturl );
-        $shorturl->sanitize();
-
+    public function __construct( Keyword $shorturl ) {
         $longurl = $shorturl->long();
 
         if( $longurl ) {

@@ -14,7 +14,7 @@ if( getenv( 'TRAVIS' ) !== true ) {
 
 /*** Code base and URL of that code base */
 define( 'YOURLS_ABSPATH', '/home/travis/build/YOURLS/YOURLS' );
-    
+
 define( 'YOURLS_SITE', 'http://localhost/YOURLS' );
 
 /*** MySQL settings */
@@ -24,6 +24,6 @@ define( 'YOURLS_DB_NAME', 'yourls_tests' );
 define( 'YOURLS_DB_HOST', 'localhost' );
 
 /*** Site options */
-define( 'YOURLS_LANG', 'fr_FR' ); 
-    
+define( 'YOURLS_LANG', 'fr_FR' );
+
 define( 'YOURLS_PHP_BIN', 'php' );

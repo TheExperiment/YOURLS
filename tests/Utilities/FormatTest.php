@@ -33,15 +33,14 @@ class FormatTest extends \PHPUnit_Framework_TestCase {
             Format::string2int( rand( 1, strlen( $this->charset ) ), $this->charset )
         );
     }
-    
- 
+
     /**
      * @covers YOURLS\Utilities\Format::string2int
      * @dataProvider random_string_provider
      */
     public function test_string2int( $a, $b ) {
         $this->assertInternalType( 'int', Format::string2int( $a, $this->charset ) );
-        $this->assertNotEquals( 
+        $this->assertNotEquals(
             Format::string2int( $a, $this->charset ),
             Format::string2int( $b, $this->charset )
         );
@@ -54,7 +53,7 @@ class FormatTest extends \PHPUnit_Framework_TestCase {
     public function test_string2htmlid( $a, $b ) {
         $this->assertNotEquals(
             Format::string2htmlid( $a ),
-            Format::string2htmlid( $b ) 
+            Format::string2htmlid( $b )
         );
     }
 

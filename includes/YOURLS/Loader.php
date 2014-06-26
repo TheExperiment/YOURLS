@@ -4,7 +4,7 @@
  * YOURLS Loader
  *
  * @since 2.0
- * @version 2.0-alpha
+ * @version 2.0.0-alpha
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */
@@ -14,7 +14,7 @@ namespace YOURLS;
 /**
  * YOURLS version
  */
-const VERSION = '2.0-alpha';
+const VERSION = '2.0.0-alpha';
 
 use YOURLS\Configuration\Options;
 use YOURLS\Network\Redirect;

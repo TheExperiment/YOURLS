@@ -4,7 +4,7 @@
  * Authentication Wrapper
  *
  * @since 2.0
- * @version 2.0-alpha
+ * @version 2.0.0-alpha
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */
@@ -23,12 +23,11 @@ class Password extends PasswordHash {
      */
     public function __construct( $password ) {
         $this->password = $password;
-        
+
         $iteration = Filters::apply_filter( 'phpass_new_instance_iteration', $iteration );
         $portable  = Filters::apply_filter( 'phpass_new_instance_portable', $portable );
         parent::__construct( $iteration, $portable );
     }
-
 
     /**
      * Check auth against list of login=>pwd. Sets user if applicable, returns bool
@@ -128,7 +127,6 @@ class Password extends PasswordHash {
 
         return true;
     }
-
 
     /**
      * Check to see if any passwords are stored as cleartext.

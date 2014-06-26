@@ -35,11 +35,12 @@ phpunit/
 whoops/
 
 # Useless files
-includes/vendor/*/*/*
-includes/vendor/bin/
-!includes/vendor/*/*/src/
-!includes/vendor/*/*/library/
-!includes/vendor/psr/log/Psr/
+includes/vendor/
+#includes/vendor/*/*/*
+#includes/vendor/bin/
+#!includes/vendor/*/*/src/
+#!includes/vendor/*/*/library/
+#!includes/vendor/psr/log/Psr/
 
 # Useful files
 !README.*
@@ -73,6 +74,7 @@ $RECYCLE.BIN/
 /W[eE]*.*s*
 
 # Temp
+temp/
 assets/css/*
 !assets/css/yourls.min.css
 assets/less/*.css

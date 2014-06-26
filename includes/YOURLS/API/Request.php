@@ -4,7 +4,7 @@
  * Response Wrapper
  *
  * @since 2.0
- * @version 2.0-alpha
+ * @version 2.0.0-alpha
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */
@@ -12,8 +12,8 @@
 namespace YOURLS\API;
 
 class Request {
-    
-    public $actions = array(
+
+    private $actions = array(
         'db-stats'  => 'DatabaseStatsPoint',
         'expand'    => 'ExpendPoint',
         'url-stats' => 'KeywordStatsPoint',
@@ -23,12 +23,16 @@ class Request {
 
     public function __construct() {
         $this->actions = Filters::apply_filters( 'api_actions', $this->actions );
-        
-        $action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : null;
-        Filters::do_action( 'api', $action );
-        
+
+        Filters::do_action( 'api', $this->action );
+
         try {
-            $response = new $this->actions[$action];
+            $reflection = new ReflectionMethod( $this->actions[$action], '__construct' );
+            $params = $reflection->getParameters();
+            foreach ($params as $param) {
+                $f_param = $this->$param->getName();
+            }
+            $response = new $this->actions[$action]( $f_param );
         } catch (Exception $e) {
             $response = new Response( array(
                 'status_code' => 400,
@@ -37,6 +41,10 @@ class Request {
             ) );
         }
         echo $response;
+    }
+
+    public function __get( $param ) {
+        return isset( $_REQUEST[ $param ] ) ? $_REQUEST[ $param ] : null;
     }
 
 }

@@ -8,7 +8,7 @@ $list_of_days = array();
 $list_of_months = array();
 $list_of_years = array();
 $last_24h = array();
-    
+
 // Define keyword query range : either a single keyword or a list of keywords
 if( $aggregate ) {
     $keyword_list = yourls_get_longurl_keywords( $longurl );
@@ -16,31 +16,30 @@ if( $aggregate ) {
 } else {
     $keyword_range = sprintf( "= '%s'", yourls_escape( $keyword ) );
 }
-    
-    
+
 // *** Referrers ***
 $query = "SELECT `referrer`, COUNT(*) AS `count` FROM `$table` WHERE `shorturl` $keyword_range GROUP BY `referrer`;";
 $rows = $ydb->get_results( yourls_apply_filter( 'stat_query_referrer', $query ) );
-    
+
 // Loop through all results and build list of referrers, countries and hits per day
 foreach( (array)$rows as $row ) {
     if ( $row->referrer == 'direct' ) {
         $direct = $row->count;
         continue;
     }
-        
+
     $host = yourls_get_domain( $row->referrer );
     if( !array_key_exists( $host, $referrers ) )
         $referrers[$host] = array( );
     if( !array_key_exists( $row->referrer, $referrers[$host] ) ) {
         $referrers[$host][$row->referrer] = $row->count;
-        $notdirect += $row->count;			
+        $notdirect += $row->count;
     } else {
         $referrers[$host][$row->referrer] += $row->count;
-        $notdirect += $row->count;				
+        $notdirect += $row->count;
     }
 }
-    
+
 // Sort referrers. $referrer_sort is a array of most frequent domains
 arsort( $referrers );
 $referrer_sort = array();
@@ -51,33 +50,31 @@ foreach( $referrers as $site => $urls ) {
 }
 arsort($referrer_sort);
 
-    
 // *** Countries ***
 $query = "SELECT `country_code`, COUNT(*) AS `count` FROM `$table` WHERE `shorturl` $keyword_range GROUP BY `country_code`;";
 $rows = $ydb->get_results( yourls_apply_filter( 'stat_query_country', $query ) );
-    
+
 // Loop through all results and build list of countries and hits
 foreach( (array)$rows as $row ) {
     if ("$row->country_code")
         $countries["$row->country_code"] = $row->count;
 }
-    
+
 // Sort countries, most frequent first
 if ( $countries )
     arsort( $countries );
 
-        
 // *** Dates : array of $dates[$year][$month][$day] = number of clicks ***
-$query = "SELECT 
-    DATE_FORMAT(`click_time`, '%Y') AS `year`, 
-    DATE_FORMAT(`click_time`, '%m') AS `month`, 
-    DATE_FORMAT(`click_time`, '%d') AS `day`, 
-    COUNT(*) AS `count` 
+$query = "SELECT
+    DATE_FORMAT(`click_time`, '%Y') AS `year`,
+    DATE_FORMAT(`click_time`, '%m') AS `month`,
+    DATE_FORMAT(`click_time`, '%d') AS `day`,
+    COUNT(*) AS `count`
 FROM `$table`
 WHERE `shorturl` $keyword_range
 GROUP BY `year`, `month`, `day`;";
 $rows = $ydb->get_results( yourls_apply_filter( 'stat_query_dates', $query ) );
-    
+
 // Loop through all results and fill blanks
 foreach( (array)$rows as $row ) {
     if( !array_key_exists($row->year, $dates ) )
@@ -89,7 +86,7 @@ foreach( (array)$rows as $row ) {
     else
         $dates[$row->year][$row->month][$row->day] += $row->count;
 }
-    
+
 // Sort dates, chronologically from [2007][12][24] to [2009][02][19]
 ksort( $dates );
 foreach( $dates as $year=>$months ) {
@@ -98,14 +95,13 @@ foreach( $dates as $year=>$months ) {
         ksort( $dates[$year][$month] );
     }
 }
-    
+
 // Get $list_of_days, $list_of_months, $list_of_years
 reset( $dates );
 if( $dates ) {
     extract( yourls_build_list_of_days( $dates ) );
 }
 
-    
 // *** Last 24 hours : array of $last_24h[ $hour ] = number of click ***
 $query = "SELECT
     DATE_FORMAT(`click_time`, '%H %p') AS `time`,
@@ -114,13 +110,13 @@ FROM `$table`
 WHERE `shorturl` $keyword_range AND `click_time` > (CURRENT_TIMESTAMP - INTERVAL 1 DAY)
 GROUP BY `time`;";
 $rows = $ydb->get_results( yourls_apply_filter( 'stat_query_last24h', $query ) );
-    
+
 $_last_24h = array();
 foreach( (array)$rows as $row ) {
     if ( $row->time )
         $_last_24h[ "$row->time" ] = $row->count;
 }
-    
+
 $now = intval( date('U') );
 for ($i = 23; $i >= 0; $i--) {
     $h = date('H A', $now - ($i * 60 * 60) );
@@ -128,9 +124,9 @@ for ($i = 23; $i >= 0; $i--) {
     $last_24h[ $h ] = array_key_exists( $h, $_last_24h ) ? $_last_24h[ $h ] : 0 ;
 }
 unset( $_last_24h );
-    
-// *** Queries all done, phew ***	
-    
+
+// *** Queries all done, phew ***
+
 // Filter all this junk if applicable. Be warned, some are possibly huge datasets.
 $referrers      = yourls_apply_filter( 'pre_yourls_info_referrers', $referrers );
 $referrer_sort  = yourls_apply_filter( 'pre_yourls_info_referrer_sort', $referrer_sort );
@@ -167,7 +163,7 @@ if ( $list_of_days ) {
         '30' => yourls__( 'Last 30 days' ),
         'all'=> yourls__( 'All time' )
     );
-            
+
     // Which graph to generate ?
     $do_all = $do_30 = $do_7 = $do_24 = false;
     $hits_all = array_sum( $list_of_days );
@@ -182,7 +178,7 @@ if ( $list_of_days ) {
         $do_7 = true; // graph for last 7 days
     if( $hits_24 > 0 )
         $do_24 = true; // graph for last 24 hours
-            
+
     // Which graph to display ?
     $display_all = $display_30 = $display_7 = $display_24 = false;
     if( $do_24 ) {
@@ -195,4 +191,3 @@ if ( $list_of_days ) {
         $display_all = true;
     }
 }
-    

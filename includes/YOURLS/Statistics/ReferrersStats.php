@@ -4,7 +4,7 @@
  * Info Wrapper
  *
  * @since 2.0
- * @version 2.0-alpha
+ * @version 2.0.0-alpha
  * @copyright 2009-2014 YOURLS
  * @license MIT
  */
@@ -47,7 +47,7 @@ class ReferrersStats implements Statistics {
                     echo "<li id='sites_various'>" . yourls__( 'Various:' ) . " <strong>". count( $referrers ). "</strong> <a href='' class='details hide-if-no-js' id='more_various'>" . yourls__( '(details)' ) . "</a></li>";
                     echo "<ul id='details_various' style='display:none'>";
                     foreach( $referrers as $url ) {
-                        echo "<li>"; yourls_html_link(key($url)); echo ": 1</li>";	
+                        echo "<li>"; yourls_html_link(key($url)); echo ": 1</li>";
                     }
                     echo "</ul>";
                 }
@@ -62,11 +62,11 @@ class ReferrersStats implements Statistics {
             <p><?php yourls_e( 'Referrer traffic:' ); echo ' ' . sprintf( yourls_n( '<strong>%s</strong> hit', '<strong>%s</strong> hits', $notdirect ), $direct ); ?></p>
 </div></div>
             <?php yourls_do_action( 'post_yourls_info_sources', $keyword );
-            
+
         } else {
             echo '<p>' . yourls__( 'No referrer data.' ) . '</p>';
         } ?>
-            
+
     </div>
     <?php
     }
