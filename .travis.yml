@@ -12,9 +12,16 @@ matrix:
         - php: hhvm
 
 before_script:
+  - composer install
   - wget https://raw.githubusercontent.com/ozh/YOURLS-fr_FR/master/fr_FR.mo -O ./user/languages/fr_FR.mo
   - mysql -e 'create database IF NOT EXISTS yourls_tests;'
   - cp ./tests/data/yourls-tests-config-travis.php ./user/config.php
+
+after_script: includes/vendor/bin/test-reporter
+
+addons:
+  code_climate:
+    repo_token: NEED COMPLETION
 
 notifications:
   email: false
