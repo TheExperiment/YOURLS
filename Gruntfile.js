@@ -8,7 +8,7 @@ module.exports = function (grunt) {
   'use strict';
 
   // Tools
-  require("time-grunt")(grunt);
+  require('time-grunt')(grunt);
   var path = require('path');
   var semver = require('semver');
   var currentVersion = '2.0.0-alpha';
@@ -130,8 +130,8 @@ module.exports = function (grunt) {
     },
     less: {
       dev: {
-        src: "assets/less/yourls.less",
-        dest: "assets/css/yourls.css",
+        src: 'assets/less/yourls.less',
+        dest: 'assets/css/yourls.css',
         options: {
           sourceMap: true,
           sourceMapFilename: 'assets/css/yourls.css.map',
@@ -140,8 +140,8 @@ module.exports = function (grunt) {
         }
       },
       dist: {
-        src: "assets/less/yourls.less",
-        dest: "assets/css/yourls.min.css",
+        src: 'assets/less/yourls.less',
+        dest: 'assets/css/yourls.min.css',
         options: {
           cleancss: true,
           report: 'min',
@@ -162,7 +162,7 @@ module.exports = function (grunt) {
         undef: true,
         strict: true,
         trailing: true,
-        reporter: require("jshint-stylish")
+        reporter: require('jshint-stylish')
       },
       yourls: {
         options: {
@@ -176,7 +176,7 @@ module.exports = function (grunt) {
           }
         },
         src: [
-          "assets/js/yourls.js"
+          'assets/js/yourls.js'
         ]
       },
       grunt: {
@@ -184,7 +184,7 @@ module.exports = function (grunt) {
           node: true
         },
         src: [
-          "Gruntfile.js"
+          'Gruntfile.js'
         ]
       }
     },
@@ -294,14 +294,13 @@ module.exports = function (grunt) {
         }
       }
     },
-    "update_submodules": {
+    'update_submodules': {
       yourls: {}
     },
     composer: {
       options: {
         flags: [
-          "no-dev",
-          "optimize-autoloader"
+          'no-dev'
         ]
       },
       yourls: {},
@@ -416,7 +415,7 @@ module.exports = function (grunt) {
         done = this.async();
 
     this.files.forEach(function (file) {
-      grunt.verbose.writeln("Uncompressing " + file.dest.cyan + "...");
+      grunt.verbose.writeln('Uncompressing ' + file.dest.cyan + '...');
       var content = grunt.file.read(file.src, { encoding: null });
 
       zlib.gunzip(content, function (error, result) {
@@ -425,7 +424,7 @@ module.exports = function (grunt) {
           grunt.fatal(error);
         }
         grunt.file.write(file.dest, result);
-        grunt.log.ok("Uncompressed file written to " + file.dest.cyan);
+        grunt.log.ok('Uncompressed file written to ' + file.dest.cyan);
       });
     });
   });

@@ -53,6 +53,7 @@
     }
   },
   "config": {
-    "vendor-dir": "includes/vendor"
+    "vendor-dir": "includes/vendor",
+    "optimize-autoloader": true
   }
 }
