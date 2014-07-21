@@ -107,9 +107,11 @@ module.exports = function (grunt) {
       install: {
         options: {
           targetDir: './assets',
-          layout: function (type, component) {
+          layout: function (type, component, source) {
             if (type === 'less') {
-              return path.join(type, component);
+              var subpath = path.dirname(source).split(path.sep);
+              subpath = subpath.slice(subpath.indexOf(type) + 1 || subpath.length);
+              return path.join(type, component, subpath.join(path.sep));
             }
             return type;
           }
