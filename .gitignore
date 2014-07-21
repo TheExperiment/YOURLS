@@ -66,6 +66,7 @@ $RECYCLE.BIN/
 [Cc]overage*
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+[Bb]uild/
 
 # Visual Studio
 *.sln

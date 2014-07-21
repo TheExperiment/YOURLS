@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.0/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.2/phpunit.xsd"
          bootstrap="tests/bootstrap.php" colors="true">
   <testsuites>
     <testsuite name="YOURLS Test Suite">
@@ -17,7 +17,7 @@
     <!-- Install -->
     <server name="SERVER_SOFTWARE" value="TRAVIS APACHE"/>
     <!-- Stats data -->
-    <server name="HTTP_USER_AGENT" value="Travis-CI (PHPUnit\4.0)"/>
+    <server name="HTTP_USER_AGENT" value="Travis-CI (PHPUnit\4.2)"/>
     <server name="HTTP_HOST" value="travis-ci.org"/>
     <server name="HTTP_CLIENT_IP" value="10.10.10.1"/>
     <!-- Login -->
@@ -28,6 +28,7 @@
     <request name="format" value="simple"/>
   </php>
   <logging>
+    <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
     <log type="coverage-clover" target="build/logs/clover.xml"/>
   </logging>
 </phpunit>
