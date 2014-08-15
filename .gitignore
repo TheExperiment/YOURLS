@@ -5,7 +5,8 @@
 # Configuration
 user/*
 !user/config-sample.php
-.htaccess
+!user/config.php
+#.htaccess
 *.config
 *.conf
 [Rr]obots.txt
@@ -22,6 +23,8 @@ user/plugins/*
 !user/plugins/sample-page/
 !user/plugins/sample-plugin/
 !user/plugins/sample-toolbar/
+!user/plugins/random-keywords/
+!user/plugins/yourls-domainlimit-plugin-master/
 
 # Pages
 pages/*
