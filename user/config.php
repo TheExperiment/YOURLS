@@ -8,20 +8,20 @@
  */
 
 /** MySQL database username */
-define( 'YOURLS_DB_USER', 'yourls' );
+define( 'YOURLS_DB_USER', getenv('YOURLS_DB_USER') );
 
 /** MySQL database password */
-define( 'YOURLS_DB_PASS', 'rjQ2uFUrADPpyxR8' );
+define( 'YOURLS_DB_PASS', getenv('YOURLS_DB_PASS') );
 
 /** The name of the database for YOURLS */
-define( 'YOURLS_DB_NAME', 'yourls' );
+define( 'YOURLS_DB_NAME', getenv('YOURLS_DB_NAME') );
 
 /** MySQL hostname.
  ** If using a non standard port, specify it like 'hostname:port', eg. 'localhost:9999' or '127.0.0.1:666' */
-define( 'YOURLS_DB_HOST', 'localhost' );
+define( 'YOURLS_DB_HOST', getenv('YOURLS_DB_HOST') );
 
 /** MySQL tables prefix */
-define( 'YOURLS_DB_PREFIX', 'yourls_' );
+define( 'YOURLS_DB_PREFIX', getenv('YOURLS_DB_PREFIX') );
 
 /*
  ** Site options
@@ -29,10 +29,10 @@ define( 'YOURLS_DB_PREFIX', 'yourls_' );
 
 /** YOURLS installation URL -- all lowercase and with no trailing slash.
  ** If you define it to "http://site.com", don't use "http://www.site.com" in your browser (and vice-versa) */
-define( 'YOURLS_SITE', 'http://www.ccall.me/y' );
+define( 'YOURLS_SITE', getenv('YOURLS_SITE') );
 
 /** Timezone GMT offset */
-define( 'YOURLS_HOURS_OFFSET', -5 ); 
+define( 'YOURLS_HOURS_OFFSET', getenv('YOURLS_HOURS_OFFSET') ); 
 
 /** YOURLS language
  ** Change this setting to use a translation file for your language, instead of the default English.
@@ -51,14 +51,14 @@ define( 'YOURLS_UNIQUE_URLS', false );
 define( 'YOURLS_PRIVATE', true );
 
 /** A random secret hash used to encrypt cookies. You don't have to remember it, make it long and complicated. Hint: copy from http://yourls.org/cookie **/
-define( 'YOURLS_COOKIEKEY', 'XmWWsdLv%Tp0-I1BGV#1))drzzgmI|L~Xjh0CbkZ' );
+define( 'YOURLS_COOKIEKEY', getenv('YOURLS_COOKIEKEY') );
 
 /** Username(s) and password(s) allowed to access the site. Passwords either in plain text or as encrypted hashes
  ** YOURLS will auto encrypt plain text passwords in this file
  ** Read http://yourls.org/userpassword for more information */
 $yourls_user_passwords = array(
-	'nick' => 'phpass:!2a!08!drPChCGP0w2wNy1LnDSgx.5HNbWu0CoZP28eLI80ggPPDGDS0.bRm' /* Password encrypted by YOURLS */ ,
-	'trevor' => 'phpass:!2a!08!fLIR2lMXrM/zYusspklmpOLMpngQJIF.1bS22QtIrizc8QX8QQQgG' /* Password encrypted by YOURLS */ 	// You can have one or more 'login'=>'password' lines
+	'nick' => getenv('YOURLS_NICK_PASS') /* Password encrypted by YOURLS */ ,
+	'trevor' => getenv('YOURLS_TREVOR_PASS') /* Password encrypted by YOURLS */ 	// You can have one or more 'login'=>'password' lines
 	);
 
 /** Debug mode to output some internal information
@@ -98,7 +98,7 @@ define('YOURLS_PRIVATE_API', false);
 /*
  * List of accepted domain names
  */
-$domainlimit_list = array( 'ccall.me', 'www.ccall.me', 'ccall-staging.herokuapp.com', 'ccall-production.herokuapp.com' );
+$domainlimit_list = array( getenv('YOURLS_HTTP_ROOT'), getenv('YOURLS_HTTP_MAIN') );
 
 
 
